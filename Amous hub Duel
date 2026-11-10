@@ -2532,6 +2532,7 @@ local function fn23()
 	TextLabel2.TextSize = 11
 	TextLabel2.TextXAlignment = Enum.TextXAlignment.Center
 	TextLabel2.ZIndex = 305
+	TextLabel2.Visible = false -- [PATCH] FPS text removed
 
 	-- PING Adjustment (Positioned perfectly on the right)
 	local TextLabel3 = new("TextLabel", Frame)
@@ -2545,6 +2546,7 @@ local function fn23()
 	TextLabel3.TextSize = 11
 	TextLabel3.TextXAlignment = Enum.TextXAlignment.Right
 	TextLabel3.ZIndex = 305
+	TextLabel3.Visible = false -- [PATCH] PING text removed
 
 	position = new("Frame", Frame)
 	position.Name = "AMOUSStealTrack"
@@ -2687,7 +2689,7 @@ local function fn25()
 		ColorSequenceKeypoint.new,
 		Enum.Font.GothamBold
 	fn24()
-	if UserInputService.TouchEnabled or Config.statsBarEnabled == false then
+	if true then -- [PATCH] stats bar removed
 		return
 	end
 	local ScreenGui = new("ScreenGui")
@@ -9112,6 +9114,28 @@ tbl31 = {
 		end) then
 			pcall(fn40, fn15(v13))
 		end
+		-- aimbot keybind persistence guard: re-apply saved bind if the main load lost it
+		pcall(function()
+			if not isfile_("amous/amousduel.json") then return end
+			local okRead, saved = pcall(function()
+				return HttpService:JSONDecode(readfile_("amous/amousduel.json"))
+			end)
+			if not okRead or type(saved) ~= "table" then
+				warn("[AMOUS] amousduel.json could not be read/decoded")
+				return
+			end
+			local direct = type(saved.binds) == "table" and type(saved.binds.direct) == "table" and saved.binds.direct or {}
+			local savedName = saved.aimbotKey or direct.aimbotKey
+			warn("[AMOUS] aimbotKey in file = " .. tostring(savedName) .. " | in memory = " .. tostring(tbl11.aimbot and tbl11.aimbot.Name))
+			if tbl11.aimbot == nil and type(savedName) == "string" and savedName ~= "_cleared_" then
+				local okKey, keyCode = pcall(function() return Enum.KeyCode[savedName] end)
+				if okKey and keyCode then
+					tbl11.aimbot = keyCode
+					warn("[AMOUS] aimbot key restored from file: " .. savedName)
+					if Config._refreshKeybindDisplays then pcall(Config._refreshKeybindDisplays) end
+				end
+			end
+		end)
 		pcall(Config._buildHeadDisplay, localPlayer.Character)
 		if Config.autoStealEnabled then
 			pcall(fn23)

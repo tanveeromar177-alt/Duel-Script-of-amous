@@ -4171,6 +4171,118 @@ G.UIStroke_BatTPBind.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 G.UIStroke_BatTPBind.Color = Color3.fromRGB(85, 18, 29)
 G.UIStroke_BatTPBind.Parent = G.TextButton_BatTPBind
 
+-- ==================== SPINBOT rows (Combat page, right after the Bat TP rows) ====================
+-- Frame_Spinbot (Frame) : "Spinbot" toggle row (same template as the Bat TP row)
+G.Frame_Spinbot = Instance.new("Frame")
+G.Frame_Spinbot.BackgroundColor3 = Color3.fromRGB(55, 10, 18)
+G.Frame_Spinbot.BackgroundTransparency = 1
+G.Frame_Spinbot.BorderSizePixel = 0
+G.Frame_Spinbot.LayoutOrder = 13
+G.Frame_Spinbot.Size = UDim2.new(1, 0, 0, 40)
+G.Frame_Spinbot.Parent = G.WavePage_Combat
+
+-- TextLabel_Spinbot (TextLabel)
+G.TextLabel_Spinbot = Instance.new("TextLabel")
+G.TextLabel_Spinbot.BackgroundTransparency = 1
+G.TextLabel_Spinbot.Position = UDim2.new(0, 12, 0, 0)
+G.TextLabel_Spinbot.Size = UDim2.new(1, -120, 1, 0)
+G.TextLabel_Spinbot.FontFace = G.SpicyFont
+G.TextLabel_Spinbot.Text = "Spinbot"
+G.TextLabel_Spinbot.TextColor3 = Color3.fromRGB(225, 230, 240)
+G.TextLabel_Spinbot.TextSize = 11
+G.TextLabel_Spinbot.TextXAlignment = Enum.TextXAlignment.Left
+G.TextLabel_Spinbot.Parent = G.Frame_Spinbot
+
+-- WaveTogglePill_Spinbot (Frame) : key starts with "WaveTogglePill" so the generic toggle wiring + config capture/autosave pick it up
+G.WaveTogglePill_Spinbot = Instance.new("Frame")
+G.WaveTogglePill_Spinbot.Name = "WaveTogglePill"
+G.WaveTogglePill_Spinbot.BackgroundColor3 = Color3.fromRGB(55, 12, 19)
+G.WaveTogglePill_Spinbot.BorderSizePixel = 0
+G.WaveTogglePill_Spinbot.Position = UDim2.new(1, -54, 0.5, -9)
+G.WaveTogglePill_Spinbot.Size = UDim2.new(0, 40, 0, 18)
+G.WaveTogglePill_Spinbot.ZIndex = 7
+G.WaveTogglePill_Spinbot:SetAttribute("WaveToggleOn", false)
+G.WaveTogglePill_Spinbot.Parent = G.Frame_Spinbot
+
+-- UICorner_Spinbot_Pill (UICorner)
+G.UICorner_Spinbot_Pill = Instance.new("UICorner")
+G.UICorner_Spinbot_Pill.CornerRadius = UDim.new(0, 9)
+G.UICorner_Spinbot_Pill.Parent = G.WaveTogglePill_Spinbot
+
+-- UIStroke_Spinbot (UIStroke)
+G.UIStroke_Spinbot = Instance.new("UIStroke")
+G.UIStroke_Spinbot.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+G.UIStroke_Spinbot.Color = Color3.fromRGB(100, 22, 35)
+G.UIStroke_Spinbot.Parent = G.WaveTogglePill_Spinbot
+
+-- WaveToggleDot_Spinbot (Frame)
+G.WaveToggleDot_Spinbot = Instance.new("Frame")
+G.WaveToggleDot_Spinbot.Name = "WaveToggleDot"
+G.WaveToggleDot_Spinbot.BackgroundColor3 = Color3.fromRGB(80, 20, 30)
+G.WaveToggleDot_Spinbot.BorderSizePixel = 0
+G.WaveToggleDot_Spinbot.Position = UDim2.new(0, 3, 0.5, -6)
+G.WaveToggleDot_Spinbot.Size = UDim2.new(0, 12, 0, 12)
+G.WaveToggleDot_Spinbot.ZIndex = 8
+G.WaveToggleDot_Spinbot.Parent = G.WaveTogglePill_Spinbot
+
+-- UICorner_Spinbot_Dot (UICorner)
+G.UICorner_Spinbot_Dot = Instance.new("UICorner")
+G.UICorner_Spinbot_Dot.CornerRadius = UDim.new(0, 6)
+G.UICorner_Spinbot_Dot.Parent = G.WaveToggleDot_Spinbot
+
+-- TextButton_Spinbot (TextButton) : click target of the pill
+G.TextButton_Spinbot = Instance.new("TextButton")
+G.TextButton_Spinbot.BackgroundTransparency = 1
+G.TextButton_Spinbot.BorderSizePixel = 0
+G.TextButton_Spinbot.Size = UDim2.new(1, 0, 1, 0)
+G.TextButton_Spinbot.ZIndex = 9
+G.TextButton_Spinbot.Text = ""
+G.TextButton_Spinbot.Parent = G.WaveTogglePill_Spinbot
+
+-- Frame_SpinbotBind (Frame) : "Spinbot Bind" row (same template as the Bat TP Bind row)
+G.Frame_SpinbotBind = Instance.new("Frame")
+G.Frame_SpinbotBind.BackgroundTransparency = 1
+G.Frame_SpinbotBind.BorderSizePixel = 0
+G.Frame_SpinbotBind.LayoutOrder = 14
+G.Frame_SpinbotBind.Size = UDim2.new(1, 0, 0, 34)
+G.Frame_SpinbotBind.Parent = G.WavePage_Combat
+
+-- TextLabel_SpinbotBind (TextLabel)
+G.TextLabel_SpinbotBind = Instance.new("TextLabel")
+G.TextLabel_SpinbotBind.BackgroundTransparency = 1
+G.TextLabel_SpinbotBind.Position = UDim2.new(0, 14, 0, 0)
+G.TextLabel_SpinbotBind.Size = UDim2.new(1, -84, 1, 0)
+G.TextLabel_SpinbotBind.FontFace = G.SpicyFont
+G.TextLabel_SpinbotBind.Text = "Spinbot Bind"
+G.TextLabel_SpinbotBind.TextColor3 = Color3.fromRGB(225, 230, 240)
+G.TextLabel_SpinbotBind.TextSize = 11
+G.TextLabel_SpinbotBind.TextXAlignment = Enum.TextXAlignment.Left
+G.TextLabel_SpinbotBind.Parent = G.Frame_SpinbotBind
+
+-- TextButton_SpinbotBind (TextButton) : click it, then press a key to rebind (default V)
+G.TextButton_SpinbotBind = Instance.new("TextButton")
+G.TextButton_SpinbotBind.BackgroundColor3 = Color3.fromRGB(38, 6, 11)
+G.TextButton_SpinbotBind.BorderSizePixel = 0
+G.TextButton_SpinbotBind.Position = UDim2.new(1, -54, 0.5, -12)
+G.TextButton_SpinbotBind.Size = UDim2.new(0, 44, 0, 24)
+G.TextButton_SpinbotBind.ZIndex = 8
+G.TextButton_SpinbotBind.FontFace = G.SpicyFont
+G.TextButton_SpinbotBind.Text = "V"
+G.TextButton_SpinbotBind.TextColor3 = Color3.fromRGB(144, 56, 71)
+G.TextButton_SpinbotBind.TextSize = 10
+G.TextButton_SpinbotBind.Parent = G.Frame_SpinbotBind
+
+-- UICorner_SpinbotBind (UICorner)
+G.UICorner_SpinbotBind = Instance.new("UICorner")
+G.UICorner_SpinbotBind.CornerRadius = UDim.new(0, 6)
+G.UICorner_SpinbotBind.Parent = G.TextButton_SpinbotBind
+
+-- UIStroke_SpinbotBind (UIStroke)
+G.UIStroke_SpinbotBind = Instance.new("UIStroke")
+G.UIStroke_SpinbotBind.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+G.UIStroke_SpinbotBind.Color = Color3.fromRGB(85, 18, 29)
+G.UIStroke_SpinbotBind.Parent = G.TextButton_SpinbotBind
+
 -- Frame_90 (Frame)
 G.Frame_90 = Instance.new("Frame")
 G.Frame_90.BackgroundTransparency = 1
@@ -6243,6 +6355,45 @@ G.TextButton_BatTP_Btn.ZIndex = 20
 G.TextButton_BatTP_Btn.Text = ""
 G.TextButton_BatTP_Btn.Parent = G.StackBtn_batTp
 
+-- StackBtn_spinbot (Frame) : mobile button "SPINBOT" (5th row of the panel, right of BAT TP)
+G.StackBtn_spinbot = Instance.new("Frame")
+G.StackBtn_spinbot.Name = "StackBtn_spinbot"
+G.StackBtn_spinbot.Active = true
+G.StackBtn_spinbot.BackgroundColor3 = Color3.fromRGB(48, 8, 15)
+G.StackBtn_spinbot.BackgroundTransparency = 0.10000000149011612
+G.StackBtn_spinbot.BorderSizePixel = 0
+G.StackBtn_spinbot.Position = UDim2.new(0, 82, 0, 286)
+G.StackBtn_spinbot.Size = UDim2.new(0, 58, 0, 58)
+G.StackBtn_spinbot.ZIndex = 12
+G.StackBtn_spinbot.Parent = G.MobileStackPanel
+
+-- UICorner_Spinbot_Btn (UICorner)
+G.UICorner_Spinbot_Btn = Instance.new("UICorner")
+G.UICorner_Spinbot_Btn.CornerRadius = UDim.new(0, 10)
+G.UICorner_Spinbot_Btn.Parent = G.StackBtn_spinbot
+
+-- TextLabel_Spinbot_Btn (TextLabel)
+G.TextLabel_Spinbot_Btn = Instance.new("TextLabel")
+G.TextLabel_Spinbot_Btn.BackgroundTransparency = 1
+G.TextLabel_Spinbot_Btn.Position = UDim2.new(0, 5, 0, 5)
+G.TextLabel_Spinbot_Btn.Size = UDim2.new(1, -10, 1, -10)
+G.TextLabel_Spinbot_Btn.ZIndex = 6
+G.TextLabel_Spinbot_Btn.FontFace = G.SpicyFont
+G.TextLabel_Spinbot_Btn.Text = "SPINBOT"
+G.TextLabel_Spinbot_Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+G.TextLabel_Spinbot_Btn.TextSize = 9
+G.TextLabel_Spinbot_Btn.TextWrapped = true
+G.TextLabel_Spinbot_Btn.Parent = G.StackBtn_spinbot
+
+-- TextButton_Spinbot_Btn (TextButton)
+G.TextButton_Spinbot_Btn = Instance.new("TextButton")
+G.TextButton_Spinbot_Btn.BackgroundTransparency = 1
+G.TextButton_Spinbot_Btn.BorderSizePixel = 0
+G.TextButton_Spinbot_Btn.Size = UDim2.new(1, 0, 1, 0)
+G.TextButton_Spinbot_Btn.ZIndex = 20
+G.TextButton_Spinbot_Btn.Text = ""
+G.TextButton_Spinbot_Btn.Parent = G.StackBtn_spinbot
+
 -- WAVEButtonScale (UIScale)
 G.WAVEButtonScale = Instance.new("UIScale")
 G.WAVEButtonScale.Name = "WAVEButtonScale"
@@ -6746,6 +6897,7 @@ local stackDragPairs = {
 	{G.StackBtn_tpDown,     G.TextButton_67},
 	{G.StackBtn_carrySpeed, G.TextButton_68},
 	{G.StackBtn_batTp,      G.TextButton_BatTP_Btn},
+	{G.StackBtn_spinbot,    G.TextButton_Spinbot_Btn},
 }
 for _, pair in ipairs(stackDragPairs) do
 	makeDraggable(pair[1], {pair[1], pair[2]}, function() return not stackPanelOn end)
@@ -6963,6 +7115,7 @@ local stackBtns = {
 	{frame = G.StackBtn_tpDown,     btn = G.TextButton_67, name = "TP DOWN"},
 	{frame = G.StackBtn_carrySpeed, btn = G.TextButton_68, name = "CARRY SPEED"},
 	{frame = G.StackBtn_batTp,      btn = G.TextButton_BatTP_Btn, name = "BAT TP"},
+	{frame = G.StackBtn_spinbot,    btn = G.TextButton_Spinbot_Btn, name = "SPINBOT"},
 }
 
 -- action buttons (not toggles): filled in further down. name -> function
@@ -7948,8 +8101,8 @@ do
 end
 
 -- key binds for the two action rows; clicking the key button waits for the next key (Escape cancels)
-local keyBinds = { tpDown = "F", drop = "X", speed = "Q", aimbot = "E", autoLeft = "Z", autoRight = "C", batTp = "T" }
-local bindButtons = { tpDown = G.TextButton_16, drop = G.TextButton_15, speed = G.TextButton_5, aimbot = G.TextButton_42, autoLeft = G.TextButton_10, autoRight = G.TextButton_11, batTp = G.TextButton_BatTPBind }
+local keyBinds = { tpDown = "F", drop = "X", speed = "Q", aimbot = "E", autoLeft = "Z", autoRight = "C", batTp = "T", spinbot = "V" }
+local bindButtons = { tpDown = G.TextButton_16, drop = G.TextButton_15, speed = G.TextButton_5, aimbot = G.TextButton_42, autoLeft = G.TextButton_10, autoRight = G.TextButton_11, batTp = G.TextButton_BatTPBind, spinbot = G.TextButton_SpinbotBind }
 local bindChangedHook = function() end -- replaced by scheduleAutosave in the config section
 local rebindingName
 
@@ -7997,6 +8150,8 @@ UserInputService.InputBegan:Connect(function(input, processed)
 		autoLR.toggle("right")
 	elseif keyName == keyBinds.batTp then
 		if aimCtl.toggleBatTp then aimCtl.toggleBatTp() end
+	elseif keyName == keyBinds.spinbot then
+		if aimCtl.toggleSpinbot then aimCtl.toggleSpinbot() end
 	end
 end)
 
@@ -8391,23 +8546,29 @@ if pillOn(G.WaveTogglePill_26) then attachBatCounter() end
 if pillOn(G.WaveTogglePill_27) then attachMedusa() end
 
 -- ==========================================================================
--- ADDED: BAT AIMBOT (ported from AkatsukiHub) + MIRROR TP DOWN (ported from Ace Duel)
---   The old Ace-based bat aimbot (Normal / Bypass loops, mode button, Ace speed sets) was removed.
---   Bat aimbot = Akatsuki's final "Bat Aimbot" (the Cypher prediction block that overrides T.Aimbot there):
---     every RenderStepped it takes the nearest living enemy, estimates his velocity / acceleration (clipped,
---     smoothed, air-control and quick-direction-change handling), leads the shot by ping + server tick
---     (ping is read from Stats "Data Ping" every 0.5s, clamped 0.03 .. 0.25 s), turns the root with
---     AssemblyAngularVelocity (gain 80) and moves it with AssemblyLinearVelocity toward the predicted point.
---     Swing = Tool:Activate() when the enemy is within 13 studs, at most every 0.3 s (Akatsuki constants).
---   Controls (UI unchanged): "Bat Speed" toggle (WaveTogglePill_22) = aimbot on/off, mobile AIMBOT button and the
---     Aimbot Bind key flip the same toggle. "Bat Aimbot Speed" (TextBox_8) = approach speed (Akatsuki clamp 1..120).
---     "Bat Lagger Speed" (TextBox_9) is used while a Lagger mode of the speed engine is on (Akatsuki's own final
---     aimbot has no lagger speed; this keeps the existing box meaningful). "Auto Swing" (WaveTogglePill_23) gates the swing.
---   Akatsuki start path kept: if the "Stealing" attribute is set, Drop BR runs first and the aimbot starts once
---     Stealing is gone (max 5 s), like Akatsuki's __checkAndAutoDrop.
---   Speed engine: paused while the aimbot has a target (_G.__WindAimbotDriving), as before.
---   Not ported: Akatsuki's TP Bat marker branch (Wind has no TP Bat), its "Lagger Aimbot" toggle, the
---     first Akatsuki aimbot loop (dead code there, overridden by the Cypher block).
+-- ADDED: BAT AIMBOT (ported from Vx7) + MIRROR TP DOWN (ported from Ace Duel)
+--   The previous bat aimbot (Akatsuki Cypher prediction block) was removed and replaced by the Vx7 bat aimbot
+--   (Vx7 tbl36.update / getBat / nearestTarget / ensureMover / resetMotion, as found in Vx7_by_printed_REALL.txt).
+--   Vx7 bat aimbot, every RenderStepped while "Bat Speed" (WaveTogglePill_22) is on:
+--     * target = nearest living player by distance to your root; his velocity = finite difference of his root
+--       position (dt clamped 1/120 .. 0.25, speed capped at 80, smoothed with lerp 0.25);
+--     * aim point = his position + velocity * clamp(|v| / 130, 0.05, 0.12) + 1 stud up;
+--     * turning: yaw/pitch error in degrees -> AssemblyAngularVelocity (gain 285, clamp +-28 per axis);
+--     * movement: a LinearVelocity mover (per-axis force clamp(mass * max(speed * 220, 6000), 1e6, 5e7), velocity
+--       lerp 1 - exp(-dt * 26)) toward chase point = aim point + direction * 2.8 + 4.75 studs up; horizontal
+--       speed = approach speed, vertical +-52 while the chase point is above/below you, else -2; also Humanoid:Move;
+--     * swing: while "Auto Swing" (WaveTogglePill_23) is on, the held bat/slap Tool is Activated every frame
+--       (Vx7 has no range gate or cooldown there).
+--   Start: equips the bat/slap Tool only when you hold no Tool. Stop: removes the mover, clears velocities, stands
+--   the root upright facing where it looks, restores AutoRotate / PlatformStand.
+--   Controls (UI unchanged): "Bat Speed" toggle (WaveTogglePill_22), mobile AIMBOT button and the Aimbot Bind key
+--     flip the same toggle. "Bat Aimbot Speed" (TextBox_8) = Vx7 Approach Speed (box accepts 0 < n <= 500, default 58).
+--     "Bat Lagger Speed" (TextBox_9) = speed used while a Lagger mode of the speed engine is on (default 40).
+--   Kept from the old Wind code: if the "Stealing" attribute is set, Drop BR runs first and the aimbot starts once
+--     Stealing is gone (max 5 s). Speed engine: paused while the aimbot has a target (_G.__WindAimbotDriving).
+--   Not ported: Vx7's velocity-spoof hook (Config._vxSyncSpoof, a separate speed-engine subsystem, optional there),
+--     its brainrot-safety guard, the Vx7 Bat Lagger toggle and Silent Bat Aim (Body Lock stays as it was).
+--   Unverified: nothing here was run; the Vx7 numbers are copied from the file, how they behave in the live game is not tested.
 --
 --   MIRROR TP DOWN (row under "Bat Speed", WaveTogglePill_MirrorTP) = Ace Duel's TP-mirror fall watcher:
 --     while the toggle AND the bat aimbot are on, every Heartbeat each living enemy within 8 studs horizontally
@@ -8425,37 +8586,35 @@ do
 	-- the Normal/Bypass mode button belonged to the removed Ace aimbot
 	if G.TextButton_43 then G.TextButton_43:Destroy() end
 
-	-- Akatsuki constants (Cypher block). Unused Akatsuki fields (AERIAL_VELOCITY_DECAY, FALLING_SPEED_THRESHOLD) omitted.
-	local AIM = {
-		ACTIVATE_DISTANCE = 13,
-		MIN_FOLLOW_DISTANCE = 1,
-		PREDICTION_TIME = 0.22,
-		PREDICT_AHEAD = 3,
-		MAX_VELOCITY_CHANGE = 150,
-		VELOCITY_SMOOTHING = 0.2,
-		MAX_HORIZONTAL_VELOCITY = 80,
-		SERVER_TICKRATE = 1 / 60,
-		MIN_PING_COMPENSATION = 0.03,
-		MAX_PING_COMPENSATION = 0.25,
-		ACCELERATION_PREDICTION_WEIGHT = 0.3,
-		DIRECTION_CHANGE_DETECTION_TIME = 0.12,
-		QUICK_DIRECTION_CHANGE_MULTIPLIER = 1.5,
-		GRAVITY = 196.2,
-		AIR_CONTROL_FACTOR = 0.8,
-		MIN_AIRBORNE_TIME = 0.08,
-		SWING_COOLDOWN = 0.3,
-		TURN_GAIN = 80,
-		SPEED_MIN = 1,
-		SPEED_MAX = 120,
+	-- ---------- Vx7 bat aimbot constants (Vx7 tbl36 helpers + the numbers inside tbl36.update) ----------
+	local VX = {
+		MOVER_NAME = "WindAimbotMoveVelocity",
+		ATTACHMENT_NAME = "WindAimbotMoveAttachment",
+		MIN_FORCE = 1000000,
+		MAX_FORCE = 50000000,
+		SPEED_MIN = 1,    -- Vx7 currentSpeed clamp
+		SPEED_MAX = 500,
+		VEL_CAP = 80,     -- target velocity cap (studs/s)
+		VEL_LERP = 0.25,
+		LEAD_MIN = 0.05,  -- lead time = clamp(|vel| / 130, 0.05, 0.12)
+		LEAD_MAX = 0.12,
+		LEAD_DIV = 130,
+		AIM_UP = 1,       -- aim point is 1 stud above the target root
+		OVERSHOOT = 2.8,  -- chase point = aim point + direction * 2.8 ...
+		CHASE_UP = 4.75,  -- ... + 4.75 studs up
+		TURN_GAIN = 285,
+		TURN_CLAMP = 28,
+		CLIMB_SPEED = 52, -- vertical speed while the chase point is above/below you
+		SINK_SPEED = -2,
+		MOVER_RATE = 26,  -- mover velocity lerp: 1 - exp(-dt * 26)
 	}
-	local SLAP_NAME_PARTS = { "bat", "slap" }
 
 	-- ---------- speeds (boxes) ----------
 	local function validSpeed(n)
-		return type(n) == "number" and n == n and n >= AIM.SPEED_MIN and n <= AIM.SPEED_MAX
+		return type(n) == "number" and n == n and n > 0 and n <= VX.SPEED_MAX -- Vx7 box rule: 0 < n <= 500
 	end
 
-	local aimSpeeds = { main = 58, lagger = 40 } -- the boxes ship with 58 / 40
+	local aimSpeeds = { main = 58, lagger = 40 } -- the boxes ship with 58 / 40 (same as Vx7 defaults)
 	do
 		local a, b = tonumber(G.TextBox_8.Text), tonumber(G.TextBox_9.Text)
 		if validSpeed(a) then aimSpeeds.main = a end
@@ -8473,225 +8632,208 @@ do
 		G.TextBox_9.Text = string.format("%g", aimSpeeds.lagger)
 	end
 
+	-- Vx7 currentSpeed: lagger speed while a lagger mode is on, else the main speed; clamped 1..500
 	local function currentAimSpeed()
 		local lagger = speedCtl.getLaggerMode and speedCtl.getLaggerMode() or 0
-		return (lagger ~= 0) and aimSpeeds.lagger or aimSpeeds.main
+		local v = (lagger ~= 0) and aimSpeeds.lagger or aimSpeeds.main
+		return math.clamp(tonumber(v) or ((lagger ~= 0) and 40 or 58), VX.SPEED_MIN, VX.SPEED_MAX)
 	end
 
-	-- ---------- prediction state (Akatsuki table "R") ----------
-	local st = {}
-	local function resetPrediction()
-		st.targetPlayer = nil
-		st.lastTargetPos = nil
-		st.targetVelocity = Vector3.zero
-		st.smoothedVelocity = Vector3.zero
-		st.accelerationHistory = {}
-		st.aerialVelocityHistory = {}
-		st.previousDirection = nil
-		st.airborneTime = 0
-	end
-	resetPrediction()
-	st.lastDirectionChangeTime = 0
-	st.lastActivationTime = 0
-	st.currentPing = 0.1
-	st.realPingMs = 0
-
-	local function averageVectors(list)
-		local n = #list
-		if n == 0 then return Vector3.zero end
-		local sum = Vector3.zero
-		for _, v in ipairs(list) do
-			sum = sum + v
-		end
-		return sum / n
-	end
-
-	local function pushLimited(list, value, limit)
-		table.insert(list, value)
-		if #list > limit then table.remove(list, 1) end
-	end
-
-	-- Akatsuki "YN": angular velocity = axis * asin(|axis|) * 80, axis = look x direction
-	local function turnRootTowards(root, direction)
-		if direction.Magnitude < 0.01 then return end
-		local axis = root.CFrame.LookVector:Cross(direction.Unit)
-		local angle = math.asin(math.clamp(axis.Magnitude, -1, 1))
-		root.AssemblyAngularVelocity = axis.Magnitude > 0.01 and (axis.Unit * angle * AIM.TURN_GAIN) or Vector3.zero
-	end
-
-	-- ping sampler (Akatsuki: every 0.5 s)
-	local alive = true
-	task.spawn(function()
-		while alive do
-			local okPing, ms = pcall(function()
-				return game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()
-			end)
-			if okPing and type(ms) == "number" then
-				st.realPingMs = math.floor(ms)
-			end
-			st.currentPing = math.clamp(st.realPingMs / 1000, AIM.MIN_PING_COMPENSATION, AIM.MAX_PING_COMPENSATION)
-			task.wait(0.5)
-		end
-	end)
-
-	-- ---------- bat / target helpers ----------
-	-- Akatsuki "k": held tool named bat/slap first, then the same in the Backpack
-	local function nameIsBat(name)
+	-- ---------- Vx7 helpers: bat, nearest target, LinearVelocity mover ----------
+	local function isBatName(name)
 		local lower = name:lower()
-		for _, part in ipairs(SLAP_NAME_PARTS) do
-			if lower:find(part, 1, true) then return true end
-		end
-		return false
+		return lower:find("bat") ~= nil or lower:find("slap") ~= nil
 	end
 
-	local function aimBatFind()
+	-- Vx7 getBat: a Tool named bat/slap among the character's children first, then in the Backpack
+	local function getBat()
 		local char = LocalPlayer.Character
 		if not char then return nil end
-		local held = char:FindFirstChildOfClass("Tool")
-		if held and nameIsBat(held.Name) then return held end
+		for _, child in ipairs(char:GetChildren()) do
+			if child:IsA("Tool") and isBatName(child.Name) then return child end
+		end
 		local backpack = LocalPlayer:FindFirstChildOfClass("Backpack")
 		if backpack then
 			for _, child in ipairs(backpack:GetChildren()) do
-				if child:IsA("Tool") and nameIsBat(child.Name) then return child end
+				if child:IsA("Tool") and isBatName(child.Name) then return child end
 			end
 		end
 		return nil
 	end
 
-	-- Akatsuki "ZN": nearest living enemy by distance to my root
-	local function nearestAliveEnemy(myRoot)
-		local bestPlayer, bestDist = nil, math.huge
+	-- Vx7 nearestTarget: root part of the nearest living player (by distance to my root)
+	local function nearestTarget(myRoot)
+		local bestDist, bestRoot = math.huge, nil
 		for _, plr in ipairs(Players:GetPlayers()) do
-			if plr ~= LocalPlayer and plr.Character then
-				local r = plr.Character:FindFirstChild("HumanoidRootPart")
-				local h = plr.Character:FindFirstChildOfClass("Humanoid")
+			if plr ~= LocalPlayer then
+				local c = plr.Character
+				local r = c and c:FindFirstChild("HumanoidRootPart")
+				local h = c and c:FindFirstChildOfClass("Humanoid")
 				if r and h and h.Health > 0 then
-					local d = (myRoot.Position - r.Position).Magnitude
+					local d = (r.Position - myRoot.Position).Magnitude
 					if d < bestDist then
-						bestDist, bestPlayer = d, plr
+						bestDist, bestRoot = d, r
 					end
 				end
 			end
 		end
-		return bestPlayer
+		return bestRoot
 	end
 
-	local lastEquip = 0
+	local function clearMover(root)
+		root = root or (LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart"))
+		if not root then return end
+		local lv = root:FindFirstChild(VX.MOVER_NAME)
+		local att = root:FindFirstChild(VX.ATTACHMENT_NAME)
+		if lv and lv:IsA("LinearVelocity") then lv:Destroy() end
+		if att and att:IsA("Attachment") then att:Destroy() end
+	end
 
-	-- ---------- one aimbot frame (Akatsuki RenderStepped body) ----------
+	local function ensureMover(root, speed)
+		local att = root:FindFirstChild(VX.ATTACHMENT_NAME)
+		if att and not att:IsA("Attachment") then
+			att:Destroy()
+			att = nil
+		end
+		if not att then
+			att = Instance.new("Attachment")
+			att.Name = VX.ATTACHMENT_NAME
+			att.Parent = root
+		end
+		local lv = root:FindFirstChild(VX.MOVER_NAME)
+		if not lv or not lv:IsA("LinearVelocity") then
+			if lv then lv:Destroy() end
+			lv = Instance.new("LinearVelocity")
+			lv.Name = VX.MOVER_NAME
+			lv.Attachment0 = att
+			lv.RelativeTo = Enum.ActuatorRelativeTo.World
+			lv.VelocityConstraintMode = Enum.VelocityConstraintMode.Vector
+			lv.ForceLimitsEnabled = true
+			lv.ForceLimitMode = Enum.ForceLimitMode.PerAxis
+			lv.VectorVelocity = Vector3.zero
+			lv.Parent = root
+		else
+			lv.Attachment0 = att
+		end
+		local force = math.clamp(root.AssemblyMass * math.max(speed * 220, 6000), VX.MIN_FORCE, VX.MAX_FORCE)
+		lv.MaxAxesForce = Vector3.new(force, force, force)
+		lv.Enabled = true
+		return lv
+	end
+
+	local function applyMove(root, velocity, speed, dt)
+		local lv = ensureMover(root, speed)
+		local alpha = 1 - math.exp(-math.max(dt or (1 / 60), 0) * VX.MOVER_RATE)
+		lv.VectorVelocity = lv.VectorVelocity:Lerp(velocity, alpha)
+	end
+
+	-- Vx7 resetMotion (without the velocity-spoof call, see header)
+	local function resetMotion()
+		local char = LocalPlayer.Character
+		local root = char and char:FindFirstChild("HumanoidRootPart")
+		local hum = char and char:FindFirstChildOfClass("Humanoid")
+		if root then
+			clearMover(root)
+			root.Anchored = false
+			root.AssemblyLinearVelocity = Vector3.zero
+			root.AssemblyAngularVelocity = Vector3.zero
+			if sethiddenproperty then
+				pcall(sethiddenproperty, root, "PhysicsRepRootPart", nil)
+			end
+			local look = root.CFrame.LookVector
+			local flatLook = Vector3.new(look.X, 0, look.Z)
+			local facing = flatLook.Magnitude > 0.01 and flatLook.Unit or Vector3.new(0, 0, -1)
+			root.CFrame = CFrame.lookAt(root.Position, root.Position + facing)
+		end
+		if hum then
+			hum.AutoRotate = true
+			hum.PlatformStand = false
+			pcall(function() hum:Move(Vector3.zero, false) end)
+			pcall(function() hum:ChangeState(Enum.HumanoidStateType.Running) end)
+		end
+	end
+
+	-- target root -> { pos, time, vel } (Vx7 _G._adaptBatPred); weak keys so left players drop out
+	local targetTrack = setmetatable({}, { __mode = "k" })
+
+	-- ---------- one aimbot frame (Vx7 tbl36.update, RenderStepped) ----------
 	local function stepAim(dt)
 		local char = LocalPlayer.Character
-		local hum = char and char:FindFirstChildOfClass("Humanoid")
 		local root = char and char:FindFirstChild("HumanoidRootPart")
-		if not hum or not root or hum.Health <= 0 then
+		local hum = char and char:FindFirstChildOfClass("Humanoid")
+		if not char or not root or not hum or hum.Health <= 0 then
 			_G.__WindAimbotDriving = false
 			return
 		end
 
-		local tool = char:FindFirstChildOfClass("Tool") or aimBatFind()
-		if tool and tool.Parent ~= char then
-			local now = os.clock() -- Akatsuki equips every frame; throttled to 4 per second here
-			if now - lastEquip >= 0.25 then
-				lastEquip = now
-				pcall(hum.EquipTool, hum, tool)
-			end
-		end
-
-		local targetPlayer = nearestAliveEnemy(root)
-		local targetChar = targetPlayer and targetPlayer.Character
-		local targetRoot = targetChar and targetChar:FindFirstChild("HumanoidRootPart")
-		local targetHum = targetChar and targetChar:FindFirstChildOfClass("Humanoid")
-		if not targetRoot or not targetHum or targetHum.Health <= 0 then
-			resetPrediction()
+		local targetRoot = nearestTarget(root)
+		if not targetRoot then
 			hum.AutoRotate = true
+			root.AssemblyAngularVelocity = Vector3.zero
+			clearMover(root)
 			_G.__WindAimbotDriving = false
 			return
 		end
-		if st.targetPlayer ~= targetPlayer then -- new nearest enemy: do not mix two players' positions into one velocity
-			resetPrediction()
-			st.targetPlayer = targetPlayer
-		end
-		_G.__WindAimbotDriving = true
+		_G.__WindAimbotDriving = true -- the speed engine yields while the aimbot has a target
+		local speed = currentAimSpeed()
 		hum.AutoRotate = false
 
-		-- target velocity / acceleration estimate
-		local targetPos = targetRoot.Position
-		local frameDt = math.max(dt, 1 / 240)
-		if st.lastTargetPos then
-			local vel = (targetPos - st.lastTargetPos) / frameDt
-			local change = vel - st.targetVelocity
-			if change.Magnitude > AIM.MAX_VELOCITY_CHANGE then
-				vel = st.targetVelocity + change.Unit * AIM.MAX_VELOCITY_CHANGE
-			end
-			local flatVel = Vector3.new(vel.X, 0, vel.Z)
-			if flatVel.Magnitude > AIM.MAX_HORIZONTAL_VELOCITY then
-				flatVel = flatVel.Unit * AIM.MAX_HORIZONTAL_VELOCITY
-				vel = Vector3.new(flatVel.X, vel.Y, flatVel.Z)
-			end
-			pushLimited(st.accelerationHistory, (vel - st.targetVelocity) / frameDt, 4)
-			st.targetVelocity = vel
-			st.smoothedVelocity = st.smoothedVelocity:Lerp(vel, AIM.VELOCITY_SMOOTHING)
-		end
-		st.lastTargetPos = targetPos
-
-		-- airborne handling
-		local airborne = targetHum.FloorMaterial == Enum.Material.Air
-		st.airborneTime = airborne and (st.airborneTime + frameDt) or 0
-		if airborne and st.airborneTime >= AIM.MIN_AIRBORNE_TIME then
-			pushLimited(st.aerialVelocityHistory, st.targetVelocity, 6)
-		elseif not airborne then
-			st.aerialVelocityHistory = {}
-		end
-		local usedVelocity = st.smoothedVelocity
-		if airborne and #st.aerialVelocityHistory > 0 then
-			local avg = averageVectors(st.aerialVelocityHistory)
-			usedVelocity = Vector3.new(avg.X, st.targetVelocity.Y, avg.Z) * AIM.AIR_CONTROL_FACTOR
-		end
-
-		-- quick direction change (direction flipped twice within 0.12 s)
-		local quickChange = false
-		local flatTarget = Vector3.new(st.targetVelocity.X, 0, st.targetVelocity.Z)
-		if flatTarget.Magnitude > 5 then
-			local dir = flatTarget.Unit
-			if st.previousDirection and st.previousDirection:Dot(dir) < 0.5 then
-				quickChange = tick() - st.lastDirectionChangeTime < AIM.DIRECTION_CHANGE_DETECTION_TIME
-				st.lastDirectionChangeTime = tick()
-			end
-			st.previousDirection = dir
-		end
-
-		-- predicted aim point
-		local lead = st.currentPing + AIM.SERVER_TICKRATE
-		if quickChange then lead = lead * AIM.QUICK_DIRECTION_CHANGE_MULTIPLIER end
-		local predicted = targetPos
-			+ usedVelocity * lead
-			+ averageVectors(st.accelerationHistory) * AIM.ACCELERATION_PREDICTION_WEIGHT * (lead * lead * 0.5)
-		local extraTime = AIM.PREDICTION_TIME * 1.1
-		predicted = predicted + usedVelocity * extraTime
-		if airborne then
-			predicted = predicted + Vector3.new(0, -0.5 * AIM.GRAVITY * extraTime * extraTime, 0)
-		end
-		local flatUsed = Vector3.new(usedVelocity.X, 0, usedVelocity.Z)
-		if flatUsed.Magnitude > 1 then
-			predicted = predicted + flatUsed.Unit * AIM.PREDICT_AHEAD
-		end
-		local toAim = predicted - root.Position
-
-		turnRootTowards(root, toAim)
-
-		-- swing
-		if tool and pillOn(G.WaveTogglePill_23)
-			and (targetPos - root.Position).Magnitude <= AIM.ACTIVATE_DISTANCE
-			and tick() - st.lastActivationTime >= AIM.SWING_COOLDOWN then
-			pcall(tool.Activate, tool)
-			st.lastActivationTime = tick()
-		end
-
-		-- move
-		if toAim.Magnitude > AIM.MIN_FOLLOW_DISTANCE then
-			root.AssemblyLinearVelocity = toAim.Unit * math.clamp(currentAimSpeed(), AIM.SPEED_MIN, AIM.SPEED_MAX)
+		-- target velocity: finite difference, capped at 80, smoothed 0.25 (Vx7)
+		local now = tick()
+		local track = targetTrack[targetRoot]
+		local targetVel
+		if not track then
+			targetTrack[targetRoot] = { pos = targetRoot.Position, time = now, vel = Vector3.zero }
+			targetVel = Vector3.zero
 		else
-			root.AssemblyLinearVelocity = Vector3.new(0, root.AssemblyLinearVelocity.Y * 0.5, 0)
+			local span = math.clamp(now - track.time, 1 / 120, 0.25)
+			local raw = (targetRoot.Position - track.pos) / span
+			if raw.Magnitude > VX.VEL_CAP then raw = raw.Unit * VX.VEL_CAP end
+			track.vel = track.vel:Lerp(raw, VX.VEL_LERP)
+			track.pos = targetRoot.Position
+			track.time = now
+			targetVel = track.vel
+		end
+
+		-- aim point = position + velocity * clamp(|v|/130, 0.05, 0.12) + 1 stud up
+		local lead = math.clamp(targetVel.Magnitude / VX.LEAD_DIV, VX.LEAD_MIN, VX.LEAD_MAX)
+		local aimPoint = targetRoot.Position + targetVel * lead + Vector3.new(0, VX.AIM_UP, 0)
+		local toAim = aimPoint - root.Position
+		local dir = toAim.Magnitude > 0.01 and toAim.Unit or Vector3.zero
+		local flat = Vector3.new(toAim.X, 0, toAim.Z)
+
+		-- turn: yaw and pitch error in degrees -> angular velocity (gain 285, clamp +-28), pitch axis from current yaw
+		if toAim.Magnitude > 0.01 and flat.Magnitude > 0.01 then
+			local orient = root.Orientation
+			local yawErr = (math.deg(math.atan2(-flat.X, -flat.Z)) - orient.Y + 180) % 360 - 180
+			local pitchErr = (math.deg(math.atan2(toAim.Y, flat.Magnitude)) - orient.X + 180) % 360 - 180
+			local yawRate = math.clamp(math.rad(yawErr) * VX.TURN_GAIN, -VX.TURN_CLAMP, VX.TURN_CLAMP)
+			local pitchRate = math.clamp(math.rad(pitchErr) * VX.TURN_GAIN, -VX.TURN_CLAMP, VX.TURN_CLAMP)
+			local yawRad = math.rad(orient.Y)
+			local pitchAxis = Vector3.new(math.cos(yawRad), 0, -math.sin(yawRad))
+			root.AssemblyAngularVelocity = Vector3.new(0, yawRate, 0) + pitchAxis * pitchRate
+		else
+			root.AssemblyAngularVelocity = Vector3.zero
+		end
+
+		-- move: chase point = aim point + dir * 2.8 + 4.75 up; horizontal at "speed", vertical +-52 or -2
+		local chase = aimPoint + dir * VX.OVERSHOOT + Vector3.new(0, VX.CHASE_UP, 0) - root.Position
+		local chaseFlat = Vector3.new(chase.X, 0, chase.Z)
+		local horizontal = chaseFlat.Magnitude > 0.1 and chaseFlat.Unit * speed or Vector3.zero
+		local vertical = math.abs(chase.Y) > 0.1
+			and Vector3.new(0, math.sign(chase.Y) * VX.CLIMB_SPEED, 0)
+			or Vector3.new(0, VX.SINK_SPEED, 0)
+		applyMove(root, horizontal + vertical, speed, dt)
+		if chaseFlat.Magnitude > 0.5 then
+			hum:Move(chaseFlat.Unit, false)
+		end
+
+		-- swing: Vx7 activates the held bat every frame while Auto Swing is on (no range gate, no cooldown)
+		if pillOn(G.WaveTogglePill_23) then
+			local bat = getBat()
+			if bat and bat.Parent == char then
+				pcall(bat.Activate, bat)
+			end
 		end
 	end
 
@@ -8709,29 +8851,8 @@ do
 		aim.startToken += 1 -- cancels a start that is still waiting for the auto drop
 		disconnectLoop()
 		_G.__WindAimbotDriving = false
-		resetPrediction()
-		st.lastActivationTime = 0
-		local char = LocalPlayer.Character
-		if not char then return end
-		local root = char:FindFirstChild("HumanoidRootPart")
-		local hum = char:FindFirstChildOfClass("Humanoid")
-		if hum then
-			hum.AutoRotate = true
-			hum.PlatformStand = false
-			pcall(function() hum:Move(Vector3.zero, false) end)
-			pcall(function() hum:ChangeState(Enum.HumanoidStateType.Running) end)
-		end
-		if root then
-			root.Anchored = false
-			-- the aimbot turns the root in 3D: stand it upright again, facing where it looks
-			local cf = root.CFrame
-			local look = cf.LookVector
-			local flatLook = Vector3.new(look.X, 0, look.Z)
-			local facing = (flatLook.Magnitude < 0.01) and Vector3.new(0, 0, -1) or flatLook.Unit
-			root.CFrame = CFrame.lookAt(cf.Position, cf.Position + facing)
-			root.AssemblyLinearVelocity = Vector3.zero
-			root.AssemblyAngularVelocity = Vector3.zero
-		end
+		table.clear(targetTrack)
+		resetMotion()
 		task.spawn(function()
 			for _ = 1, 12 do
 				task.wait(0.05)
@@ -8749,20 +8870,20 @@ do
 		end)
 	end
 
+	-- Vx7 v(): equip the bat only when no Tool is held, clear the mover, then run update on RenderStepped
 	local function startAim()
 		disconnectLoop()
 		aim.errShown = false
-		resetPrediction()
-		st.lastActivationTime = 0
+		table.clear(targetTrack)
 		local char = LocalPlayer.Character
 		local hum = char and char:FindFirstChildOfClass("Humanoid")
-		if hum then
-			hum.AutoRotate = false
-			local bat = char:FindFirstChildOfClass("Tool") or aimBatFind()
+		if hum and not char:FindFirstChildOfClass("Tool") then
+			local bat = getBat()
 			if bat and bat.Parent ~= char then
 				pcall(hum.EquipTool, hum, bat)
 			end
 		end
+		clearMover()
 		aim.conn = RunService.RenderStepped:Connect(function(dt)
 			if not pillOn(G.WaveTogglePill_22) then return end
 			local ok, err = pcall(stepAim, dt)
@@ -8773,7 +8894,8 @@ do
 		end)
 	end
 
-	-- Akatsuki __checkAndAutoDrop: carrying a brainrot ("Stealing") -> Drop BR first, start once it is gone (max 5 s)
+	-- WindHub start path (kept from the previous aimbot): carrying a brainrot ("Stealing") -> Drop BR first,
+	-- start once it is gone (max 5 s). Vx7's own equivalent is its brainrot-safety guard, which Wind does not have.
 	local function startAimAfterAutoDrop()
 		aim.startToken += 1
 		local token = aim.startToken
@@ -8906,7 +9028,6 @@ do
 
 	_G.__WindAimbot = {
 		Destroy = function()
-			alive = false
 			stopAim()
 			if mirrorConn then
 				mirrorConn:Disconnect()
@@ -9277,6 +9398,122 @@ do
 	_G.__WindBatTp = {
 		Destroy = function()
 			stopBatTp()
+		end,
+	}
+end
+
+-- ==========================================================================
+-- ADDED: SPINBOT (ported from Cz Hub "Spin", Cz_hub_spinner.txt)
+--   Controls: "Spinbot" toggle (WaveTogglePill_Spinbot, Combat tab, under the Bat TP rows), "Spinbot Bind" key
+--   (TextButton_SpinbotBind, default V, click it and press a key to rebind) and mobile button SPINBOT (StackBtn_spinbot,
+--   5th row, right of BAT TP). All three flip the same toggle. Saved by the generic config code: toggle =
+--   state.toggles.WaveTogglePill_Spinbot, key = state.binds.spinbot, mobile button position = state.positions.StackBtn_spinbot.
+--   Spin = Cz's rotation, unchanged: every RunService.Stepped, Root.CFrame = Root.CFrame * CFrame.Angles(0, rad((speed * dt) % 360), 0),
+--   with Humanoid.AutoRotate kept off while spinning (Cz does this so running / holding a tool cannot fight the rotation)
+--   and set back to true when the spinbot is switched off. Speed = SPIN_SPEED below = 2000 (Cz unit: degrees per second).
+--   Drop BR: unchanged and usable while spinning (key X, mobile DROP BR). The spin steps aside while Drop BR runs
+--   (_G.dropActive / _G.IsDropping, about 0.2 s) so the drop moves the root exactly as without spin, then spinning resumes.
+--   The spin also steps aside while the Bat Aimbot has a target, Bat TP or Auto Left/Right drives the root
+--   (_G.__WindAimbotDriving / __WindBatTpDriving / __WindAutoLRDriving, same convention as the speed engine and Body Lock);
+--   no toggle is switched by this, it just resumes when they stop.
+--   Not ported: Cz's Anti Die / Anti Fling toggles, its Highlight outline, its speed text box and its GUI (Wind already has
+--   its own Anti Die; Cz also turns its health protection on whenever Spin is on, Wind's Spinbot does not).
+--   An imported config never switches the Spinbot on by itself (IMPORT_FORCE_OFF).
+-- ==========================================================================
+do
+	if _G.__WindSpinbot and _G.__WindSpinbot.Destroy then
+		pcall(_G.__WindSpinbot.Destroy) -- re-execute: drop the previous instance's loop
+	end
+
+	local SPIN_SPEED = 2000 -- degrees per second (Cz "SpinSpeed"); edit this number to change the speed
+
+	local pill = G.WaveTogglePill_Spinbot
+	local spin = { conn = nil, errShown = false }
+
+	local function otherFeatureOwnsRoot()
+		return _G.dropActive == true or _G.IsDropping == true
+			or _G.__WindAimbotDriving == true
+			or _G.__WindBatTpDriving == true
+			or _G.__WindAutoLRDriving == true
+	end
+
+	-- one Cz spin step (RunService.Stepped body)
+	local function spinStep(_, dt)
+		if not pillOn(pill) then return end
+		if type(dt) ~= "number" or dt ~= dt or dt <= 0 then return end
+		local char = LocalPlayer.Character
+		local root = char and char:FindFirstChild("HumanoidRootPart")
+		local hum = char and char:FindFirstChildOfClass("Humanoid")
+		if not root or not hum or hum.Health <= 0 then return end
+		if root.Anchored or hum.Sit then return end
+		if otherFeatureOwnsRoot() then return end
+
+		-- keep auto-rotate off in case it got re-enabled (tool equip, respawn)
+		if hum.AutoRotate then
+			hum.AutoRotate = false
+		end
+
+		local degrees = (SPIN_SPEED * dt) % 360
+		root.CFrame = root.CFrame * CFrame.Angles(0, math.rad(degrees), 0)
+	end
+
+	local function stopSpin()
+		if spin.conn then
+			spin.conn:Disconnect()
+			spin.conn = nil
+		end
+		local char = LocalPlayer.Character
+		local hum = char and char:FindFirstChildOfClass("Humanoid")
+		if hum then
+			hum.AutoRotate = true
+		end
+	end
+
+	local function startSpin()
+		if spin.conn then return end
+		spin.errShown = false
+		local char = LocalPlayer.Character
+		local hum = char and char:FindFirstChildOfClass("Humanoid")
+		if hum then
+			hum.AutoRotate = false
+		end
+		spin.conn = RunService.Stepped:Connect(function(t, dt)
+			local ok, err = pcall(spinStep, t, dt)
+			if not ok and not spin.errShown then
+				spin.errShown = true
+				warn("[WIND] spinbot error: " .. tostring(err))
+			end
+		end)
+	end
+
+	-- ---------- toggle / mobile button / bind ----------
+	local function syncMobile(on)
+		mobileToggles["SPINBOT"] = on
+		if G.StackBtn_spinbot then
+			TweenService:Create(G.StackBtn_spinbot, TweenInfo.new(0.18, Enum.EasingStyle.Quad), {
+				BackgroundColor3 = on and Color3.fromRGB(160, 16, 40) or Color3.fromRGB(48, 8, 15)
+			}):Play()
+		end
+	end
+
+	pill:GetAttributeChangedSignal("WaveToggleOn"):Connect(function()
+		local on = pillOn(pill)
+		syncMobile(on)
+		if on then startSpin() else stopSpin() end
+	end)
+
+	local function toggleSpinbot()
+		setToggleVisual(pill, not pillOn(pill))
+	end
+	stackToggleHooks["SPINBOT"] = toggleSpinbot
+	aimCtl.toggleSpinbot = toggleSpinbot
+
+	syncMobile(pillOn(pill))
+	if pillOn(pill) then startSpin() end
+
+	_G.__WindSpinbot = {
+		Destroy = function()
+			stopSpin()
 		end,
 	}
 end
@@ -13960,7 +14197,7 @@ local function captureState()
 		texts = {},
 		positions = {},
 		scales = { ui = currentScale, buttons = buttonScale },
-		binds = { tpDown = keyBinds.tpDown, drop = keyBinds.drop, speed = keyBinds.speed, aimbot = keyBinds.aimbot, autoLeft = keyBinds.autoLeft, autoRight = keyBinds.autoRight, batTp = keyBinds.batTp },
+		binds = { tpDown = keyBinds.tpDown, drop = keyBinds.drop, speed = keyBinds.speed, aimbot = keyBinds.aimbot, autoLeft = keyBinds.autoLeft, autoRight = keyBinds.autoRight, batTp = keyBinds.batTp, spinbot = keyBinds.spinbot },
 		speed = speedCtl.getState and speedCtl.getState() or nil,
 		aim = aimCtl.getState and aimCtl.getState() or nil,
 		visuals = G.VisualsCtl and G.VisualsCtl.getState and G.VisualsCtl.getState() or nil,
@@ -14173,7 +14410,7 @@ do
 	local SCOPE_DONE = { full = "Full config", config = "Config only", keybinds = "Keybinds only" }
 	-- Vx7 clears the toggles that drive your character when a config is imported (batAimbotToggled, batTpEnabled, lagger...).
 	-- Same here: an imported code never switches Bat Aimbot / Bat TP / Lagger on by itself.
-	local IMPORT_FORCE_OFF = { "WaveTogglePill_22", "WaveTogglePill_BatTP" }
+	local IMPORT_FORCE_OFF = { "WaveTogglePill_22", "WaveTogglePill_BatTP", "WaveTogglePill_Spinbot" }
 
 	local panel = G.Frame_SharePanel
 	local COLOR_TEXT = Color3.fromRGB(185, 195, 215)

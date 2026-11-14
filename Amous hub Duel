@@ -4760,7 +4760,7 @@ G.TextBox_StealPause.Position = UDim2.new(0, 3, 0, 0)
 G.TextBox_StealPause.Size = UDim2.new(1, -6, 1, 0)
 G.TextBox_StealPause.ZIndex = 8
 G.TextBox_StealPause.FontFace = G.SpicyFont
-G.TextBox_StealPause.Text = "85"
+G.TextBox_StealPause.Text = "0"
 G.TextBox_StealPause.PlaceholderText = "0-99"
 G.TextBox_StealPause.TextColor3 = Color3.fromRGB(144, 56, 71)
 G.TextBox_StealPause.TextSize = 11
@@ -9317,7 +9317,11 @@ do
 	local STEAL = {
 		DURATION = 1.3,
 		STOP_FRACTION = 0.73,            -- split point when "Steal Pause %" is 0 (pause off)
-		PAUSE_DEFAULT = 85,              -- percent, Vx7 default (stealFreezePercent)
+		PAUSE_DEFAULT = 0,               -- percent; 0 = "Unpatched Auto Grab" sequence below (the box default is "0" too)
+		UNPATCHED_DURATION = 1.2,        -- "Unpatched Auto Grab": hold time before the trigger fires
+		UNPATCHED_BAR_CAP = 0.75,        -- "Unpatched Auto Grab": VISUAL cap, the bar stops at 75%
+		UNPATCHED_RETRY_DELAY = 0.12,    -- second fire pass after the first
+		UNPATCHED_COOLDOWN = 0.45,       -- no new steal for this long after a fire
 		PAUSE_MIN = 1,
 		PAUSE_MAX = 99,
 		PAUSE_RELEASE_DIST_HIGH = 7,     -- studs, Vx7 n14 when pause% >= 80
@@ -9525,9 +9529,9 @@ do
 			return data
 		end
 
-		local function fireSteal(prompt, podName, data)
+		local function fireSteal(prompt, podName, data, noRemote)
 			for _, fn in ipairs(data.trigger) do task.spawn(fn) end
-			local remote = ReplicatedStorage:FindFirstChild("StealAnimal")
+			local remote = not noRemote and ReplicatedStorage:FindFirstChild("StealAnimal")
 			if remote and remote:IsA("RemoteEvent") and podName then
 				pcall(function() remote:FireServer(podName) end)
 			end
@@ -9543,7 +9547,28 @@ do
 		-- returns true when the steal was fired, false when it was aborted
 		local function runSteal(prompt, podName, data, myRun)
 			local duration = STEAL.DURATION
-			local pauseFraction = readPauseFraction() -- nil = pause off (old behaviour)
+			local pauseFraction = readPauseFraction() -- nil = pause off
+
+			-- pause off ("Steal Pause %" = 0): the "Unpatched Auto Grab" sequence (By Weekly):
+			--   hold handlers -> wait 1.2 s (bar capped at 75%) -> fire prompt + trigger handlers -> retry after 0.12 s -> 0.45 s cooldown
+			if not pauseFraction then
+				for _, fn in ipairs(data.hold) do task.spawn(fn) end
+				local t0 = tick()
+				local dur = STEAL.UNPATCHED_DURATION
+				while true do
+					if myRun ~= runId or not active then return false end
+					local elapsed = tick() - t0
+					setBar(math.min(elapsed / dur, 1) * STEAL.UNPATCHED_BAR_CAP)
+					if elapsed >= dur then break end
+					task.wait()
+				end
+				fireSteal(prompt, podName, data, true)
+				setBar(0) -- clear the visual at once, as the original does
+				task.wait(STEAL.UNPATCHED_RETRY_DELAY)
+				if myRun == runId and active then fireSteal(prompt, podName, data, true) end
+				cooldownUntil = tick() + STEAL.UNPATCHED_COOLDOWN
+				return true
+			end
 			local stopProgress = pauseFraction or STEAL.STOP_FRACTION
 			local stopTime = duration * stopProgress
 			local startTime = tick()

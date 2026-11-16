@@ -1,3 +1,4 @@
+
 local tbl = {
 	[1] = { [3] = 1, [6] = { {} } },
 	[2] = {
@@ -4254,7 +4255,7 @@ local function fn39()
 	end
 	if v23.stealFreezePercent then
 		tbl35 = tonumber(v23.stealFreezePercent) or 85
-		Config.stealFreezePercent = tbl35 <= 77 and 75 or (tbl35 <= 82 and 80 or 85)
+		Config.stealFreezePercent = 85
 		if Config._syncStealFreezePercentChoice then
 			Config._syncStealFreezePercentChoice(
 				Config.stealFreezePercent == 75 and 1 or (Config.stealFreezePercent == 80 and 2 or 3)
@@ -4898,7 +4899,7 @@ local function fn40(arg)
 		end
 		if arg.stealFreezePercent then
 			local n18 = tonumber(arg.stealFreezePercent) or 85
-			Config.stealFreezePercent = n18 <= 77 and 75 or (n18 <= 82 and 80 or 85)
+			Config.stealFreezePercent = 85
 			if Config._syncStealFreezePercentChoice then
 				Config._syncStealFreezePercentChoice(
 					Config.stealFreezePercent == 75 and 1 or (Config.stealFreezePercent == 80 and 2 or 3)
@@ -11193,6 +11194,7 @@ tbl31 = {
 			if leftEdge == 0 then
 				leftEdge = -10
 			end
+			local orderCursor = -1000
 			for i = 2, #rows, 1 do
 				local row = rows[i]
 				local group = row:FindFirstChild("ModernChoiceGroup")
@@ -11215,6 +11217,9 @@ tbl31 = {
 					end
 					local itemHeight, itemGap = 28, 2
 					local groupHeight = 8 + #buttons * itemHeight + (#buttons - 1) * itemGap
+					header.LayoutOrder = -1000
+					orderCursor = orderCursor + 1
+					row.LayoutOrder = orderCursor
 					row.Size = UDim2.new(1, 0, 0, groupHeight + 12)
 					row.Visible = false
 					group.Position = UDim2.new(0, 10, 0, 6)
@@ -11256,6 +11261,37 @@ tbl31 = {
 					end
 				end
 			end
+		end
+		function mkAccordionOpen(arg)
+			local toggleFn = mkAccordion(arg)
+			task.defer(function()
+				pcall(function()
+					for i, panel in ipairs(arg:GetChildren()) do
+						if panel:IsA("Frame") and panel.LayoutOrder == 999 then
+							for j, row in ipairs(panel:GetChildren()) do
+								local arrow = row:IsA("Frame") and row:FindFirstChild("SubcategoryToggle")
+								if arrow then
+									arrow:Destroy()
+									for k, label in ipairs(row:GetChildren()) do
+										if label:IsA("TextLabel") and label.Position.X.Offset == 38 then
+											label.Position =
+												UDim2.new(label.Position.X.Scale, 14, label.Position.Y.Scale, label.Position.Y.Offset)
+											label.Size = UDim2.new(
+												label.Size.X.Scale,
+												label.Size.X.Offset + 24,
+												label.Size.Y.Scale,
+												label.Size.Y.Offset
+											)
+										end
+									end
+								end
+							end
+						end
+					end
+					toggleFn(true)
+				end)
+			end)
+			return toggleFn
 		end
 		function makeSpeedRow(text, text2, arg, arg2, arg3, arg4, arg5, arg6, arg7)
 			local frame6 = Instance.new("Frame", v43)
@@ -13084,53 +13120,7 @@ tbl31 = {
 						fn34()
 					end)
 				end
-				do
-					local frame6 = Instance.new("Frame", Frame)
-					frame6.Size = UDim2.new(1, 0, 0, 40)
-					frame6.BorderSizePixel = 0
-					frame6.LayoutOrder = LO()
-					frame6.BackgroundColor3 = glass.panel
-					frame6.BackgroundTransparency = 0.4
-					mkCorner(frame6, 10)
-					mkAnimStroke(frame6, 1)
-					local textLabel2 = Instance.new("TextLabel", frame6)
-					textLabel2.Size = UDim2.new(1, -24, 1, 0)
-					textLabel2.Position = UDim2.new(0, 14, 0, 0)
-					textLabel2.BackgroundTransparency = 1
-					textLabel2.Text = "Auto Grab Pause"
-					textLabel2.TextColor3 = Color3.fromRGB(200, 200, 200)
-					textLabel2.Font = Enum.Font.GothamBold
-					textLabel2.TextSize = 12
-					textLabel2.TextXAlignment = Enum.TextXAlignment.Left
-					local stealFreezePercent = Config.stealFreezePercent or 85
-					stealFreezePercent = stealFreezePercent <= 77 and 75 or (stealFreezePercent <= 82 and 80 or 85)
-					Config.stealFreezePercent = stealFreezePercent
-					Config._syncStealFreezePercentChoice = makeChoiceControl(
-						frame6,
-						{ "75%", "80%", "85%" },
-						stealFreezePercent == 75 and 1 or (stealFreezePercent == 80 and 2 or 3),
-						function(arg, arg2)
-							Config.stealFreezePercent = ({ 75, 80, 85 })[arg2]
-							fn34()
-						end
-					)
-					fn81 = function()
-						local visible = Config.autoStealVersion ~= "V2"
-						frame6.Visible = visible
-						frame6.BackgroundTransparency = 0.4
-						textLabel2.TextColor3 = Color3.fromRGB(200, 200, 200)
-						for i, descendant in ipairs(frame6:GetDescendants()) do
-							if descendant:IsA("TextButton") then
-								descendant.Active = visible
-								descendant.AutoButtonColor = visible
-							end
-						end
-						if v45 then
-							v45()
-						end
-					end
-					fn81()
-				end
+				Config.stealFreezePercent = 85
 				do
 					local v46 = Config._makeSettingsRow(Frame)
 					local textLabel2 = Instance.new("TextLabel", v46)
@@ -13159,7 +13149,7 @@ tbl31 = {
 						end
 					end
 				end
-				v45 = mkAccordion(Frame)
+				mkDropdown(Frame)
 				if fn81 then
 					fn81()
 				end
@@ -14422,7 +14412,7 @@ tbl31 = {
 					fn34()
 				end)
 			end
-			mkAccordion(frame6)
+			mkAccordionOpen(frame6)
 			makeGap(4)
 			frame6 = Instance.new("Frame", v43)
 			frame6.Size = UDim2.new(1, 0, 0, 0)
@@ -14693,7 +14683,7 @@ tbl31 = {
 					frame7.BackgroundColor3 = batTpNoCollision and glass.panelHover or glass.panel
 				end
 			end
-			Config._refreshBatTpAccordion = mkAccordion(uiListLayout2)
+			Config._refreshBatTpAccordion = mkAccordionOpen(uiListLayout2)
 			Config._syncBatTpStuds()
 			makeGap(2)
 			textLabel2 = Instance.new("Frame", v43)
@@ -14983,7 +14973,7 @@ tbl31 = {
 					fn81(Config.smartBatTpSpeed, false)
 				end
 			end
-			mkAccordion(textLabel2)
+			mkAccordionOpen(textLabel2)
 			function setBatTp(batTpEnabled)
 				Config.batTpEnabled = batTpEnabled
 				if batTpEnabled then
@@ -16550,7 +16540,7 @@ tbl31 = {
 					textLabel2.TextColor3 = purpleSkyEnabled and glass.text or glass.muted
 				end
 				skySyncAll()
-				mkAccordion(frame6)
+				mkAccordionOpen(frame6)
 			end
 			makeGap(2)
 			local function fn82(arg, arg2)
@@ -16761,7 +16751,7 @@ tbl31 = {
 					end
 				end
 				makeGap(2)
-				mkAccordion(frame6)
+				mkAccordionOpen(frame6)
 			end
 			do
 				_resConn = nil
@@ -16947,7 +16937,7 @@ tbl31 = {
 					end
 				end
 				makeGap(2)
-				mkAccordion(frame6)
+				mkAccordionOpen(frame6)
 			end
 			makeSectionHeader("ESP")
 			makeGap(2)

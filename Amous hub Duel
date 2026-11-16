@@ -1504,6 +1504,11 @@ local function fn22()
 	Config._stealBarRoot = nil
 end
 local function fn23()
+	-- OLD steal bar (CARRY / FPS / PING) REMOVED. Only the new BlyraAutoGrabBar (end of file) is used.
+	-- Kept as a no-op so every Start/Rebuild/SetStyle call still works, but nothing is built and
+	-- Config._applyStealBarScale is no longer overwritten, so the Steal Bar Size slider drives the new bar.
+	fn22()
+	do return nil end
 	local new, udim2, udim22, udim, color, color2, new2, gothamBold, position =
 		Instance.new,
 		UDim2.new,

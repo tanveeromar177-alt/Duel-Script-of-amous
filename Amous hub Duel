@@ -94,12 +94,33 @@ end)
 localPlayer.CharacterAdded:Connect(function()
 	task.defer(_G.__BLYRA_APPLY_FPS_CAP)
 end)
-local isfile_, readfile_, writefile_ =
-	isfile or syn and syn.isfile or getgenv and getgenv().isfile or function()
-		return false
-	end, readfile or syn and syn.readfile or getgenv and getgenv().readfile or function()
-		return nil
-	end, writefile or syn and syn.writefile or getgenv and getgenv().writefile or function() end
+local function _blyraPickFS(name)
+	local candidates = {
+		rawget and rawget(_G, name),
+		type(syn) == "table" and syn[name],
+		type(getgenv) == "function" and getgenv() and getgenv()[name],
+		type(getfenv) == "function" and getfenv() and getfenv()[name],
+	}
+	for _, fn in ipairs(candidates) do
+		if type(fn) == "function" then
+			return fn
+		end
+	end
+	return nil
+end
+local isfile_ = _blyraPickFS("isfile") or function()
+	return false
+end
+local readfile_ = _blyraPickFS("readfile") or function()
+	return nil
+end
+local writefile_ = _blyraPickFS("writefile") or function() end
+-- also keep raw globals if present
+pcall(function()
+	if type(writefile) == "function" then writefile_ = writefile end
+	if type(readfile) == "function" then readfile_ = readfile end
+	if type(isfile) == "function" then isfile_ = isfile end
+end)
 _G.__BLYRA_FS = {
 	isfolder = isfolder or syn and syn.isfolder or getgenv and getgenv().isfolder,
 	makefolder = makefolder or syn and syn.makefolder or getgenv and getgenv().makefolder,
@@ -2858,14 +2879,45 @@ local function fn33()
 			makefolder("blyra")
 		end
 	end)
-	if ok and result then
-		local wOk, wErr = pcall(function()
-			writefile_("blyra/BlyraConfig.json", result)
-		end)
-		if not wOk then
-			pcall(function()
-				writefile("blyra/BlyraConfig.json", result)
+	local function _writeConfig(payload)
+		if type(payload) ~= "string" or payload == "" then
+			return false
+		end
+		local paths = { "blyra/BlyraConfig.json", "BlyraConfig.json" }
+		for _, pth in ipairs(paths) do
+			local wOk = pcall(function()
+				writefile_(pth, payload)
 			end)
+			if wOk then
+				-- verify write stuck
+				local okR, got = pcall(function()
+					return readfile_(pth)
+				end)
+				if okR and type(got) == "string" and #got > 10 then
+					return true
+				end
+			end
+			wOk = pcall(function()
+				if type(writefile) == "function" then
+					writefile(pth, payload)
+				end
+			end)
+			if wOk then
+				return true
+			end
+		end
+		return false
+	end
+	if ok and result then
+		if not _writeConfig(result) then
+			warn("[BLYRA] config write failed, retrying stripped")
+			tbl32.toggleKeybinds = nil
+			local ok2, result2 = pcall(function()
+				return HttpService:JSONEncode(tbl32)
+			end)
+			if ok2 and result2 then
+				_writeConfig(result2)
+			end
 		end
 	else
 		tbl32.toggleKeybinds = nil
@@ -2873,9 +2925,7 @@ local function fn33()
 			return HttpService:JSONEncode(tbl32)
 		end)
 		if ok2 and result2 then
-			pcall(function()
-				writefile_("blyra/BlyraConfig.json", result2)
-			end)
+			_writeConfig(result2)
 		end
 	end
 	local v23 = fn32(tbl30)
@@ -2891,20 +2941,54 @@ local function fn33()
 	end
 end
 local flag4 = false
+Config._configDirty = false
 local function fn34()
+	Config._configDirty = true
 	if flag4 then
 		return
 	end
 	flag4 = true
-	task.delay(0.5, function()
+	task.delay(0.35, function()
 		flag4 = false
-		fn33()
+		Config._configDirty = false
+		pcall(fn33)
 	end)
 end
 local function fn35()
 	flag4 = false
-	fn33()
+	Config._configDirty = false
+	pcall(fn33)
 end
+-- public aliases so any feature can auto-save
+local function scheduleSaveConfig()
+	fn34()
+end
+_G.scheduleSaveConfig = scheduleSaveConfig
+_G.__BLYRA_SAVE_CONFIG = fn35
+_G.__BLYRA_SAVE_CONFIG_DEBOUNCED = fn34
+
+-- periodic autosave backup (catches any missed fn34 calls)
+task.spawn(function()
+	while true do
+		task.wait(5)
+		if Config._configDirty and _G.BLYRA_LOADED then
+			pcall(fn35)
+		end
+	end
+end)
+-- save on leave / focus lost
+pcall(function()
+	Players.PlayerRemoving:Connect(function(plr)
+		if plr == localPlayer then
+			pcall(fn35)
+		end
+	end)
+end)
+pcall(function()
+	UserInputService.WindowFocusReleased:Connect(function()
+		pcall(fn35)
+	end)
+end)
 local tbl32, tbl33 =
 	{
 		[Enum.KeyCode.W] = true,
@@ -3183,7 +3267,22 @@ local function fn38(arg)
 	return nil, nil
 end
 local function fn39()
-	if not isfile_("blyra/BlyraConfig.json") then
+	local hasCfg = false
+	for _, pth in ipairs({ "blyra/BlyraConfig.json", "BlyraConfig.json" }) do
+		local okI = pcall(function()
+			if isfile_(pth) then
+				hasCfg = true
+			end
+		end)
+		if hasCfg then break end
+		pcall(function()
+			if type(isfile) == "function" and isfile(pth) then
+				hasCfg = true
+			end
+		end)
+		if hasCfg then break end
+	end
+	if not hasCfg then
 		return true
 	end
 	local data = nil
@@ -3195,8 +3294,24 @@ local function fn39()
 	end)
 	local v23 = data
 	if type(v23) ~= "table" then
-		local ok, result = pcall(readfile_, "blyra/BlyraConfig.json")
-		if not ok or type(result) ~= "string" or result == "" then
+		local result = nil
+		for _, pth in ipairs({ "blyra/BlyraConfig.json", "BlyraConfig.json" }) do
+			local okR, dataR = pcall(readfile_, pth)
+			if okR and type(dataR) == "string" and dataR ~= "" then
+				result = dataR
+				break
+			end
+			okR, dataR = pcall(function()
+				if type(readfile) == "function" then
+					return readfile(pth)
+				end
+			end)
+			if okR and type(dataR) == "string" and dataR ~= "" then
+				result = dataR
+				break
+			end
+		end
+		if type(result) ~= "string" or result == "" then
 			return false
 		end
 		local decoded = nil
@@ -3401,6 +3516,13 @@ local function fn39()
 	end
 	if v23.stealBarScale ~= nil then
 		Config.stealBarScale = math.clamp(tonumber(v23.stealBarScale) or 1, 0.5, 2)
+		task.defer(function()
+			pcall(function()
+				if Config._applyStealBarScale then
+					Config._applyStealBarScale(Config.stealBarScale)
+				end
+			end)
+		end)
 	end
 	if v23.stealBarStyle ~= nil then
 		Config.stealBarStyle = "Compact"
@@ -18013,14 +18135,15 @@ frame6.Visible = false
 			makeGap(2)
 			uiScaleBox = makeInputRow("UI Scale", Config.uiScale, function(uiScale2)
 				if uiScale2 >= 0.5 and uiScale2 <= 1.25 then
+					Config.uiScale = uiScale2
 					if Config._applyMainUIScale then
 						Config._applyMainUIScale(uiScale2, true)
 					else
-						Config.uiScale = uiScale2
 						if uiScale then
 							uiScale.Scale = uiScale2
 						end
 					end
+					fn34()
 				end
 			end)
 			Config.statsBarEnabled = false
@@ -27409,6 +27532,18 @@ buildPage("Config", function()
 				end)
 				applyLoadedButtonStates()
 				syncUIValues()
+				-- re-apply persisted scales after UI fully built
+				pcall(function()
+					if Config._applyMainUIScale then
+						Config._applyMainUIScale(Config.uiScale, false)
+					end
+					if type(fn8) == "function" then
+						fn8(Config.floatScale or 0.7)
+					end
+					if Config._applyStealBarScale then
+						Config._applyStealBarScale(Config.stealBarScale or 1)
+					end
+				end)
 				if setBatAimbot then
 					setBatAimbot(Config.batAimbotToggled)
 				end
@@ -30228,10 +30363,19 @@ task.spawn(function()
 	outerScale.Scale = math.clamp(tonumber(Config and Config.stealBarScale) or 1, 0.5, 2)
 	outerScale.Parent = Y
 	pcall(function()
+		local prevApply = Config._applyStealBarScale
 		Config._applyStealBarScale = function(arg)
 			Config.stealBarScale = math.clamp(tonumber(arg) or 1, 0.5, 2)
 			outerScale.Scale = Config.stealBarScale
+			if type(prevApply) == "function" and prevApply ~= Config._applyStealBarScale then
+				pcall(prevApply, Config.stealBarScale)
+			end
+			pcall(function()
+				if type(fn34) == "function" then fn34() elseif scheduleSaveConfig then scheduleSaveConfig() end
+			end)
 		end
+		-- apply whatever was loaded
+		outerScale.Scale = math.clamp(tonumber(Config.stealBarScale) or 1, 0.5, 2)
 	end)
 	Instance.new("UICorner", Root).CornerRadius = UDim.new(0, 14)
 	local rootStroke = Instance.new("UIStroke", Root)

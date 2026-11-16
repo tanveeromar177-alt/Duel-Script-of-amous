@@ -3323,6 +3323,10 @@ local function fn39()
 		end
 		v23 = decoded
 	end
+	-- FIX: the keybind helper below reads `data`; it must be the same table as v23
+	-- (it stayed nil when the config came from the file, which threw an error,
+	-- made the caller load defaults, and the delayed autosave then overwrote the file).
+	data = v23
 	local tbl35 = {
 		v3FillDuration = "number",
 		popupScale = "number",
@@ -3600,10 +3604,21 @@ local function fn39()
 		Config.enemyRagdollTimerEnabled = v23.enemyRagdollTimerEnabled
 	end
 	local function antiRagdollEnabled(arg, arg2, arg3)
-		if data[arg] == "_cleared_" then
+		local saved = v23[arg]
+		local keyCode = nil
+		if type(saved) == "string" and saved ~= "_cleared_" then
+			-- Enum.KeyCode[name] throws on an unknown name, so guard it
+			local okK, kc = pcall(function()
+				return Enum.KeyCode[saved]
+			end)
+			if okK then
+				keyCode = kc
+			end
+		end
+		if saved == "_cleared_" then
 			tbl11[arg2] = nil
-		elseif data[arg] and Enum.KeyCode[data[arg]] then
-			tbl11[arg2] = Enum.KeyCode[data[arg]]
+		elseif keyCode then
+			tbl11[arg2] = keyCode
 		else
 			tbl11[arg2] = arg3
 		end
@@ -8307,11 +8322,25 @@ tbl31 = {
 		destroyOldGuis()
 		task.wait()
 		v13 = fn31()
-		if not pcall(function()
+		local loadOk, loadErr = pcall(function()
 			if fn39() == false then
 				error("invalid config cache")
 			end
-		end) then
+		end)
+		if not loadOk then
+			warn("[BLYRA] config load failed: " .. tostring(loadErr))
+			-- keep a copy of the user's file before defaults get applied and autosaved over it
+			pcall(function()
+				for _, pth in ipairs({ "blyra/BlyraConfig.json", "BlyraConfig.json" }) do
+					if isfile_(pth) then
+						local raw = readfile_(pth)
+						if type(raw) == "string" and raw ~= "" then
+							writefile_("blyra/BlyraConfig.backup.json", raw)
+						end
+						break
+					end
+				end
+			end)
 			pcall(fn40, fn15(v13))
 		end
 		pcall(Config._buildHeadDisplay, localPlayer.Character)

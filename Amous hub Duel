@@ -30457,4 +30457,4 @@ Config.carrySpeed = Config.carrySpeed or 16
 
 -- Signal to any keysystem/loader that the hub finished bootstrapping.
 -- (Real core would set this after decrypting the LPH buffer.)
-_G.BLYRA_LOADED = true
+_G.BLYRA_LOADED = trueby

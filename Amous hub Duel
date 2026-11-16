@@ -22333,6 +22333,371 @@ buildPage("Keys", function()
 end)
 Config._keysTabBuild = false
 RunService.Heartbeat:Wait()
+Config._themeColor = Config._themeColor or { custom = setmetatable({}, { __mode = "k" }), hooked = false, hsv = nil }
+Config._buildThemeColorSection = function()
+	local GuiService = game:GetService("GuiService")
+	local tc = Config._themeColor
+	local APPLY_INTERVAL = 0.15
+	local SV_SIZE, BAR_WIDTH, PAD, PREVIEW_HEIGHT = 150, 18, 8, 34
+	local WHITE = Color3.new(1, 1, 1)
+
+	local function copyPalette(palette)
+		local copy = {}
+		for key, value in pairs(palette) do
+			copy[key] = value
+		end
+		return copy
+	end
+
+	local function makePalette(h, s, v)
+		local function hsv(sat, val)
+			return Color3.fromHSV(h, math.clamp(sat, 0, 1), math.clamp(val, 0, 1))
+		end
+		local accentValue = math.max(v, 0.45)
+		local accent = hsv(s, accentValue)
+		local accent2 = hsv(s, accentValue * 0.75)
+		local surface = s * 0.55
+		local luma = 0.299 * accent.R + 0.587 * accent.G + 0.114 * accent.B
+		return {
+			bg = hsv(surface, 0.07),
+			top = hsv(surface, 0.10),
+			side = hsv(surface, 0.085),
+			panel = hsv(surface * 0.9, 0.15),
+			hover = hsv(surface * 0.8, 0.23),
+			border = hsv(surface * 0.8, 0.36),
+			accent = accent,
+			accent2 = accent2,
+			fill = accent,
+			fillIdle = hsv(s * 0.35, 0.45),
+			statsBg = hsv(surface, 0.055),
+			statsText = accent,
+			statsMuted = hsv(s * 0.2, 0.62),
+			statsAccent = accent,
+			brand = accent,
+			text = hsv(s * 0.1, 0.93),
+			muted = hsv(s * 0.2, 0.62),
+			contrast = luma > 0.45 and hsv(s * 0.5, 0.06) or hsv(s * 0.1, 0.96),
+		}
+	end
+
+	local function toHex(color)
+		return string.format(
+			"#%02X%02X%02X",
+			math.floor(color.R * 255 + 0.5),
+			math.floor(color.G * 255 + 0.5),
+			math.floor(color.B * 255 + 0.5)
+		)
+	end
+
+	if not tc.hooked then
+		tc.hooked = true
+		local originalGradient = Config._theme.headTextGradient
+		Config._theme.headTextGradient = function(palette, index)
+			if palette and tc.custom[palette] then
+				local light = palette.accent:Lerp(WHITE, 0.7)
+				return ColorSequence.new({
+					ColorSequenceKeypoint.new(0, light),
+					ColorSequenceKeypoint.new(0.3, palette.accent),
+					ColorSequenceKeypoint.new(0.7, palette.accent2),
+					ColorSequenceKeypoint.new(1, light),
+				})
+			end
+			return originalGradient(palette, index)
+		end
+		local originalApplyObject = Config._theme.applyObject
+		Config._theme.applyObject = function(obj, newPalette, oldPalette)
+			local okSkip, skip = pcall(function()
+				if obj:GetAttribute("BlyraNoTheme") then
+					return true
+				end
+				local parent = obj.Parent
+				return parent ~= nil and parent:GetAttribute("BlyraNoTheme") == true
+			end)
+			if okSkip and skip then
+				return
+			end
+			if tc.custom[newPalette] and obj:IsA("TextLabel") and obj:FindFirstChild("BLYRAHeadTextGradient") then
+				newPalette = copyPalette(newPalette)
+				newPalette.brand = WHITE
+			end
+			return originalApplyObject(obj, newPalette, oldPalette)
+		end
+	end
+
+	makeGap(8)
+	makeSectionHeader("GUI Color")
+	makeGap(2)
+
+	local row = Config._makeSettingsRow()
+	row.Size = UDim2.new(1, 0, 0, PAD * 3 + SV_SIZE + PREVIEW_HEIGHT)
+
+	local function exempt(inst)
+		inst:SetAttribute("BlyraNoTheme", true)
+		return inst
+	end
+	local function newFrame(parent, size, position, zIndex)
+		local frame = exempt(Instance.new("Frame"))
+		frame.Size = size
+		frame.Position = position or UDim2.new()
+		frame.BorderSizePixel = 0
+		frame.ZIndex = zIndex or 1
+		frame.Parent = parent
+		return frame
+	end
+	local function round(inst, radius)
+		local corner = Instance.new("UICorner")
+		corner.CornerRadius = radius
+		corner.Parent = inst
+	end
+	local function newHit(parent)
+		local hit = exempt(Instance.new("TextButton"))
+		hit.Size = UDim2.fromScale(1, 1)
+		hit.BackgroundTransparency = 1
+		hit.BorderSizePixel = 0
+		hit.Text = ""
+		hit.AutoButtonColor = false
+		hit.ZIndex = 10
+		hit.Parent = parent
+		return hit
+	end
+
+	local inner = newFrame(row, UDim2.new(0, PAD * 3 + SV_SIZE + BAR_WIDTH, 1, 0), UDim2.new(0.5, 0, 0, 0))
+	inner.AnchorPoint = Vector2.new(0.5, 0)
+	inner.BackgroundTransparency = 1
+
+	local svArea = newFrame(inner, UDim2.fromOffset(SV_SIZE, SV_SIZE), UDim2.fromOffset(PAD, PAD))
+	svArea.BackgroundTransparency = 1
+	local svBase = newFrame(svArea, UDim2.fromScale(1, 1))
+	svBase.ClipsDescendants = true
+	round(svBase, UDim.new(0, 6))
+	local whiteOverlay = newFrame(svBase, UDim2.fromScale(1, 1), nil, 2)
+	whiteOverlay.BackgroundColor3 = WHITE
+	local whiteGradient = Instance.new("UIGradient")
+	whiteGradient.Rotation = 0
+	whiteGradient.Transparency = NumberSequence.new(0, 1)
+	whiteGradient.Parent = whiteOverlay
+	local blackOverlay = newFrame(svBase, UDim2.fromScale(1, 1), nil, 3)
+	blackOverlay.BackgroundColor3 = Color3.new(0, 0, 0)
+	local blackGradient = Instance.new("UIGradient")
+	blackGradient.Rotation = 90
+	blackGradient.Transparency = NumberSequence.new(1, 0)
+	blackGradient.Parent = blackOverlay
+	local svCursor = newFrame(svArea, UDim2.fromOffset(14, 14), nil, 4)
+	svCursor.AnchorPoint = Vector2.new(0.5, 0.5)
+	svCursor.BackgroundColor3 = WHITE
+	round(svCursor, UDim.new(1, 0))
+	local svDot = newFrame(svCursor, UDim2.fromOffset(8, 8), UDim2.fromScale(0.5, 0.5), 5)
+	svDot.AnchorPoint = Vector2.new(0.5, 0.5)
+	round(svDot, UDim.new(1, 0))
+	local svHit = newHit(svArea)
+
+	local barArea = newFrame(inner, UDim2.fromOffset(BAR_WIDTH, SV_SIZE), UDim2.fromOffset(PAD * 2 + SV_SIZE, PAD))
+	barArea.BackgroundTransparency = 1
+	local barBase = newFrame(barArea, UDim2.fromScale(1, 1))
+	barBase.BackgroundColor3 = WHITE
+	round(barBase, UDim.new(0, 6))
+	local hueGradient = Instance.new("UIGradient")
+	hueGradient.Rotation = 90
+	local hueKeys = {}
+	for i = 0, 6 do
+		hueKeys[#hueKeys + 1] = ColorSequenceKeypoint.new(i / 6, Color3.fromHSV(i / 6 % 1, 1, 1))
+	end
+	hueKeys[#hueKeys] = ColorSequenceKeypoint.new(1, Color3.fromHSV(0, 1, 1))
+	hueGradient.Color = ColorSequence.new(hueKeys)
+	hueGradient.Parent = barBase
+	local hueCursor = newFrame(barArea, UDim2.new(1, 4, 0, 6), nil, 4)
+	hueCursor.AnchorPoint = Vector2.new(0.5, 0.5)
+	hueCursor.BackgroundColor3 = WHITE
+	round(hueCursor, UDim.new(0, 3))
+	local barHit = newHit(barArea)
+
+	local preview = newFrame(
+		inner,
+		UDim2.fromOffset(SV_SIZE + PAD + BAR_WIDTH, PREVIEW_HEIGHT),
+		UDim2.fromOffset(PAD, PAD * 2 + SV_SIZE)
+	)
+	round(preview, UDim.new(0, 6))
+	local hexLabel = exempt(Instance.new("TextButton"))
+	hexLabel.Size = UDim2.fromScale(1, 1)
+	hexLabel.BackgroundTransparency = 1
+	hexLabel.Active = false
+	hexLabel.AutoButtonColor = false
+	hexLabel.Font = Enum.Font.GothamBold
+	hexLabel.TextSize = 12
+	hexLabel.ZIndex = 2
+	hexLabel.Parent = preview
+
+	local H, S, V
+	if tc.hsv then
+		H, S, V = tc.hsv.h, tc.hsv.s, tc.hsv.v
+	else
+		H, S, V = (Config._theme.active or Config._theme.base).accent:ToHSV()
+	end
+
+	local function refreshVisuals()
+		local color = Color3.fromHSV(H, S, V)
+		svBase.BackgroundColor3 = Color3.fromHSV(H, 1, 1)
+		svCursor.Position = UDim2.fromScale(S, 1 - V)
+		svDot.BackgroundColor3 = color
+		hueCursor.Position = UDim2.fromScale(0.5, H)
+		preview.BackgroundColor3 = color
+		hexLabel.Text = toHex(color)
+		local luma = 0.299 * color.R + 0.587 * color.G + 0.114 * color.B
+		hexLabel.TextColor3 = luma > 0.55 and Color3.fromRGB(16, 16, 18) or Color3.fromRGB(245, 245, 247)
+	end
+	refreshVisuals()
+
+	local pending, scheduled = nil, false
+	local function applyNow()
+		scheduled = false
+		local target = pending
+		pending = nil
+		if not target then
+			return
+		end
+		local palette = makePalette(target.h, target.s, target.v)
+		tc.custom[palette] = true
+		tc.hsv = target
+		Config._theme.palettes[1] = palette
+		local ok, err = pcall(Config._theme.apply, 1)
+		if not ok then
+			warn("[Blyra] GUI color apply failed: " .. tostring(err))
+		end
+	end
+	local function scheduleApply()
+		pending = { h = H, s = S, v = V }
+		if not scheduled then
+			scheduled = true
+			task.delay(APPLY_INTERVAL, applyNow)
+		end
+	end
+
+	local dragMode, dragInput, lockedScroller = nil, nil, nil
+	local function endDrag()
+		dragMode, dragInput = nil, nil
+		if lockedScroller then
+			pcall(function()
+				lockedScroller.ScrollingEnabled = true
+			end)
+			lockedScroller = nil
+		end
+		if pending then
+			applyNow()
+		end
+	end
+	local function pointer(input)
+		local gui = svArea:FindFirstAncestorOfClass("ScreenGui")
+		local inset = (gui and gui.IgnoreGuiInset) and GuiService:GetGuiInset() or Vector2.zero
+		return Vector2.new(input.Position.X, input.Position.Y) + inset
+	end
+	local function updateFromInput(input)
+		local position = pointer(input)
+		if dragMode == "sv" then
+			local size = svArea.AbsoluteSize
+			if size.X <= 0 or size.Y <= 0 then
+				return
+			end
+			S = math.clamp((position.X - svArea.AbsolutePosition.X) / size.X, 0, 1)
+			V = 1 - math.clamp((position.Y - svArea.AbsolutePosition.Y) / size.Y, 0, 1)
+		elseif dragMode == "hue" then
+			local height = barArea.AbsoluteSize.Y
+			if height <= 0 then
+				return
+			end
+			H = math.clamp((position.Y - barArea.AbsolutePosition.Y) / height, 0, 1)
+		else
+			return
+		end
+		refreshVisuals()
+		scheduleApply()
+	end
+	local function isPress(input)
+		return input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch
+	end
+	local function beginDrag(mode)
+		return function(input)
+			if not isPress(input) then
+				return
+			end
+			dragMode, dragInput = mode, input
+			lockedScroller = row:FindFirstAncestorOfClass("ScrollingFrame")
+			if lockedScroller then
+				pcall(function()
+					lockedScroller.ScrollingEnabled = false
+				end)
+			end
+			updateFromInput(input)
+		end
+	end
+	svHit.InputBegan:Connect(beginDrag("sv"))
+	barHit.InputBegan:Connect(beginDrag("hue"))
+
+	local moveConn = UserInputService.InputChanged:Connect(function(input)
+		if not dragMode then
+			return
+		end
+		if
+			input.UserInputType == Enum.UserInputType.MouseMovement
+			or (input.UserInputType == Enum.UserInputType.Touch and input == dragInput)
+		then
+			updateFromInput(input)
+		end
+	end)
+	local endConn = UserInputService.InputEnded:Connect(function(input)
+		if dragMode and isPress(input) and (input.UserInputType ~= Enum.UserInputType.Touch or input == dragInput) then
+			endDrag()
+		end
+	end)
+	local focusConn
+	pcall(function()
+		focusConn = UserInputService.WindowFocusReleased:Connect(endDrag)
+	end)
+	row.AncestryChanged:Connect(function(_, parent)
+		if not parent then
+			endDrag()
+			moveConn:Disconnect()
+			endConn:Disconnect()
+			if focusConn then
+				focusConn:Disconnect()
+			end
+		end
+	end)
+
+	makeGap(4)
+	local resetButton = Instance.new("TextButton", v43)
+	resetButton.Name = "ResetGuiColor"
+	resetButton.Size = UDim2.new(1, 0, 0, 34)
+	resetButton.LayoutOrder = LO()
+	resetButton.BorderSizePixel = 0
+	resetButton.AutoButtonColor = false
+	resetButton.BackgroundColor3 = glass.panel
+	resetButton.BackgroundTransparency = 0.2
+	resetButton.Text = "Reset"
+	resetButton.TextColor3 = glass.text
+	resetButton.Font = Enum.Font.GothamBold
+	resetButton.TextSize = 12
+	mkCorner(resetButton, 10)
+	mkAnimStroke(resetButton, 1)
+	resetButton.MouseEnter:Connect(function()
+		TweenService:Create(resetButton, TweenInfo.new(0.1), { BackgroundColor3 = glass.panelHover }):Play()
+	end)
+	resetButton.MouseLeave:Connect(function()
+		TweenService:Create(resetButton, TweenInfo.new(0.1), { BackgroundColor3 = glass.panel }):Play()
+	end)
+	resetButton.Activated:Connect(function()
+		pending = nil
+		endDrag()
+		tc.hsv = nil
+		Config._theme.palettes[1] = copyPalette(Config._theme.base)
+		local ok, err = pcall(Config._theme.apply, 1)
+		if not ok then
+			warn("[Blyra] GUI color reset failed: " .. tostring(err))
+		end
+		H, S, V = Config._theme.base.accent:ToHSV()
+		refreshVisuals()
+	end)
+	makeGap(10)
+end
 buildPage("Config", function()
 			makeGap(2)
 			buildSettingsSection()
@@ -22358,6 +22723,7 @@ buildPage("Config", function()
 			textLabel2.TextXAlignment = Enum.TextXAlignment.Left
 			textLabel2.TextWrapped = true
 			buildConfigSection()
+			Config._buildThemeColorSection()
 		end);
 		(function()
 			for k, v45 in pairs(tbl47) do

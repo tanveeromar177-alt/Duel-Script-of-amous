@@ -3972,6 +3972,8 @@ local function fn38(arg)
 			fn34()
 		end, function() end
 	elseif arg == "laggerFunc" then
+		return function() end, function() end
+	elseif arg == "laggerFunc__removed" then
 		return function()
 			local laggerFuncEnabled = not Config.laggerFuncEnabled
 			Config.laggerFuncEnabled = laggerFuncEnabled
@@ -5550,6 +5552,7 @@ Config._laggerKeyLabel = function(arg)
 	})[v23] or (v23:gsub("Button", ""):sub(1, 5))
 end
 Config._setLaggerKeybind = function(laggerFunc, arg)
+	laggerFunc = nil
 	laggerFunc = if laggerFunc and typeof(laggerFunc) == "EnumItem"
 		then { type = tbl33 and tbl33[laggerFunc] and "gamepad" or "key", value = laggerFunc }
 		else if laggerFunc and type(laggerFunc) ~= "table" then nil else laggerFunc
@@ -11015,6 +11018,131 @@ tbl31 = {
 			frame6.BorderSizePixel = 0
 			frame6.LayoutOrder = LO()
 		end
+		function Config._mkSlider(parent, opt)
+			local minValue, maxValue, step = opt.min, opt.max, opt.step or 0
+			local labelWidth = opt.labelWidth or 124
+			local formatString = opt.format or "%.1f"
+			local tolerance = (step > 0 and step or 0.001) / 2
+			local label = Instance.new("TextLabel", parent)
+			label.Size = UDim2.new(0, labelWidth, 1, 0)
+			label.Position = UDim2.new(0, 14, 0, 0)
+			label.BackgroundTransparency = 1
+			label.Text = opt.label
+			label.TextColor3 = Color3.fromRGB(200, 200, 200)
+			label.Font = Enum.Font.GothamBold
+			label.TextSize = 12
+			label.TextXAlignment = Enum.TextXAlignment.Left
+			local valueLabel = Instance.new("TextLabel", parent)
+			valueLabel.Size = UDim2.new(0, 56, 0, 14)
+			valueLabel.Position = UDim2.new(1, -76, 0, 2)
+			valueLabel.BackgroundTransparency = 1
+			valueLabel.TextColor3 = Color3.fromRGB(185, 185, 195)
+			valueLabel.Font = Enum.Font.GothamBold
+			valueLabel.TextSize = 10
+			valueLabel.TextXAlignment = Enum.TextXAlignment.Right
+			local track = Instance.new("Frame", parent)
+			track.Size = UDim2.new(1, -(14 + labelWidth + 8 + 20), 0, 8)
+			track.Position = UDim2.new(0, 14 + labelWidth + 8, 0.5, -4)
+			track.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+			track.BorderSizePixel = 0
+			track.ZIndex = 5
+			mkCorner(track, 4)
+			mkStroke(track, Color3.fromRGB(90, 90, 98), 0.5)
+			local fill = Instance.new("Frame", track)
+			fill.BackgroundColor3 = Color3.fromRGB(220, 220, 230)
+			fill.BorderSizePixel = 0
+			fill.ZIndex = 6
+			mkCorner(fill, 4)
+			local knob = Instance.new("TextButton", track)
+			knob.Size = UDim2.new(0, 18, 0, 18)
+			knob.AnchorPoint = Vector2.new(0.5, 0.5)
+			knob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			knob.BorderSizePixel = 0
+			knob.ZIndex = 7
+			knob.Text = ""
+			mkCorner(knob, 9)
+			mkStroke(knob, Color3.fromRGB(140, 140, 150), 1)
+			local function snap(value)
+				value = math.clamp(value, minValue, maxValue)
+				if step > 0 then
+					value = minValue + math.floor((value - minValue) / step + 0.5) * step
+					value = math.floor(value * 10000 + 0.5) / 10000
+					value = math.clamp(value, minValue, maxValue)
+				end
+				return value
+			end
+			local function placeHandle(value)
+				local ratio = (value - minValue) / (maxValue - minValue)
+				fill.Size = UDim2.new(ratio, 0, 1, 0)
+				knob.Position = UDim2.new(ratio, 0, 0.5, 0)
+			end
+			local initial = tonumber(opt.get())
+			if not initial or initial ~= initial then
+				initial = minValue
+			end
+			local current = snap(initial)
+			placeHandle(current)
+			valueLabel.Text = string.format(formatString, current)
+			local function commit(value)
+				value = snap(value)
+				if value == current then
+					return
+				end
+				current = value
+				placeHandle(value)
+				valueLabel.Text = string.format(formatString, value)
+				opt.set(value)
+			end
+			valueLabel:GetPropertyChangedSignal("Text"):Connect(function()
+				local parsed = tonumber(string.match(valueLabel.Text, "%-?%d+%.?%d*"))
+				if parsed and math.abs(parsed - current) > tolerance then
+					current = snap(parsed)
+					placeHandle(current)
+				end
+			end)
+			local dragging = false
+			local function valueFromInput(input)
+				local width = track.AbsoluteSize.X
+				if width <= 0 then
+					return current
+				end
+				local ratio = math.clamp((input.Position.X - track.AbsolutePosition.X) / width, 0, 1)
+				return minValue + ratio * (maxValue - minValue)
+			end
+			local function beginDrag(input)
+				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+					dragging = true
+					commit(valueFromInput(input))
+				end
+			end
+			track.InputBegan:Connect(beginDrag)
+			knob.InputBegan:Connect(beginDrag)
+			local moveConnection, endConnection
+			moveConnection = UserInputService.InputChanged:Connect(function(input)
+				if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+					commit(valueFromInput(input))
+				end
+			end)
+			endConnection = UserInputService.InputEnded:Connect(function(input)
+				if dragging and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+					dragging = false
+				end
+			end)
+			track.AncestryChanged:Connect(function()
+				if not track.Parent then
+					dragging = false
+					if moveConnection then
+						moveConnection:Disconnect()
+						moveConnection = nil
+					end
+					if endConnection then
+						endConnection:Disconnect()
+						endConnection = nil
+					end
+				end
+			end)
+			return { valueLabel = valueLabel, track = track }
+		end
 		function makeSectionHeader(arg, arg2)
 			arg2 = Instance.new("Frame", v43)
 			arg2.Name = "SectionHeader"
@@ -16203,76 +16331,20 @@ frame6.Visible = false
 				frame8.BackgroundTransparency = 0.4
 				mkCorner(frame8, 10)
 				mkAnimStroke(frame8, 1)
-				uiListLayout = Instance.new("TextLabel", frame8)
-				uiListLayout.Size = UDim2.new(0, 100, 1, 0)
-				uiListLayout.Position = UDim2.new(0, 14, 0, 0)
-				uiListLayout.BackgroundTransparency = 1
-				uiListLayout.Text = "Camera Fov Edit"
-				uiListLayout.TextColor3 = Color3.fromRGB(200, 200, 200)
-				uiListLayout.Font = Enum.Font.GothamBold
-				uiListLayout.TextSize = 12
-				uiListLayout.TextXAlignment = Enum.TextXAlignment.Left
-				uiListLayout = Instance.new("TextButton", frame8)
-				uiListLayout.Size = UDim2.new(0, 28, 0, 28)
-				uiListLayout.Position = UDim2.new(1, -128, 0.5, -14)
-				uiListLayout.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-				uiListLayout.BackgroundTransparency = 0.3
-				uiListLayout.Text = "-"
-				uiListLayout.TextColor3 = Color3.fromRGB(180, 180, 180)
-				uiListLayout.Font = Enum.Font.GothamBold
-				uiListLayout.TextSize = 14
-				uiListLayout.BorderSizePixel = 0
-				uiListLayout.AutoButtonColor = false
-				uiListLayout.ZIndex = 6
-				mkCorner(uiListLayout, 6)
-				local textBox2 = Instance.new("TextBox", frame8)
-				textBox2.Size = UDim2.new(0, 60, 0, 28)
-				textBox2.Position = UDim2.new(1, -96, 0.5, -14)
-				textBox2.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-				textBox2.BackgroundTransparency = 0.3
-				textBox2.Text = tostring(Config.fovValue)
-				textBox2.TextColor3 = Color3.fromRGB(255, 255, 255)
-				textBox2.Font = Enum.Font.GothamBold
-				textBox2.TextSize = 12
-				textBox2.BorderSizePixel = 0
-				textBox2.ClearTextOnFocus = true
-				textBox2.PlaceholderText = "60-200"
-				textBox2.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
-				textBox2.ZIndex = 6
-				mkCorner(textBox2, 6)
-				local textButton3 = Instance.new("TextButton", frame8)
-				textButton3.Size = UDim2.new(0, 28, 0, 28)
-				textButton3.Position = UDim2.new(1, -32, 0.5, -14)
-				textButton3.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-				textButton3.BackgroundTransparency = 0.3
-				textButton3.Text = "+"
-				textButton3.TextColor3 = Color3.fromRGB(180, 180, 180)
-				textButton3.Font = Enum.Font.GothamBold
-				textButton3.TextSize = 14
-				textButton3.BorderSizePixel = 0
-				textButton3.AutoButtonColor = false
-				textButton3.ZIndex = 6
-				mkCorner(textButton3, 6)
-				local function fn83()
-					Config.fovValue = math.clamp(math.floor(Config.fovValue), 60, 200)
-					textBox2.Text = tostring(Config.fovValue)
-					fn34()
-				end
-				uiListLayout.MouseButton1Click:Connect(function()
-					Config.fovValue = math.clamp(Config.fovValue - 5, 60, 200)
-					fn83()
-				end)
-				textButton3.MouseButton1Click:Connect(function()
-					Config.fovValue = math.clamp(Config.fovValue + 5, 60, 200)
-					fn83()
-				end)
-				textBox2.FocusLost:Connect(function()
-					local num = tonumber(textBox2.Text)
-					if num then
-						Config.fovValue = math.clamp(math.floor(num), 60, 200)
-					end
-					fn83()
-				end)
+				Config._mkSlider(frame8, {
+					label = "Camera Fov Edit",
+					min = 60,
+					max = 200,
+					step = 1,
+					format = "%d",
+					get = function()
+						return Config.fovValue
+					end,
+					set = function(value)
+						Config.fovValue = value
+						fn34()
+					end,
+				})
 				function Config._fovVisual(fovEnabled2)
 					fovEnabled = fovEnabled2
 					Config.fovEnabled = fovEnabled2
@@ -16416,76 +16488,20 @@ frame6.Visible = false
 				uiListLayout.BackgroundTransparency = 0.4
 				mkCorner(uiListLayout, 10)
 				mkAnimStroke(uiListLayout, 1)
-				textLabel3 = Instance.new("TextLabel", uiListLayout)
-				textLabel3.Size = UDim2.new(0, 120, 1, 0)
-				textLabel3.Position = UDim2.new(0, 14, 0, 0)
-				textLabel3.BackgroundTransparency = 1
-				textLabel3.Text = "Stretched Rez Edit"
-				textLabel3.TextColor3 = Color3.fromRGB(200, 200, 200)
-				textLabel3.Font = Enum.Font.GothamBold
-				textLabel3.TextSize = 12
-				textLabel3.TextXAlignment = Enum.TextXAlignment.Left
-				textLabel3 = Instance.new("TextButton", uiListLayout)
-				textLabel3.Size = UDim2.new(0, 28, 0, 28)
-				textLabel3.Position = UDim2.new(1, -128, 0.5, -14)
-				textLabel3.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-				textLabel3.BackgroundTransparency = 0.3
-				textLabel3.Text = "-"
-				textLabel3.TextColor3 = Color3.fromRGB(180, 180, 180)
-				textLabel3.Font = Enum.Font.GothamBold
-				textLabel3.TextSize = 14
-				textLabel3.BorderSizePixel = 0
-				textLabel3.AutoButtonColor = false
-				textLabel3.ZIndex = 6
-				mkCorner(textLabel3, 6)
-				local textBox2 = Instance.new("TextBox", uiListLayout)
-				textBox2.Size = UDim2.new(0, 60, 0, 28)
-				textBox2.Position = UDim2.new(1, -96, 0.5, -14)
-				textBox2.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-				textBox2.BackgroundTransparency = 0.3
-				textBox2.Text = tostring(Config.resFov)
-				textBox2.TextColor3 = Color3.fromRGB(255, 255, 255)
-				textBox2.Font = Enum.Font.GothamBold
-				textBox2.TextSize = 12
-				textBox2.BorderSizePixel = 0
-				textBox2.ClearTextOnFocus = true
-				textBox2.PlaceholderText = "70-179"
-				textBox2.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
-				textBox2.ZIndex = 6
-				mkCorner(textBox2, 6)
-				local textButton3 = Instance.new("TextButton", uiListLayout)
-				textButton3.Size = UDim2.new(0, 28, 0, 28)
-				textButton3.Position = UDim2.new(1, -32, 0.5, -14)
-				textButton3.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-				textButton3.BackgroundTransparency = 0.3
-				textButton3.Text = "+"
-				textButton3.TextColor3 = Color3.fromRGB(180, 180, 180)
-				textButton3.Font = Enum.Font.GothamBold
-				textButton3.TextSize = 14
-				textButton3.BorderSizePixel = 0
-				textButton3.AutoButtonColor = false
-				textButton3.ZIndex = 6
-				mkCorner(textButton3, 6)
-				local function fn87()
-					Config.resFov = math.clamp(math.floor(Config.resFov), 70, 179)
-					textBox2.Text = tostring(Config.resFov)
-					fn34()
-				end
-				textLabel3.MouseButton1Click:Connect(function()
-					Config.resFov = math.clamp(Config.resFov - 5, 70, 179)
-					fn87()
-				end)
-				textButton3.MouseButton1Click:Connect(function()
-					Config.resFov = math.clamp(Config.resFov + 5, 70, 179)
-					fn87()
-				end)
-				textBox2.FocusLost:Connect(function()
-					local num = tonumber(textBox2.Text)
-					if num then
-						Config.resFov = math.clamp(math.floor(num), 70, 179)
-					end
-					fn87()
-				end)
+				Config._mkSlider(uiListLayout, {
+					label = "Stretched Rez Edit",
+					min = 70,
+					max = 179,
+					step = 1,
+					format = "%d",
+					get = function()
+						return Config.resFov
+					end,
+					set = function(value)
+						Config.resFov = value
+						fn34()
+					end,
+				})
 				function Config._resVisual(resEnabled2)
 					resEnabled = resEnabled2
 					Config.resEnabled = resEnabled2
@@ -18866,63 +18882,27 @@ frame6.Visible = false
 				frame6.BackgroundTransparency = 0.4
 				mkCorner(frame6, 10)
 				mkAnimStroke(frame6, 1)
-				local textLabel2 = Instance.new("TextLabel", frame6)
-				textLabel2.Size = UDim2.new(1, -150, 1, 0)
-				textLabel2.Position = UDim2.fromOffset(14, 0)
-				textLabel2.BackgroundTransparency = 1
-				textLabel2.Text = "Steal Bar Size"
-				textLabel2.TextColor3 = Color3.fromRGB(200, 200, 200)
-				textLabel2.Font = Enum.Font.GothamBold
-				textLabel2.TextSize = 12
-				textLabel2.TextXAlignment = Enum.TextXAlignment.Left
-				textLabel2 = Instance.new("TextButton", frame6)
-				textLabel2.Size = UDim2.fromOffset(32, 26)
-				textLabel2.Position = UDim2.new(1, -132, 0.5, -13)
-				textLabel2.BorderSizePixel = 0
-				textLabel2.BackgroundColor3 = Color3.fromRGB(24, 26, 32)
-				textLabel2.Text = "-"
-				textLabel2.TextColor3 = Color3.fromRGB(225, 225, 230)
-				textLabel2.Font = Enum.Font.GothamBold
-				textLabel2.TextSize = 18
-				mkCorner(textLabel2, 7)
-				mkStroke(textLabel2, Color3.fromRGB(90, 90, 98), 0.7)
-				local textLabel3 = Instance.new("TextLabel", frame6)
-				textLabel3.Size = UDim2.fromOffset(58, 26)
-				textLabel3.Position = UDim2.new(1, -96, 0.5, -13)
-				textLabel3.BackgroundTransparency = 1
-				textLabel3.Text = string.format("%.2fx", Config.stealBarScale or 1)
-				textLabel3.TextColor3 = Color3.fromRGB(220, 220, 230)
-				textLabel3.Font = Enum.Font.GothamBold
-				textLabel3.TextSize = 11
-				local textButton3 = Instance.new("TextButton", frame6)
-				textButton3.Size = UDim2.fromOffset(32, 26)
-				textButton3.Position = UDim2.new(1, -34, 0.5, -13)
-				textButton3.BorderSizePixel = 0
-				textButton3.BackgroundColor3 = Color3.fromRGB(24, 26, 32)
-				textButton3.Text = "+"
-				textButton3.TextColor3 = Color3.fromRGB(225, 225, 230)
-				textButton3.Font = Enum.Font.GothamBold
-				textButton3.TextSize = 16
-				mkCorner(textButton3, 7)
-				mkStroke(textButton3, Color3.fromRGB(90, 90, 98), 0.7)
-				Config._stealBarScaleLabel = textLabel3
-				local function fn83(arg)
-					local n21 = math.floor(((Config.stealBarScale or 1) + arg * 0.05) * 100 + 0.5) / 100
-					if Config._applyStealBarScale then
-						Config._applyStealBarScale(n21)
-					else
-						Config.stealBarScale = math.clamp(n21, 0.5, 2)
-					end
-					fn34()
-				end
-				textLabel2.MouseButton1Click:Connect(function()
-					fn83(-1)
-				end)
-				textButton3.MouseButton1Click:Connect(function()
-					fn83(1)
-				end)
+				local stealBarSlider = Config._mkSlider(frame6, {
+					label = "Steal Bar Size",
+					min = 0.5,
+					max = 2,
+					step = 0.05,
+					format = "%.2fx",
+					get = function()
+						return Config.stealBarScale or 1
+					end,
+					set = function(value)
+						if Config._applyStealBarScale then
+							Config._applyStealBarScale(value)
+						else
+							Config.stealBarScale = math.clamp(value, 0.5, 2)
+						end
+						fn34()
+					end,
+				})
+				Config._stealBarScaleLabel = stealBarSlider.valueLabel
 				frame6.AncestryChanged:Connect(function()
-					if not frame6.Parent and Config._stealBarScaleLabel == textLabel3 then
+					if not frame6.Parent and Config._stealBarScaleLabel == stealBarSlider.valueLabel then
 						Config._stealBarScaleLabel = nil
 					end
 				end)
@@ -22331,14 +22311,6 @@ buildPage("Keys", function()
 		end
 		later()
 	end, "instaReset"), function() return tbl30.instaReset and tbl30.instaReset.value end)
-	makeGap(6)
-
-	makeSectionHeader("Utility")
-	makeGap(2)
-	reg(makeKeybindRow("Lagger", (tbl30.laggerFunc and tbl30.laggerFunc.value) or tbl11.laggerFunc, function(k)
-		Config._setLaggerKeybind(k and { type = tbl33[k] and "gamepad" or "key", value = k } or nil, false)
-		later()
-	end, "laggerFunc"), function() return (tbl30.laggerFunc and tbl30.laggerFunc.value) or tbl11.laggerFunc end)
 	makeGap(6)
 
 	makeSectionHeader("Interface")

@@ -3272,199 +3272,45 @@ end
 Config._theme = {
 	palettes = {
 		fn30({
-			bg = 16119287,
-			top = 15461358,
-			side = 15790323,
-			panel = 15000808,
-			hover = 13684949,
-			border = 2763567,
-			accent = 10264228,
-			accent2 = 6843250,
-			fill = 3158584,
-			fillIdle = 6909302,
-			statsBg = 3553343,
-			statsText = 16053751,
-			statsMuted = 12369862,
-			statsAccent = 14606565,
-			brand = 1579292,
-			text = 1316120,
-			muted = 6053734,
-			contrast = 657932,
+			bg = 1184276,
+			top = 1644828,
+			side = 1447449,
+			panel = 2236966,
+			hover = 3421242,
+			border = 5658205,
+			accent = 15921906,
+			accent2 = 11974332,
+			fill = 14277086,
+			fillIdle = 6974066,
+			statsBg = 1315862,
+			statsText = 15921906,
+			statsMuted = 10132130,
+			statsAccent = 14277086,
+			brand = 15921906,
+			text = 15329773,
+			muted = 10132130,
+			contrast = 1052690,
 		}),
-		fn30({
-			bg = 854799,
-			top = 1511448,
-			side = 1248789,
-			panel = 2234402,
-			hover = 3743284,
-			border = 7222622,
-			accent = 16730801,
-			accent2 = 12725636,
-			fill = 16730801,
-			fillIdle = 11611000,
-			statsBg = 1904925,
-			statsText = 16773113,
-			statsMuted = 13344185,
-			statsAccent = 16730801,
-			brand = 16730801,
-			text = 16773113,
-			muted = 12751793,
-			contrast = 1640979,
-		}),
-		fn30({
-			bg = 2043972,
-			top = 2506068,
-			side = 2242381,
-			panel = 2901600,
-			hover = 3626355,
-			border = 6064561,
-			accent = 5743582,
-			accent2 = 8304093,
-			fill = 6600174,
-			fillIdle = 4423861,
-			statsBg = 1979724,
-			statsText = 15857917,
-			statsMuted = 11455458,
-			statsAccent = 6468074,
-			brand = 8897516,
-			text = 15660796,
-			muted = 11455458,
-			contrast = 1188916,
-		}),
-		fn30({
-			bg = 13492710,
-			top = 15267576,
-			side = 14348018,
-			panel = 12508386,
-			hover = 13889523,
-			border = 6867414,
-			accent = 2611688,
-			accent2 = 7126732,
-			fill = 1213593,
-			fillIdle = 4302517,
-			statsBg = 1855064,
-			statsText = 15662334,
-			statsMuted = 10803937,
-			statsAccent = 3463912,
-			brand = 811638,
-			text = 1127226,
-			muted = 4155761,
-			contrast = 601910,
-		}),
-		fn30({
-			bg = 1854001,
-			top = 2581825,
-			side = 2250810,
-			panel = 3043401,
-			hover = 4032857,
-			border = 6862210,
-			accent = 8777640,
-			accent2 = 12777427,
-			fill = 8777640,
-			fillIdle = 5484660,
-			statsBg = 1788720,
-			statsText = 16252922,
-			statsMuted = 12509898,
-			statsAccent = 8777640,
-			brand = 10154679,
-			text = 16252922,
-			muted = 12903887,
-			contrast = 1064738,
-		}),
-		fn30({
-			bg = 2168105,
-			top = 4401495,
-			side = 3481668,
-			panel = 5846895,
-			hover = 7687057,
-			border = 11897576,
-			accent = 12616956,
-			accent2 = 4446706,
-			fill = 12616956,
-			fillIdle = 7950746,
-			statsBg = 2956344,
-			statsText = 16446975,
-			statsMuted = 14139366,
-			statsAccent = 4446706,
-			brand = 14993407,
-			text = 16446975,
-			muted = 13612254,
-			contrast = 2102567,
-		}),
-		fn30({
-			bg = 1511969,
-			top = 2366259,
-			side = 1972009,
-			panel = 3023168,
-			hover = 4534360,
-			border = 7228030,
-			accent = 16732067,
-			accent2 = 16752202,
-			fill = 16732067,
-			fillIdle = 10702206,
-			statsBg = 2233904,
-			statsText = 16510967,
-			statsMuted = 12884661,
-			statsAccent = 16732067,
-			brand = 16740273,
-			text = 16248309,
-			muted = 10849446,
-			contrast = 2363428,
-		}),
-		fn30({
-			bg = 657940,
-			top = 1184290,
-			side = 921114,
-			panel = 1579048,
-			hover = 2500160,
-			border = 4013419,
-			accent = 3531007,
-			accent2 = 16727450,
-			fill = 3531007,
-			fillIdle = 2785182,
-			statsBg = 1052704,
-			statsText = 15595519,
-			statsMuted = 9413575,
-			statsAccent = 3531007,
-			brand = 6088447,
-			text = 15397631,
-			muted = 8293808,
-			contrast = 529180,
-		}),
-		(fn30({
-			bg = 16117214,
-			top = 15721422,
-			side = 15919576,
-			panel = 15326403,
-			hover = 14469540,
-			border = 6048307,
-			accent = 15309596,
-			accent2 = 11826730,
-			fill = 15309596,
-			fillIdle = 12159563,
-			statsBg = 4864548,
-			statsText = 16774886,
-			statsMuted = 14073495,
-			statsAccent = 16103746,
-			brand = 6046232,
-			text = 3023893,
-			muted = 8022610,
-			contrast = 16775404,
-		})),
 	},
 	base = fn30({
-		bg = 1315863,
-		top = 1908001,
-		side = 1710622,
-		panel = 2368553,
-		hover = 3618615,
-		border = 5789784,
-		accent = 15461355,
-		accent2 = 11513775,
-		brand = 15461355,
-		text = 16119285,
-		muted = 10197915,
-		contrast = 1315863,
+		bg = 1184276,
+		top = 1644828,
+		side = 1447449,
+		panel = 2236966,
+		hover = 3421242,
+		border = 5658205,
+		accent = 15921906,
+		accent2 = 11974332,
+		fill = 14277086,
+		fillIdle = 6974066,
+		statsBg = 1315862,
+		statsText = 15921906,
+		statsMuted = 10132130,
+		statsAccent = 14277086,
+		brand = 15921906,
+		text = 15329773,
+		muted = 10132130,
+		contrast = 1052690,
 	}),
 	guiNames = {
 		BlyraModernV2 = true,
@@ -3477,18 +3323,6 @@ Config._theme = {
 }
 Config._fontStyleOrder = {
 	"BLYRA Original",
-	"Merriweather",
-	"Builder",
-	"Nunito",
-	"Ubuntu",
-	"Fredoka",
-	"Roboto",
-	"Oswald",
-	"Cartoon",
-	"Arcade",
-	"Sci-Fi",
-	"Code",
-	"Bangers",
 }
 Config._resolveFontEnum = function(arg, arg2)
 	local ok, result = pcall(function()
@@ -9383,16 +9217,16 @@ tbl31 = {
 		png, png2, v24 = nil, nil, nil
 		_mainLogoImage = nil
 		local glass = {
-			bg = Color3.fromRGB(20, 20, 23),
-			top = Color3.fromRGB(29, 29, 33),
-			side = Color3.fromRGB(26, 26, 30),
-			panel = Color3.fromRGB(36, 36, 41),
-			panelHover = Color3.fromRGB(55, 55, 55),
-			border = Color3.fromRGB(88, 88, 88),
-			accent = Color3.fromRGB(235, 235, 235),
-			accent2 = Color3.fromRGB(175, 175, 175),
-			text = Color3.fromRGB(245, 245, 245),
-			muted = Color3.fromRGB(155, 155, 155),
+			bg = Color3.fromRGB(18, 18, 20),
+			top = Color3.fromRGB(25, 25, 28),
+			side = Color3.fromRGB(22, 22, 25),
+			panel = Color3.fromRGB(34, 34, 38),
+			panelHover = Color3.fromRGB(52, 52, 58),
+			border = Color3.fromRGB(86, 86, 93),
+			accent = Color3.fromRGB(242, 242, 242),
+			accent2 = Color3.fromRGB(182, 182, 188),
+			text = Color3.fromRGB(233, 233, 237),
+			muted = Color3.fromRGB(154, 154, 162),
 			tween = TweenInfo.new(0.16, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
 		}
 		function Config._theme.distance(arg, arg2)
@@ -9547,7 +9381,7 @@ tbl31 = {
 		end
 		function Config._theme.applyObject(arg, arg2, arg3)
 			local flag6, flag7, statsBarRoot =
-				arg2 == Config._theme.palettes[1] and tbl27.sg ~= nil and (arg:IsDescendantOf(tbl27.sg)),
+				false,
 				Config._theme.index == 9 and tbl27.sg ~= nil and (arg:IsDescendantOf(tbl27.sg)),
 				Config._statsBarRoot
 			if statsBarRoot and statsBarRoot.Parent and (arg == statsBarRoot or (arg:IsDescendantOf(statsBarRoot))) then
@@ -9759,6 +9593,8 @@ tbl31 = {
 							ColorSequenceKeypoint.new(1, arg2.accent2),
 						}),
 					})
+				elseif arg.Name == "ModernToggleGradient" then
+					fn70(arg, { Color = ColorSequence.new(arg2.accent) })
 				elseif arg.Name ~= "BLYRAStealFillGradient" and arg.Name ~= "BLYRAStealGlossGradient" then
 					fn70(arg, {
 						Color = ColorSequence.new({
@@ -9936,11 +9772,7 @@ tbl31 = {
 			local uiGradient = Instance.new("UIGradient", frame2)
 			uiGradient.Name = "ModernToggleGradient"
 			uiGradient.Rotation = 0
-			uiGradient.Color = ColorSequence.new({
-				ColorSequenceKeypoint.new(0, glass.accent2),
-				ColorSequenceKeypoint.new(0.55, glass.accent),
-				ColorSequenceKeypoint.new(1, glass.accent2),
-			})
+			uiGradient.Color = ColorSequence.new(glass.accent)
 			uiGradient.Enabled = enabled
 			local frame3 = Instance.new("Frame", frame2)
 			frame3.Name = "ModernToggleKnob"
@@ -10063,7 +9895,7 @@ tbl31 = {
 			mkCorner(imageLabel, 16)
 			v20 = imageLabel
 			local function fn72(arg, arg2)
-				local v42 = tbl28[arg]
+				local v42 = nil
 				if not v42 or not getcustomasset then
 					return nil
 				end
@@ -20040,230 +19872,6 @@ tbl31 = {
 					end
 				end
 			end)
-			makeGap(2)
-			do
-				fn82 = Instance.new("Frame", v43)
-				fn82.Size = UDim2.new(1, 0, 0, 44)
-				fn82.BorderSizePixel = 0
-				fn82.LayoutOrder = LO()
-				fn82.BackgroundColor3 = glass.panel
-				fn82.BackgroundTransparency = 0.3
-				mkCorner(fn82, 10)
-				mkAnimStroke(fn82, 1)
-				local textLabel2 = Instance.new("TextLabel", fn82)
-				textLabel2.Size = UDim2.new(1, -216, 1, 0)
-				textLabel2.Position = UDim2.fromOffset(14, 0)
-				textLabel2.BackgroundTransparency = 1
-				textLabel2.Text = "Font Style"
-				textLabel2.TextColor3 = glass.text
-				textLabel2.Font = Enum.Font.GothamBold
-				textLabel2.TextSize = 12
-				textLabel2.TextXAlignment = Enum.TextXAlignment.Left
-				textLabel2 = Instance.new("Frame", fn82)
-				textLabel2.Size = UDim2.fromOffset(194, 30)
-				textLabel2.Position = UDim2.new(1, -204, 0.5, -15)
-				textLabel2.BackgroundColor3 = glass.bg
-				textLabel2.BackgroundTransparency = 0.08
-				textLabel2.BorderSizePixel = 0
-				mkCorner(textLabel2, 9)
-				mkStroke(textLabel2, glass.border, 0.7)
-				local textButton3 = Instance.new("TextButton", textLabel2)
-				textButton3.Size = UDim2.fromOffset(30, 30)
-				textButton3.BackgroundTransparency = 1
-				textButton3.Text = "<"
-				textButton3.TextColor3 = glass.muted
-				textButton3.Font = Enum.Font.GothamBold
-				textButton3.TextSize = 15
-				textButton3.ZIndex = 8
-				local textLabel3 = Instance.new("TextLabel", textLabel2)
-				textLabel3.Size = UDim2.new(1, -60, 1, 0)
-				textLabel3.Position = UDim2.fromOffset(30, 0)
-				textLabel3.BackgroundTransparency = 1
-				textLabel3.TextColor3 = glass.text
-				textLabel3.Font = Enum.Font.GothamBold
-				textLabel3.TextSize = 10
-				textLabel3.TextTruncate = Enum.TextTruncate.AtEnd
-				textLabel3.ZIndex = 8
-				local textButton4 = Instance.new("TextButton", textLabel2)
-				textButton4.Size = UDim2.fromOffset(30, 30)
-				textButton4.Position = UDim2.new(1, -30, 0, 0)
-				textButton4.BackgroundTransparency = 1
-				textButton4.Text = ">"
-				textButton4.TextColor3 = glass.muted
-				textButton4.Font = Enum.Font.GothamBold
-				textButton4.TextSize = 15
-				textButton4.ZIndex = 8
-				local n21, v45, fontStyleOrder = 1, ipairs, Config._fontStyleOrder
-				for k, v46 in v45(fontStyleOrder) do
-					if v46 == Config.fontStyle then
-						n21 = k
-						break
-					end
-				end
-				local function fn83(arg, arg2)
-					n21 = (arg - 1) % #Config._fontStyleOrder + 1
-					Config.fontStyle = Config._fontStyleOrder[n21]
-					textLabel3.Text = Config.fontStyle
-					if arg2 then
-						if Config._applyGlobalFont then
-							Config._applyGlobalFont()
-						end
-					elseif Config._refreshGlobalFont then
-						Config._refreshGlobalFont()
-					elseif Config._applyGlobalFont then
-						Config._applyGlobalFont()
-					end
-					if Config._refreshHeadDisplayFont then
-						pcall(Config._refreshHeadDisplayFont)
-						task.delay(0.15, function()
-							pcall(Config._refreshHeadDisplayFont)
-						end)
-					end
-					if not arg2 then
-						fn34()
-					end
-				end
-				textButton3.Activated:Connect(function()
-					fn83(n21 - 1, false)
-				end)
-				textButton4.Activated:Connect(function()
-					fn83(n21 + 1, false)
-				end)
-				function Config._syncFontStyleChoice()
-					for i, v46 in ipairs(Config._fontStyleOrder) do
-						if v46 == Config.fontStyle then
-							fn83(i, true)
-							return
-						end
-					end
-					fn83(1, true)
-				end
-				fn83(n21, true)
-			end
-			makeGap(2)
-			do
-				fn82 = Instance.new("Frame", v43)
-				fn82.Size = UDim2.new(1, 0, 0, 98)
-				fn82.BorderSizePixel = 0
-				fn82.LayoutOrder = LO()
-				fn82.BackgroundColor3 = glass.panel
-				fn82.BackgroundTransparency = 0.18
-				mkCorner(fn82, 12)
-				mkAnimStroke(fn82, 1)
-				local textLabel2 = Instance.new("TextLabel", fn82)
-				textLabel2.Size = UDim2.new(0, 190, 0, 26)
-				textLabel2.Position = UDim2.new(0, 12, 0, 3)
-				textLabel2.BackgroundTransparency = 1
-				textLabel2.Text = "BACKGROUND THEME"
-				textLabel2.TextColor3 = glass.text
-				textLabel2.Font = Enum.Font.GothamBold
-				textLabel2.TextSize = 10
-				textLabel2.TextXAlignment = Enum.TextXAlignment.Left
-				local imageLabel = Instance.new("ImageLabel", fn82)
-				imageLabel.Size = UDim2.new(0, 92, 0, 60)
-				imageLabel.Position = UDim2.new(1, -102, 0, 29)
-				imageLabel.BackgroundColor3 = glass.bg
-				imageLabel.BackgroundTransparency = 0.05
-				imageLabel.BorderSizePixel = 0
-				imageLabel.ScaleType = Enum.ScaleType.Crop
-				mkCorner(imageLabel, 10)
-				mkStroke(imageLabel, glass.border, 0.9)
-				Config._backgroundPreview = imageLabel
-				textLabel2 = Instance.new("TextButton", fn82)
-				textLabel2.Size = UDim2.new(0, 32, 0, 38)
-				textLabel2.Position = UDim2.new(0, 12, 0, 37)
-				textLabel2.BackgroundColor3 = glass.bg
-				textLabel2.BackgroundTransparency = 0.08
-				textLabel2.BorderSizePixel = 0
-				textLabel2.Text = "<<"
-				textLabel2.TextColor3 = glass.text
-				textLabel2.Font = Enum.Font.GothamBold
-				textLabel2.TextSize = 10
-				textLabel2.AutoButtonColor = false
-				mkCorner(textLabel2, 10)
-				mkStroke(textLabel2, glass.border, 0.7)
-				local textButton3 = Instance.new("TextButton", fn82)
-				textButton3.Size = UDim2.new(0, 126, 0, 44)
-				textButton3.Position = UDim2.new(0, 50, 0, 34)
-				textButton3.BackgroundColor3 = glass.bg
-				textButton3.BackgroundTransparency = 0.04
-				textButton3.BorderSizePixel = 0
-				textButton3.Text = ""
-				textButton3.AutoButtonColor = false
-				mkCorner(textButton3, 11)
-				mkStroke(textButton3, glass.accent2, 0.8)
-				local textLabel3 = Instance.new("TextLabel", textButton3)
-				textLabel3.Size = UDim2.new(1, -10, 0, 20)
-				textLabel3.Position = UDim2.new(0, 5, 0, 3)
-				textLabel3.BackgroundTransparency = 1
-				textLabel3.TextColor3 = glass.text
-				textLabel3.Font = Enum.Font.GothamBold
-				textLabel3.TextSize = 10
-				textLabel3.TextXAlignment = Enum.TextXAlignment.Center
-				local textLabel4 = Instance.new("TextLabel", textButton3)
-				textLabel4.Size = UDim2.new(1, -10, 0, 16)
-				textLabel4.Position = UDim2.new(0, 5, 0, 23)
-				textLabel4.BackgroundTransparency = 1
-				textLabel4.TextColor3 = glass.muted
-				textLabel4.Font = Enum.Font.GothamMedium
-				textLabel4.TextSize = 8
-				textLabel4.TextXAlignment = Enum.TextXAlignment.Center
-				local textButton4 = Instance.new("TextButton", fn82)
-				textButton4.Size = UDim2.new(0, 32, 0, 38)
-				textButton4.Position = UDim2.new(0, 182, 0, 37)
-				textButton4.BackgroundColor3 = glass.bg
-				textButton4.BackgroundTransparency = 0.08
-				textButton4.BorderSizePixel = 0
-				textButton4.Text = ">>"
-				textButton4.TextColor3 = glass.text
-				textButton4.Font = Enum.Font.GothamBold
-				textButton4.TextSize = 10
-				textButton4.AutoButtonColor = false
-				mkCorner(textButton4, 10)
-				mkStroke(textButton4, glass.border, 0.7)
-				local tbl53, n21 =
-					{
-						"WHITE / GREY",
-						"BLACK / PINK",
-						"BLUE / GREY",
-						"WHITE / CYAN",
-						"GREEN / WHITE",
-						"LAVENDER / CYAN",
-						"PURPLE / ORANGE",
-						"BLACK / CYAN",
-						"CREAM / GOLD",
-					}, n13
-				local function fn83(arg, arg2)
-					n21 = math.clamp(arg, 1, #tbl28)
-					textLabel3.Text = string.format("BACKGROUND %02d / %02d", n21, #tbl28)
-					textLabel4.Text = tbl53[n21] or "BLYRA THEME"
-					local getCachedMainBackground = Config._getCachedMainBackground
-						and (Config._getCachedMainBackground(arg))
-					if getCachedMainBackground then
-						imageLabel.Image = getCachedMainBackground
-					end
-					if arg2 and Config._selectMainBackground then
-						Config._selectMainBackground(n21, function(image)
-							if image then
-								imageLabel.Image = image
-							end
-						end, true)
-					end
-				end
-				textLabel2.MouseButton1Click:Connect(function()
-					fn83((n21 - 2) % #tbl28 + 1, true)
-				end)
-				textButton4.MouseButton1Click:Connect(function()
-					fn83(n21 % #tbl28 + 1, true)
-				end)
-				textButton3.MouseButton1Click:Connect(function()
-					fn83(n21, true)
-				end)
-				function Config._refreshBackgroundPicker()
-					fn83(n13, false)
-				end
-				fn83(n13, false)
-			end
 			makeGap(8)
 			makeSectionHeader("On-Screen Information")
 			makeGap(2)

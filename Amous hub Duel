@@ -9091,7 +9091,7 @@ tbl31 = {
 			if frame then
 				TweenService
 					:Create(frame, TweenInfo.new(0.2, Enum.EasingStyle.Quint), {
-						BackgroundTransparency = 0.22,
+						BackgroundTransparency = 0,
 						BackgroundColor3 = Config._theme.active and Config._theme.active.bg
 							or (Color3.fromRGB(20, 20, 23)),
 					})
@@ -9849,7 +9849,7 @@ tbl31 = {
 		frame.Size = UDim2.new(0, 400, 0, 528)
 		frame.Position = fn3(tbl2.main, UDim2.new(0.5, -200, 0.5, -264), 400, 528)
 		frame.BackgroundColor3 = glass.bg
-		frame.BackgroundTransparency = 0.16
+		frame.BackgroundTransparency = 0
 		frame.BorderSizePixel = 0
 		frame.Active = true
 		frame.ClipsDescendants = false
@@ -11301,40 +11301,15 @@ tbl31 = {
 			frame6.BackgroundTransparency = 0.32
 			mkCorner(frame6, 11)
 			mkStroke(frame6, arg3 and glass.accent2 or glass.border, arg3 and 1 or 0.7)
-			local frame7 = Instance.new("Frame", frame6)
-			frame7.Size = UDim2.new(0, 18, 0, 18)
-			frame7.Position = UDim2.new(0, 12, 0.5, -9)
-			frame7.BackgroundColor3 = glass.panel
-			frame7.BackgroundTransparency = 0.4
-			frame7.BorderSizePixel = 0
-			mkCorner(frame7, 9)
-			local v44, frame8 =
-				mkStroke(frame7, arg3 and glass.accent or glass.border, 1.2), Instance.new("Frame", frame7)
-			frame8.Size = UDim2.new(0, 8, 0, 8)
-			frame8.AnchorPoint = Vector2.new(0.5, 0.5)
-			frame8.Position = UDim2.new(0.5, 0, 0.5, 0)
-			frame8.BackgroundColor3 = glass.accent
-			frame8.BorderSizePixel = 0
-			frame8.BackgroundTransparency = arg3 and 0 or 1
-			mkCorner(frame8, 4)
 			arg3 = Instance.new("TextLabel", frame6)
-			arg3.Size = UDim2.new(1, -220, 0, 20)
-			arg3.Position = UDim2.new(0, 40, 0, 11)
+			arg3.Size = UDim2.new(1, -190, 1, 0)
+			arg3.Position = UDim2.new(0, 14, 0, 0)
 			arg3.BackgroundTransparency = 1
 			arg3.Text = text
 			arg3.TextColor3 = glass.text
 			arg3.Font = Enum.Font.GothamBold
 			arg3.TextSize = 12
 			arg3.TextXAlignment = Enum.TextXAlignment.Left
-			text = Instance.new("TextLabel", frame6)
-			text.Size = UDim2.new(1, -220, 0, 14)
-			text.Position = UDim2.new(0, 40, 0, 32)
-			text.BackgroundTransparency = 1
-			text.Text = text2
-			text.TextColor3 = glass.muted
-			text.Font = Enum.Font.Gotham
-			text.TextSize = 8
-			text.TextXAlignment = Enum.TextXAlignment.Left
 			arg3 = Instance.new("TextLabel", frame6)
 			arg3.Size = UDim2.new(0, 48, 0, 11)
 			arg3.Position = UDim2.new(1, -108, 0, 5)
@@ -11630,7 +11605,7 @@ tbl31 = {
 					arg4()
 				end
 			end)
-			return textBox3, textBox2, frame6, frame7, frame8, v44, fn77
+			return textBox3, textBox2, frame6, nil, nil, nil, fn77
 		end
 		local flag10, connection11, connection12 = false
 		Config._activePromptKeys = {}
@@ -12633,7 +12608,7 @@ tbl31 = {
 			makeGap(2)
 			local v45, v46, v47, v48, v49, v50, v51 = makeSpeedRow(
 				"Normal Speed",
-				"default mode",
+				"",
 				Config.normalStealSpeed,
 				Config.normalSpeed,
 				str2 == "Normal",
@@ -12660,7 +12635,7 @@ tbl31 = {
 			makeGap(2)
 			frame6, v45, v51, v47, v49, v46, v50 = makeSpeedRow(
 				"Lagger Speed",
-				"use against lagger",
+				"",
 				Config.laggerStealSpeed,
 				Config.laggerSpeed,
 				str2 == "Lagger",
@@ -12687,7 +12662,7 @@ tbl31 = {
 			makeGap(2)
 			textLabel2, v50, v46, frame6, v45, v49, v51 = makeSpeedRow(
 				"Custom Speed",
-				"Use if Custom spd",
+				"",
 				Config.carryStealSpeed,
 				Config.carrySpeed,
 				str2 == "Carry",
@@ -12866,50 +12841,6 @@ tbl31 = {
 					end
 				end
 			end
-			do
-				local v45 = Config._makeSettingsRow(Frame)
-				local textLabel2 = Instance.new("TextLabel", v45)
-				textLabel2.Size = UDim2.new(1, -90, 1, 0)
-				textLabel2.Position = UDim2.new(0, 14, 0, 0)
-				textLabel2.BackgroundTransparency = 1
-				textLabel2.Text = "Trigger Height"
-				textLabel2.TextColor3 = Color3.fromRGB(200, 200, 200)
-				textLabel2.Font = Enum.Font.GothamBold
-				textLabel2.TextSize = 12
-				textLabel2.TextXAlignment = Enum.TextXAlignment.Left
-				textLabel2 = Instance.new("Frame", v45)
-				textLabel2.Size = UDim2.new(0, 62, 0, 24)
-				textLabel2.Position = UDim2.new(1, -74, 0.5, -12)
-				textLabel2.BackgroundColor3 = glass.panel
-				textLabel2.BackgroundTransparency = 0.4
-				textLabel2.BorderSizePixel = 0
-				textLabel2.ZIndex = 6
-				mkCorner(textLabel2, 6)
-				mkStroke(textLabel2, Color3.fromRGB(72, 72, 82), 0.7)
-				local textBox2 = Instance.new("TextBox", textLabel2)
-				textBox2.Size = UDim2.new(1, -6, 1, 0)
-				textBox2.Position = UDim2.new(0, 3, 0, 0)
-				textBox2.BackgroundTransparency = 1
-				textBox2.Text = tostring(math.floor(tonumber(Config.autoTPDownHeight) or 20))
-				textBox2.TextColor3 = Color3.fromRGB(230, 230, 230)
-				textBox2.Font = Enum.Font.GothamBold
-				textBox2.TextSize = 10
-				textBox2.ClearTextOnFocus = false
-				textBox2.ZIndex = 7
-				textBox2.TextXAlignment = Enum.TextXAlignment.Center
-				textBox2.FocusLost:Connect(function()
-					local num = tonumber(textBox2.Text)
-					if num and num >= 1 and num <= 100000 then
-						Config.autoTPDownHeight = math.floor(num)
-					end
-					textBox2.Text = tostring(math.floor(Config.autoTPDownHeight or 20))
-					fn34()
-				end)
-				function Config._syncAutoTPDownHeightBox()
-					textBox2.Text = tostring(math.floor(tonumber(Config.autoTPDownHeight) or 20))
-				end
-			end
-			mkAccordion(Frame)
 			makeGap(1)
 			do
 				Frame = fn9("Frame", v43, {
@@ -15683,90 +15614,6 @@ tbl31 = {
 					end)
 				end
 			end
-			do
-				frame6 = Instance.new("Frame", uiListLayout2)
-				frame6.Size = UDim2.new(1, 0, 0, 40)
-				frame6.BorderSizePixel = 0
-				frame6.LayoutOrder = 2
-				frame6.BackgroundColor3 = glass.panel
-				frame6.BackgroundTransparency = 0.4
-				mkCorner(frame6, 10)
-				mkAnimStroke(frame6, 1)
-				uiListLayout = Instance.new("TextLabel", frame6)
-				uiListLayout.Size = UDim2.new(1, -54, 1, 0)
-				uiListLayout.Position = UDim2.new(0, 14, 0, 0)
-				uiListLayout.BackgroundTransparency = 1
-				uiListLayout.Text = "Body Mode"
-				uiListLayout.TextColor3 = Color3.fromRGB(200, 200, 200)
-				uiListLayout.Font = Enum.Font.GothamBold
-				uiListLayout.TextSize = 12
-				uiListLayout.TextXAlignment = Enum.TextXAlignment.Left
-				local n20 = Config.sbaEnemyPerm and not Config.sbaEnemyRadio and 1 or 2
-				makeChoiceControl(frame6, { "Body Perm", "Body Radio" }, n20, function(arg, arg2)
-					n20 = arg2
-					Config.sbaEnemyPerm = arg == "Body Perm"
-					Config.sbaEnemyRadio = arg == "Body Radio"
-					fn34()
-				end)
-			end
-			do
-				frame6 = Instance.new("Frame", uiListLayout2)
-				frame6.Size = UDim2.new(1, 0, 0, 40)
-				frame6.BorderSizePixel = 0
-				frame6.LayoutOrder = 3
-				frame6.BackgroundColor3 = glass.panel
-				frame6.BackgroundTransparency = 0.4
-				mkCorner(frame6, 10)
-				mkAnimStroke(frame6, 1)
-				uiListLayout = Instance.new("TextLabel", frame6)
-				uiListLayout.Size = UDim2.new(1, -54, 1, 0)
-				uiListLayout.Position = UDim2.new(0, 14, 0, 0)
-				uiListLayout.BackgroundTransparency = 1
-				uiListLayout.Text = "Body Radio"
-				uiListLayout.TextColor3 = Color3.fromRGB(200, 200, 200)
-				uiListLayout.Font = Enum.Font.GothamBold
-				uiListLayout.TextSize = 12
-				uiListLayout.TextXAlignment = Enum.TextXAlignment.Left
-				fn87 = Instance.new("TextLabel", frame6)
-				fn87.Size = UDim2.new(0, 46, 1, 0)
-				fn87.Position = UDim2.new(1, -126, 0, 0)
-				fn87.BackgroundTransparency = 1
-				fn87.Text = "Range:"
-				fn87.TextColor3 = Color3.fromRGB(255, 255, 255)
-				fn87.Font = Enum.Font.GothamBold
-				fn87.TextSize = 10
-				fn87.TextXAlignment = Enum.TextXAlignment.Right
-				fn87.ZIndex = 6
-				textLabel2 = Instance.new("Frame", frame6)
-				textLabel2.Size = UDim2.new(0, 60, 0, 24)
-				textLabel2.Position = UDim2.new(1, -72, 0.5, -12)
-				textLabel2.BackgroundColor3 = glass.panel
-				textLabel2.BackgroundTransparency = 0.4
-				textLabel2.BorderSizePixel = 0
-				textLabel2.ZIndex = 6
-				mkCorner(textLabel2, 6)
-				mkStroke(textLabel2, Color3.fromRGB(72, 72, 82), 0.7)
-				local textBox2 = Instance.new("TextBox", textLabel2)
-				textBox2.Size = UDim2.new(1, -6, 1, 0)
-				textBox2.Position = UDim2.new(0, 3, 0, 0)
-				textBox2.BackgroundTransparency = 1
-				textBox2.Text = tostring((fn86()))
-				textBox2.TextColor3 = Color3.fromRGB(230, 230, 230)
-				textBox2.Font = Enum.Font.GothamBold
-				textBox2.TextSize = 10
-				textBox2.ClearTextOnFocus = false
-				textBox2.ZIndex = 7
-				textBox2.TextXAlignment = Enum.TextXAlignment.Center
-				textBox2.FocusLost:Connect(function()
-					local sbaRange = tonumber(textBox2.Text)
-					if sbaRange and sbaRange > 0 then
-						Config.sbaRange = sbaRange
-					end
-					textBox2.Text = tostring(Config.sbaRange)
-					fn34()
-				end)
-			end
-			mkAccordion(uiListLayout2)
 			makeGap(2)
 		end
 		function buildMiscVisualFeatures()
@@ -22047,48 +21894,6 @@ tbl31 = {
 		function buildConfigSection()
 			makeGap(8)
 			makeSectionHeader("Saved Config & Sharing")
-			makeGap(2)
-			do
-				local flag14, frame6 = Config.skipIntro == true, Instance.new("Frame", v43)
-				frame6.Size = UDim2.new(1, 0, 0, 44)
-				frame6.BorderSizePixel = 0
-				frame6.LayoutOrder = LO()
-				frame6.BackgroundColor3 = flag14 and glass.panelHover or glass.panel
-				frame6.BackgroundTransparency = 0.32
-				mkCorner(frame6, 10)
-				mkAnimStroke(frame6, 1)
-				local textLabel2 = Instance.new("TextLabel", frame6)
-				textLabel2.Size = UDim2.new(1, -66, 0, 23)
-				textLabel2.Position = UDim2.new(0, 14, 0, 2)
-				textLabel2.BackgroundTransparency = 1
-				textLabel2.Text = "Skip Intro"
-				textLabel2.TextColor3 = flag14 and glass.text or glass.muted
-				textLabel2.Font = Enum.Font.GothamBold
-				textLabel2.TextSize = 12
-				textLabel2.TextXAlignment = Enum.TextXAlignment.Left
-				local textLabel3 = Instance.new("TextLabel", frame6)
-				textLabel3.Size = UDim2.new(1, -66, 0, 15)
-				textLabel3.Position = UDim2.new(0, 14, 0, 24)
-				textLabel3.BackgroundTransparency = 1
-				textLabel3.Text = "Skip it on the next execution"
-				textLabel3.TextColor3 = glass.muted
-				textLabel3.Font = Enum.Font.GothamMedium
-				textLabel3.TextSize = 8
-				textLabel3.TextXAlignment = Enum.TextXAlignment.Left
-				mkSwitch(frame6, flag14, function(skipIntro)
-					flag14 = skipIntro
-					Config.skipIntro = skipIntro
-					Config.skipIntroConfigured = true
-					textLabel2.TextColor3 = skipIntro and glass.text or glass.muted
-					TweenService:Create(
-						frame6,
-						TweenInfo.new(0.15),
-						{ BackgroundColor3 = skipIntro and glass.panelHover or glass.panel }
-					):Play()
-					fn35()
-				end).Position =
-					UDim2.new(1, -50, 0.5, -12)
-			end
 			makeGap(2)
 			local frame6 = Instance.new("Frame", v43)
 			frame6.Size = UDim2.new(1, 0, 0, 34)

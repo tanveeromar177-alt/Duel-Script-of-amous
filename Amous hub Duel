@@ -10048,7 +10048,7 @@ tbl31 = {
 			topLogo.Name = "TopCenterLogo"
 			topLogo.AnchorPoint = Vector2.new(0.5, 0.5)
 			topLogo.Position = UDim2.new(0.5, 0, 0.5, 0)
-			topLogo.Size = UDim2.fromOffset(66, 66)
+			topLogo.Size = UDim2.fromOffset(58, 58)
 			topLogo.BackgroundTransparency = 1
 			topLogo.BorderSizePixel = 0
 			topLogo.Image = logoId
@@ -16881,11 +16881,11 @@ frame6.Visible = false
 			makeGap(2)
 			do
 				local tbl53 = {
-					{ name = "Outfit 1", sub = "Invisible legs", asset = 82277826177074, outfitIndex = 9 },
-					{ name = "Outfit 2", sub = "Headless", asset = 119331031817124, outfitIndex = 4 },
-					{ name = "Outfit 3", sub = "Headless", asset = 18902416696, outfitIndex = 5 },
-					{ name = "Outfit 4", sub = "Classic", asset = 13935333090, outfitIndex = 6 },
-					{ name = "Outfit 5", sub = "Eclipse", asset = 74722950142505, outfitIndex = 10 },
+					{ name = "NEW SKIN", sub = "Invisible legs", asset = 82277826177074, outfitIndex = 9 },
+					{ name = "OUTFIT 3", sub = "Headless", asset = 119331031817124, outfitIndex = 4 },
+					{ name = "OUTFIT 4", sub = "Headless", asset = 18902416696, outfitIndex = 5 },
+					{ name = "Eclipse", sub = "Custom outfit", asset = 74722950142505, outfitIndex = 10 },
+					{ name = "OFF", sub = "Remove outfit", off = true },
 				}
 				local skinChangerSelection, skinGalaxyEnabled =
 					math.clamp(
@@ -16951,17 +16951,20 @@ frame6.Visible = false
 				end
 				local function fn85()
 					Config.skinChangerSelection = skinChangerSelection
-					Config.skinGalaxyEnabled = skinGalaxyEnabled
 					Config.skinCustomEnabled = false
-					if not skinGalaxyEnabled then
+					local v46 = tbl53[skinChangerSelection]
+					if not skinGalaxyEnabled or (v46 and v46.off) then
+						skinGalaxyEnabled = false
+						Config.skinGalaxyEnabled = false
 						pcall(skinGalaxyCache._stopCustom)
 						pcall(skinGalaxyCache._stop)
 						pcall(skinGalaxyCache._stopOutfit)
 					else
+						skinGalaxyEnabled = true
+						Config.skinGalaxyEnabled = true
 						pcall(skinGalaxyCache._stopOutfit)
 						pcall(skinGalaxyCache._stopCustom)
 						pcall(skinGalaxyCache._stop)
-						local v46 = tbl53[skinChangerSelection]
 						local oi = v46 and v46.outfitIndex or 9
 						pcall(skinGalaxyCache._startOutfit, oi)
 					end
@@ -16977,613 +16980,248 @@ frame6.Visible = false
 				frame7.Position = UDim2.new(1, -46, 0.5, -11)
 				local frame8 = Instance.new("Frame", screenGui)
 				frame8.Name = "BLYRA_SkinGallery"
-				frame8.Size = UDim2.fromOffset(520, 420)
+				frame8.Size = UDim2.fromOffset(340, 280)
 				frame8.BackgroundColor3 = glass.bg
 				frame8.BackgroundTransparency = 0
 				frame8.BorderSizePixel = 0
 				frame8.Visible = false
 				frame8.ZIndex = 220
-				mkCorner(frame8, 17)
-				mkGradientStroke(frame8, 1.3)
+				mkCorner(frame8, 16)
+				mkGradientStroke(frame8, 1.2)
 				local uiScale2 = Instance.new("UIScale", frame8)
-				uiScale2.Scale = 0.94
-				frame7 = Instance.new("Frame", frame8)
-				frame7.Size = UDim2.new(1, 0, 0, 64)
-				frame7.BackgroundColor3 = glass.top
-				frame7.BackgroundTransparency = 0
-				frame7.BorderSizePixel = 0
-				frame7.ZIndex = 221
-				frame7.Active = true
-				mkCorner(frame7, 17)
-				local textLabel4 = Instance.new("TextLabel", frame7)
-				textLabel4.Size = UDim2.new(1, -60, 0, 25)
-				textLabel4.Position = UDim2.new(0, 16, 0, 7)
-				textLabel4.BackgroundTransparency = 1
-				textLabel4.Text = "Appearance"
-				textLabel4.TextColor3 = glass.text
-				textLabel4.Font = Enum.Font.GothamBold
-				textLabel4.TextSize = 13
-				textLabel4.TextXAlignment = Enum.TextXAlignment.Left
-				textLabel4.ZIndex = 222
-				textLabel4 = Instance.new("TextLabel", frame7)
-				textLabel4.Size = UDim2.new(1, -60, 0, 16)
-				textLabel4.Position = UDim2.new(0, 16, 0, 32)
-				textLabel4.BackgroundTransparency = 1
-				textLabel4.Text = "Select outfit & wear or remove"
-				textLabel4.TextColor3 = glass.muted
-				textLabel4.Font = Enum.Font.GothamMedium
-				textLabel4.TextSize = 9
-				textLabel4.TextXAlignment = Enum.TextXAlignment.Left
-				textLabel4.ZIndex = 222
-				textLabel4 = Instance.new("TextButton", frame7)
-				textLabel4.Size = UDim2.fromOffset(32, 32)
-				textLabel4.Position = UDim2.new(1, -44, 0, 13)
-				textLabel4.BackgroundColor3 = glass.panel
-				textLabel4.BackgroundTransparency = 0.08
-				textLabel4.BorderSizePixel = 0
-				textLabel4.Text = "X"
-				textLabel4.TextColor3 = glass.text
-				textLabel4.Font = Enum.Font.GothamBold
-				textLabel4.TextSize = 10
-				textLabel4.ZIndex = 223
-				mkCorner(textLabel4, 10)
-				local scrollingFrame = Instance.new("ScrollingFrame", frame8)
-				scrollingFrame.Size = UDim2.new(1, -20, 1, -84)
-				scrollingFrame.Position = UDim2.new(0, 10, 0, 72)
-				scrollingFrame.BackgroundTransparency = 1
-				scrollingFrame.BorderSizePixel = 0
-				scrollingFrame.ScrollBarThickness = 2
-				scrollingFrame.ScrollBarImageColor3 = glass.accent
-				scrollingFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
-				scrollingFrame.CanvasSize = UDim2.new()
-				scrollingFrame.ZIndex = 221
-				local uiGridLayout = Instance.new("UIGridLayout", scrollingFrame)
-				uiGridLayout.CellSize = UDim2.fromOffset(154, 132)
-				uiGridLayout.CellPadding = UDim2.fromOffset(9, 9)
-				uiGridLayout.FillDirectionMaxCells = 3
-				uiGridLayout.SortOrder = Enum.SortOrder.LayoutOrder
-				uiGridLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-				local tbl54 = {}
-				local function fn86()
-					for i, v46 in ipairs(tbl54) do
-						local visible = i == skinChangerSelection
-						v46.stroke.Color = visible and glass.accent or glass.border
-						v46.stroke.Thickness = visible and 1.7 or 0.7
-						v46.frame.BackgroundColor3 = visible and glass.panelHover or glass.panel
-						v46.check.Visible = visible
+				uiScale2.Scale = 1
+				-- header
+				local header = Instance.new("Frame", frame8)
+				header.Size = UDim2.new(1, 0, 0, 44)
+				header.BackgroundColor3 = glass.top
+				header.BackgroundTransparency = 0
+				header.BorderSizePixel = 0
+				header.ZIndex = 221
+				header.Active = true
+				mkCorner(header, 16)
+				local titleLbl = Instance.new("TextLabel", header)
+				titleLbl.Size = UDim2.new(1, -56, 1, 0)
+				titleLbl.Position = UDim2.new(0, 16, 0, 0)
+				titleLbl.BackgroundTransparency = 1
+				titleLbl.Text = "Appearance"
+				titleLbl.TextColor3 = glass.text
+				titleLbl.Font = Enum.Font.GothamBold
+				titleLbl.TextSize = 15
+				titleLbl.TextXAlignment = Enum.TextXAlignment.Left
+				titleLbl.ZIndex = 222
+				local closeBtn = Instance.new("TextButton", header)
+				closeBtn.Size = UDim2.fromOffset(30, 30)
+				closeBtn.Position = UDim2.new(1, -38, 0.5, -15)
+				closeBtn.BackgroundColor3 = glass.panel
+				closeBtn.BackgroundTransparency = 0.08
+				closeBtn.BorderSizePixel = 0
+				closeBtn.Text = "x"
+				closeBtn.TextColor3 = glass.text
+				closeBtn.Font = Enum.Font.GothamBold
+				closeBtn.TextSize = 12
+				closeBtn.ZIndex = 223
+				mkCorner(closeBtn, 8)
+				-- body: preview + name + arrows
+				local body = Instance.new("Frame", frame8)
+				body.Size = UDim2.new(1, -24, 0, 72)
+				body.Position = UDim2.new(0, 12, 0, 56)
+				body.BackgroundTransparency = 1
+				body.ZIndex = 221
+				local previewBg = Instance.new("Frame", body)
+				previewBg.Size = UDim2.fromOffset(56, 56)
+				previewBg.Position = UDim2.new(0, 0, 0.5, -28)
+				previewBg.BackgroundColor3 = glass.panel
+				previewBg.BorderSizePixel = 0
+				previewBg.ZIndex = 222
+				mkCorner(previewBg, 10)
+				local previewImg = Instance.new("ImageLabel", previewBg)
+				previewImg.Size = UDim2.fromScale(1, 1)
+				previewImg.BackgroundTransparency = 1
+				previewImg.ScaleType = Enum.ScaleType.Fit
+				previewImg.ZIndex = 223
+				local nameLbl = Instance.new("TextLabel", body)
+				nameLbl.Size = UDim2.new(1, -140, 0, 28)
+				nameLbl.Position = UDim2.new(0, 68, 0.5, -14)
+				nameLbl.BackgroundTransparency = 1
+				nameLbl.Text = "NEW SKIN"
+				nameLbl.TextColor3 = glass.text
+				nameLbl.Font = Enum.Font.GothamBold
+				nameLbl.TextSize = 16
+				nameLbl.TextXAlignment = Enum.TextXAlignment.Left
+				nameLbl.ZIndex = 222
+				local prevBtn = Instance.new("TextButton", body)
+				prevBtn.Size = UDim2.fromOffset(32, 32)
+				prevBtn.Position = UDim2.new(1, -72, 0.5, -16)
+				prevBtn.BackgroundColor3 = glass.panel
+				prevBtn.BorderSizePixel = 0
+				prevBtn.Text = "<"
+				prevBtn.TextColor3 = glass.text
+				prevBtn.Font = Enum.Font.GothamBold
+				prevBtn.TextSize = 14
+				prevBtn.ZIndex = 223
+				mkCorner(prevBtn, 8)
+				local nextBtn = Instance.new("TextButton", body)
+				nextBtn.Size = UDim2.fromOffset(32, 32)
+				nextBtn.Position = UDim2.new(1, -36, 0.5, -16)
+				nextBtn.BackgroundColor3 = glass.panel
+				nextBtn.BorderSizePixel = 0
+				nextBtn.Text = ">"
+				nextBtn.TextColor3 = glass.text
+				nextBtn.Font = Enum.Font.GothamBold
+				nextBtn.TextSize = 14
+				nextBtn.ZIndex = 223
+				mkCorner(nextBtn, 8)
+				-- buttons row
+				local applyBtn = Instance.new("TextButton", frame8)
+				applyBtn.Size = UDim2.new(0.5, -16, 0, 40)
+				applyBtn.Position = UDim2.new(0, 12, 1, -100)
+				applyBtn.BackgroundColor3 = glass.panel
+				applyBtn.BorderSizePixel = 0
+				applyBtn.Text = "APPLY"
+				applyBtn.TextColor3 = glass.text
+				applyBtn.Font = Enum.Font.GothamBold
+				applyBtn.TextSize = 13
+				applyBtn.ZIndex = 222
+				mkCorner(applyBtn, 10)
+				local removeBtn = Instance.new("TextButton", frame8)
+				removeBtn.Size = UDim2.new(0.5, -16, 0, 40)
+				removeBtn.Position = UDim2.new(0.5, 4, 1, -100)
+				removeBtn.BackgroundColor3 = glass.panel
+				removeBtn.BorderSizePixel = 0
+				removeBtn.Text = "REMOVE"
+				removeBtn.TextColor3 = glass.text
+				removeBtn.Font = Enum.Font.GothamBold
+				removeBtn.TextSize = 13
+				removeBtn.ZIndex = 222
+				mkCorner(removeBtn, 10)
+				-- only cycle wearable outfits (exclude OFF)
+				local wearList = {}
+				for i, v in ipairs(tbl53) do
+					if not v.off then
+						table.insert(wearList, i)
 					end
 				end
-				for i, v46 in ipairs(tbl53) do
-					uiGridLayout = Instance.new("TextButton", scrollingFrame)
-					uiGridLayout.LayoutOrder = i
-					uiGridLayout.BackgroundColor3 = glass.panel
-					uiGridLayout.BackgroundTransparency = 0.12
-					uiGridLayout.BorderSizePixel = 0
-					uiGridLayout.Text = ""
-					uiGridLayout.ZIndex = 222
-					mkCorner(uiGridLayout, 12)
-					local v47, textLabel5 =
-						mkStroke(uiGridLayout, glass.border, 0.7), Instance.new("TextLabel", uiGridLayout)
-					textLabel5.Size = UDim2.new(1, -12, 0, 84)
-					textLabel5.Position = UDim2.new(0, 6, 0, 6)
-					textLabel5.BackgroundColor3 = glass.bg
-					textLabel5.BackgroundTransparency = 0.12
-					textLabel5.BorderSizePixel = 0
-					textLabel5.Text = v46.name:sub(1, 2)
-					textLabel5.TextColor3 = glass.muted
-					textLabel5.Font = Enum.Font.GothamBlack
-					textLabel5.TextSize = 18
-					textLabel5.ZIndex = 223
-					mkCorner(textLabel5, 9)
-					local imageLabel2 = Instance.new("ImageLabel", uiGridLayout)
-					imageLabel2.Name = "SkinThumbnail"
-					imageLabel2.Size = textLabel5.Size
-					imageLabel2.Position = textLabel5.Position
-					imageLabel2.BackgroundTransparency = 1
-					imageLabel2.BorderSizePixel = 0
-					imageLabel2.Image = ""
-					imageLabel2.ScaleType = Enum.ScaleType.Crop
-					imageLabel2.ZIndex = 224
-					mkCorner(imageLabel2, 9)
-					local viewportFrame = Instance.new("ViewportFrame", uiGridLayout)
-					viewportFrame.Name = "OutfitViewport"
-					viewportFrame.Size = textLabel5.Size
-					viewportFrame.Position = textLabel5.Position
-					viewportFrame.BackgroundTransparency = 1
-					viewportFrame.BorderSizePixel = 0
-					viewportFrame.ZIndex = 225
-					local textLabel6 = Instance.new("TextLabel", uiGridLayout)
-					textLabel6.Size = UDim2.new(1, -12, 0, 18)
-					textLabel6.Position = UDim2.new(0, 6, 0, 96)
-					textLabel6.BackgroundTransparency = 1
-					textLabel6.Text = v46.name
-					textLabel6.TextColor3 = glass.text
-					textLabel6.Font = Enum.Font.GothamBold
-					textLabel6.TextSize = 9
-					textLabel6.TextXAlignment = Enum.TextXAlignment.Left
-					textLabel6.ZIndex = 223
-					textLabel6 = Instance.new("TextLabel", uiGridLayout)
-					textLabel6.Size = UDim2.new(1, -12, 0, 12)
-					textLabel6.Position = UDim2.new(0, 6, 0, 114)
-					textLabel6.BackgroundTransparency = 1
-					textLabel6.Text = v46.sub
-					textLabel6.TextColor3 = glass.muted
-					textLabel6.Font = Enum.Font.GothamMedium
-					textLabel6.TextSize = 7
-					textLabel6.TextXAlignment = Enum.TextXAlignment.Left
-					textLabel6.ZIndex = 223
-					textLabel6 = Instance.new("TextLabel", uiGridLayout)
-					textLabel6.Size = UDim2.fromOffset(24, 18)
-					textLabel6.Position = UDim2.new(1, -29, 0, 11)
-					textLabel6.BackgroundColor3 = glass.accent
-					textLabel6.BorderSizePixel = 0
-					textLabel6.Text = "ON"
-					textLabel6.TextColor3 = glass.bg
-					textLabel6.Font = Enum.Font.GothamBold
-					textLabel6.TextSize = 8
-					textLabel6.ZIndex = 225
-					mkCorner(textLabel6, 9)
-					v46 = Instance.new("TextLabel", uiGridLayout)
-					v46.Name = "OutfitDbg"
-					v46.Size = UDim2.new(1, -12, 0, 10)
-					v46.Position = UDim2.new(0, 6, 1, -11)
-					v46.BackgroundTransparency = 1
-					v46.Text = ""
-					v46.TextColor3 = Color3.fromRGB(255, 90, 90)
-					v46.Font = Enum.Font.GothamBold
-					v46.TextSize = 7
-					v46.TextXAlignment = Enum.TextXAlignment.Left
-					v46.ZIndex = 226
-					tbl54[i] = {
-						frame = uiGridLayout,
-						stroke = v47,
-						check = textLabel6,
-						preview = imageLabel2,
-						viewport = viewportFrame,
-						ph = textLabel5,
-						dbg = v46,
-					}
-					uiGridLayout.MouseButton1Click:Connect(function()
-						skinChangerSelection, skinGalaxyEnabled = i, true
-						v45(true)
-						fn85()
-						fn86()
-					end)
+				local viewIdx = 1
+				for wi, realIdx in ipairs(wearList) do
+					if realIdx == skinChangerSelection then
+						viewIdx = wi
+						break
+					end
 				end
-				local flag14, flag15, n20 = false, false, 0
+				local function refreshView()
+					local realIdx = wearList[viewIdx] or 1
+					local entry = tbl53[realIdx]
+					if not entry then
+						return
+					end
+					nameLbl.Text = entry.name or "Outfit"
+					if entry.asset then
+						previewImg.Image = "rbxthumb://type=Asset&id=" .. tostring(entry.asset) .. "&w=150&h=150"
+					else
+						previewImg.Image = ""
+					end
+					skinChangerSelection = realIdx
+					Config.skinChangerSelection = realIdx
+				end
+				refreshView()
+				prevBtn.MouseButton1Click:Connect(function()
+					viewIdx = viewIdx - 1
+					if viewIdx < 1 then
+						viewIdx = #wearList
+					end
+					refreshView()
+				end)
+				nextBtn.MouseButton1Click:Connect(function()
+					viewIdx = viewIdx + 1
+					if viewIdx > #wearList then
+						viewIdx = 1
+					end
+					refreshView()
+				end)
+				applyBtn.MouseButton1Click:Connect(function()
+					local realIdx = wearList[viewIdx] or 1
+					skinChangerSelection = realIdx
+					skinGalaxyEnabled = true
+					v45(true)
+					fn85()
+				end)
+				removeBtn.MouseButton1Click:Connect(function()
+					-- find OFF entry if present, else just disable
+					local offIdx = nil
+					for i, v in ipairs(tbl53) do
+						if v.off then
+							offIdx = i
+							break
+						end
+					end
+					if offIdx then
+						skinChangerSelection = offIdx
+					end
+					skinGalaxyEnabled = false
+					v45(false)
+					fn85()
+				end)
+				local function fn86()
+					-- keep selection in sync for highlight logic (no grid)
+					refreshView()
+				end
+				local flag14, connection14 = false, nil
 				local function fn87()
 					local currentCamera = workspace.CurrentCamera
-					local viewportSize = currentCamera and currentCamera.ViewportSize or (Vector2.new(1280, 720))
-					return math.max(
-						0.42,
-						math.min(Config.popupScale or 1, (viewportSize.X - 16) / 520, (viewportSize.Y - 16) / 420)
-					)
+					local viewportSize = currentCamera and currentCamera.ViewportSize or Vector2.new(1280, 720)
+					return math.max(0.55, math.min(Config.popupScale or 1, (viewportSize.X - 16) / 340, (viewportSize.Y - 16) / 280))
 				end
 				local function fn88()
 					local currentCamera = workspace.CurrentCamera
-					local viewportSize, absolutePosition, absoluteSize, n21 =
-						currentCamera and currentCamera.ViewportSize or (Vector2.new(1280, 720)),
-						frame.AbsolutePosition,
-						frame.AbsoluteSize,
-						fn87()
-					local n22, n23, n24 = 520 * n21, 420 * n21, absolutePosition.X + absoluteSize.X + 12
-					n21, currentCamera = n24 + n22, viewportSize.X - 8
-					n24 = if (if n21 > currentCamera then absolutePosition.X - n22 - 12 else n24) < 8
-						then (math.max(8, (viewportSize.X - n22) * 0.5))
-						else if n21 > currentCamera then absolutePosition.X - n22 - 12 else n24
-					n21 = math.clamp(
-						absolutePosition.Y + (absoluteSize.Y - n23) * 0.5,
-						8,
-						math.max(8, viewportSize.Y - n23 - 8)
+					local viewportSize = currentCamera and currentCamera.ViewportSize or Vector2.new(1280, 720)
+					local scale = fn87()
+					local w, h = 340 * scale, 280 * scale
+					frame8.Position = UDim2.fromOffset(
+						math.max(8, (viewportSize.X - w) * 0.5),
+						math.max(8, (viewportSize.Y - h) * 0.5)
 					)
-					frame8.Position = UDim2.fromOffset(n24, n21)
 				end
 				do
-					local flag16, position3, position4, v46 = false
-					frame7.InputBegan:Connect(function(input)
-						if
-							input.UserInputType == Enum.UserInputType.MouseButton1
-							or input.UserInputType == Enum.UserInputType.Touch
-						then
-							flag16 = true
-							position3 = input.Position
-							position4, v46 = frame8.Position, input
-						end
-					end)
-					frame7.InputChanged:Connect(function(input)
-						local flag17 = input.UserInputType == Enum.UserInputType.MouseMovement
-							or input.UserInputType == Enum.UserInputType.Touch
-						if flag17 then
-							v46 = input
+					local dragging, startPos, startFrame, inputRef = false
+					header.InputBegan:Connect(function(input)
+						if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+							dragging = true
+							startPos = input.Position
+							startFrame = frame8.Position
+							inputRef = input
 						end
 					end)
 					UserInputService.InputChanged:Connect(function(input)
-						if flag16 and input == v46 then
-							local n21 = input.Position - position3
-							frame8.Position = UDim2.new(
-								position4.X.Scale,
-								position4.X.Offset + n21.X,
-								position4.Y.Scale,
-								position4.Y.Offset + n21.Y
-							)
-							flag15 = true
+						if dragging and input == inputRef then
+							local delta = input.Position - startPos
+							frame8.Position = UDim2.fromOffset(startFrame.X.Offset + delta.X, startFrame.Y.Offset + delta.Y)
 						end
 					end)
 					UserInputService.InputEnded:Connect(function(input)
-						local flag17 = input == v46 or input.UserInputType == Enum.UserInputType.MouseButton1
-						if flag17 then
-							flag16 = false
+						if input == inputRef or input.UserInputType == Enum.UserInputType.MouseButton1 then
+							dragging = false
 						end
 					end)
 				end
-				local function fn89()
-					local character2 = localPlayer.Character
-					if not character2 then
-						return nil
-					end
-					local archivable = character2.Archivable
-					character2.Archivable = true
-					local ok, result = pcall(function()
-						return character2:Clone()
-					end)
-					character2.Archivable = archivable
-					if not ok or not result then
-						return nil
-					end
-					for i, descendant in ipairs(result:GetDescendants()) do
-						if
-							descendant:IsA("LuaSourceContainer")
-							or (descendant:IsA("Script"))
-							or (descendant:IsA("LocalScript"))
-							or descendant.Name == "Animate"
-							or (descendant:IsA("Tool"))
-							or (descendant:IsA("ForceField"))
-							or (descendant:IsA("LinearVelocity"))
-							or (descendant:IsA("AlignPosition"))
-							or (descendant:IsA("AngularVelocity"))
-							or (descendant:IsA("BillboardGui"))
-							or (descendant:IsA("SurfaceGui"))
-							or (descendant:IsA("ParticleEmitter"))
-							or (descendant:IsA("Trail"))
-							or (descendant:IsA("Highlight"))
-						then
-							pcall(function()
-								descendant:Destroy()
-							end)
-						elseif descendant:IsA("BasePart") then
-							descendant.Anchored = true
-							descendant.CanCollide = false
-							descendant.CanQuery = false
-							descendant.CanTouch = false
-						end
-					end
-					archivable = result:FindFirstChildOfClass("Humanoid")
-					if archivable then
-						archivable.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
-						for i, v46 in ipairs(archivable:GetPlayingAnimationTracks()) do
-							pcall(function()
-								v46:Stop()
-							end)
-						end
-						local animator = archivable:FindFirstChildOfClass("Animator")
-						if animator then
-							pcall(function()
-								animator:Destroy()
-							end)
-						end
-					end
-					return result
-				end
-				local function fn90(parent, arg)
-					local worldModel = Instance.new("WorldModel")
-					worldModel.Name = "PreviewWorld"
-					worldModel.Parent = parent
-					arg.Name = "OutfitPreview"
-					arg.Parent = worldModel
-					arg:PivotTo(CFrame.new())
-					local boundingBox, v46 = arg:GetBoundingBox()
-					worldModel = Instance.new("Camera")
-					worldModel.FieldOfView = 28
-					worldModel.Parent = parent
-					parent.CurrentCamera = worldModel
-					arg, parent =
-						boundingBox.Position + Vector3.new(0, v46.Y * 0.03, 0), math.max(v46.Y * 2.2, v46.X * 2.6)
-					worldModel.CFrame = CFrame.lookAt(arg + Vector3.new(0, 0, -parent), arg)
-				end
-				local function fn91(arg)
-					for i, child in ipairs(arg:GetChildren()) do
-						if
-							child:IsA("Accessory")
-							or (child:IsA("Accoutrement"))
-							or (child:IsA("Shirt"))
-							or (child:IsA("Pants"))
-							or (child:IsA("ShirtGraphic"))
-							or (child:IsA("CharacterMesh"))
-						then
-							pcall(function()
-								child:Destroy()
-							end)
-						end
-					end
-				end
-				local function fn92(parent, arg)
-					for i, v46 in ipairs(arg or {}) do
-						local ok, result = pcall(function()
-							return game:GetObjects("rbxassetid://" .. tostring(v46))
-						end)
-						if ok and result and #result > 0 then
-							for i2, v47 in ipairs(result) do
-								if v47:IsA("Accessory") or (v47:IsA("Accoutrement")) then
-									i2 = v47:FindFirstChild("Handle")
-									if i2 then
-										i = i2:FindFirstChildOfClass("Attachment")
-										local v48, v49
-										if i then
-											for i3, child in ipairs(parent:GetChildren()) do
-												if child:IsA("BasePart") then
-													i3 = child:FindFirstChild(i.Name)
-													if i3 then
-														v48, v49 = child, i3
-														break
-													end
-												end
-											end
-										end
-										v48 = if not v48
-											then parent:FindFirstChild("Head") or (parent:FindFirstChild(
-												"HumanoidRootPart"
-											))
-											else v48
-										if v48 then
-											if v49 and i then
-												i2.CFrame = v49.WorldCFrame * i.CFrame:Inverse()
-											else
-												i2.CFrame = v48.CFrame
-											end
-											local weldConstraint = Instance.new("WeldConstraint")
-											weldConstraint.Part0 = i2
-											weldConstraint.Part1 = v48
-											weldConstraint.Parent = i2
-											i2.Anchored = false
-											i2.CanCollide = false
-											v47.Parent = parent
-										end
-									end
-								elseif v47:IsA("Shirt") or (v47:IsA("Pants")) or (v47:IsA("ShirtGraphic")) then
-									local v48 = parent:FindFirstChildOfClass(v47.ClassName)
-									if v48 then
-										v48:Destroy()
-									end
-									v47.Parent = parent
-								end
-							end
-						end
-					end
-				end
-				local tbl55, value =
-					{
-						[3] = { ids = { 10997283529, 125085889448130 } },
-						[4] = { ids = { 125157548394108, 123231522991173, 74827642361405 } },
-						[5] = { ids = { 136644276218918, 132022106987543, 131740907052260 } },
-						[6] = { ids = { 119331031817124, 84952305140948 }, headless = true },
-						[7] = {
-							ids = { 18902416696, 17739456422, 116750288839357, 12842417046, 122223069519702 },
-							headless = true,
-						},
-						[8] = { ids = { 13935333090, 16110951997, 10632503818 } },
-						[9] = {
-							ids = { 74891470, 4390891467, 91274263831244, 128424248603010, 91151766440767, 17044638424 },
-							headless = true,
-						},
-						[10] = {
-							ids = {
-								76479271580913,
-								1402432199,
-								140627490971265,
-								128912609563885,
-								17449551560,
-								5796531729,
-								139607718,
-							},
-							headless = true,
-							hideR = true,
-						},
-						[11] = {
-							ids = { 70414871864071, 14863917259, 133498027006138, 82277826177074 },
-							hideL = true,
-							hideR = true,
-						},
-					}, rawget(_G, "__BLYRASkinPreviewCacheV2")
-				if type(value) ~= "table" then
-					value = {}
-					rawset(_G, "__BLYRASkinPreviewCacheV2", value)
-				end
-				local function fn93(arg, arg2)
-					local v46 = tbl54[arg]
-					if not v46 or not v46.viewport or not v46.viewport.Parent then
-						return
-					end
-					local viewport = v46.viewport
-					local function fn94()
-						if v46.preview then
-							v46.preview.Visible = false
-						end
-						if v46.ph then
-							v46.ph.Visible = false
-						end
-						if v46.dbg then
-							v46.dbg.Text = ""
-						end
-					end
-					if viewport:FindFirstChildOfClass("WorldModel") then
-						fn94()
-						return
-					end
-					local v47 = value[arg]
-					if v47 and v47.Parent == nil then
-						local ok, result = pcall(function()
-							return v47:Clone()
-						end)
-						if ok and result then
-							fn90(viewport, result)
-							fn94()
-							return
-						end
-					end
-					local function fn95(arg3)
-						if not arg3 then
-							return
-						end
-						if not value[arg] then
-							local ok, result = pcall(function()
-								return arg3:Clone()
-							end)
-							if ok and result then
-								result.Parent = nil
-								value[arg] = result
-							end
-						end
-						fn90(viewport, arg3)
-					end
-					if arg > 2 then
-						pcall(function()
-							local v48 = tbl55[arg]
-							if not v48 then
-								if v46.dbg then
-									v46.dbg.Text = "NO DATA"
-								end
-								return
-							end
-							local v49 = fn89()
-							if not v49 then
-								return
-							end
-							fn91(v49)
-							fn92(v49, v48.ids)
-							if v48.headless then
-								local head = v49:FindFirstChild("Head")
-								if head then
-									head.Transparency = 1
-									for i, descendant in ipairs(head:GetDescendants()) do
-										if descendant:IsA("Decal") or (descendant:IsA("Texture")) then
-											descendant.Transparency = 1
-										end
-									end
-								end
-							end
-							if v48.hideR then
-								local tbl56 = { "RightUpperLeg", "RightLowerLeg", "RightFoot", "Right Leg" }
-								for i, v50 in ipairs(tbl56) do
-									i = v49:FindFirstChild(v50)
-									if i then
-										i.Transparency = 1
-									end
-								end
-							end
-							if v48.hideL then
-								local tbl56 = { "LeftUpperLeg", "LeftLowerLeg", "LeftFoot", "Left Leg" }
-								for i, v50 in ipairs(tbl56) do
-									i = v49:FindFirstChild(v50)
-									if i then
-										i.Transparency = 1
-									end
-								end
-							end
-							fn95(v49)
-						end)
-						if viewport:FindFirstChildOfClass("WorldModel") then
-							fn94()
-							return
-						end
-					end
-					pcall(function()
-						local v48 = fn89()
-						if v48 then
-							fn95(v48)
-						end
-					end)
-					if viewport:FindFirstChildOfClass("WorldModel") then
-						fn94()
-					end
-				end
-				local connection14
-				local n21 = 0
-				local function fn94()
-					if connection14 then
-						return
-					end
-					connection14 = RunService.Heartbeat:Connect(function(deltaTime)
-						if not flag14 then
-							return
-						end
-						n21 += math.clamp(deltaTime or 0.016666666666666666, 0, 0.1)
-						if n21 < 0.03333333333333333 then
-							return
-						end
-						local v46 = math.rad(22 * n21)
-						n21 = 0
-						for i, v47 in ipairs(tbl54) do
-							i = v47.viewport
-							if i and i.Parent then
-								deltaTime = i:FindFirstChildOfClass("WorldModel")
-								local model = deltaTime and (deltaTime:FindFirstChildWhichIsA("Model", true))
-								if model then
-									pcall(function()
-										model:PivotTo(model:GetPivot() * CFrame.Angles(0, v46, 0))
-									end)
-								end
-							end
-						end
-					end)
-				end
-				local function fn95(arg)
-					flag14 = arg
-					textButton3.Text = arg and "CLOSE" or "SKINS"
-					pcall(function()
-						if Config._blyraQuickGui then
-							Config._blyraQuickGui.Enabled = not arg and not Config.stackButtonsHidden
-						end
-					end)
-					if arg then
-						if Config._closeButtonManager then
-							pcall(Config._closeButtonManager)
-						end
-						if not flag15 then
-							fn88()
-						end
-						fn86()
+				local function fn95(open)
+					flag14 = open
+					if open then
+						uiScale2.Scale = 0.94 * fn87()
+						fn88()
 						frame8.Visible = true
-						local v46 = fn87()
-						uiScale2.Scale = 0.94 * v46
-						n20 += 1
-						local v47 = n20
-						fn94()
-						task.spawn(function()
-							for i, v48 in ipairs(tbl53) do
-								if v47 ~= n20 or not flag14 then
-									break
-								end
-								local v49 = tbl54[i]
-								if v49 and v49.preview and (v49.preview.Image == "" or v49.preview.Image == nil) then
-									pcall(function()
-										v49.preview.Image = fn83(v48) or ""
-									end)
-								end
-								pcall(fn93, i, v48)
-								task.wait(0.15)
+						refreshView()
+						TweenService:Create(uiScale2, TweenInfo.new(0.16, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { Scale = fn87() }):Play()
+						if connection14 then
+							connection14:Disconnect()
+						end
+						connection14 = workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(function()
+							if flag14 then
+								fn88()
+								uiScale2.Scale = fn87()
 							end
 						end)
-						TweenService:Create(
-							uiScale2,
-							TweenInfo.new(0.16, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
-							{ Scale = v46 }
-						):Play()
 					else
-						TweenService:Create(
-							uiScale2,
-							TweenInfo.new(0.12, Enum.EasingStyle.Quint, Enum.EasingDirection.In),
-							{ Scale = 0.94 * fn87() }
-						):Play()
+						TweenService:Create(uiScale2, TweenInfo.new(0.12, Enum.EasingStyle.Quint, Enum.EasingDirection.In), { Scale = 0.94 * fn87() }):Play()
 						task.delay(0.12, function()
 							if not flag14 then
 								frame8.Visible = false
@@ -17598,7 +17236,7 @@ frame6.Visible = false
 				textButton3.MouseButton1Click:Connect(function()
 					fn95(not flag14)
 				end)
-				textLabel4.MouseButton1Click:Connect(function()
+				closeBtn.MouseButton1Click:Connect(function()
 					fn95(false)
 				end)
 				function Config._closeSkinGallery()
@@ -17609,13 +17247,20 @@ frame6.Visible = false
 				fn84()
 				fn86()
 				function skinGalaxyCache._setter(arg)
-					skinChangerSelection, skinGalaxyEnabled =
-						math.clamp(math.floor(tonumber(Config.skinChangerSelection) or skinChangerSelection), 1, #tbl53),
-						arg
+					skinChangerSelection = math.clamp(math.floor(tonumber(Config.skinChangerSelection) or skinChangerSelection), 1, #tbl53)
+					skinGalaxyEnabled = arg
 					v45(arg)
+					-- sync viewIdx
+					for wi, realIdx in ipairs(wearList) do
+						if realIdx == skinChangerSelection then
+							viewIdx = wi
+							break
+						end
+					end
 					fn86()
 					fn85()
 				end
+
 			end
 			makeGap(2)
 			pcall(buildAnimalHoldDetector)
@@ -26600,8 +26245,8 @@ buildPage("Config", function()
 					pcall(tbl3.start)
 				end
 				if Config.skinGalaxyEnabled then
-					local skinChangerSelection = math.clamp(tonumber(Config.skinChangerSelection) or 1, 1, 5)
-					local map = { [1] = 9, [2] = 4, [3] = 5, [4] = 6, [5] = 10 }
+					local skinChangerSelection = math.clamp(tonumber(Config.skinChangerSelection) or 1, 1, 4)
+					local map = { [1] = 9, [2] = 4, [3] = 5, [4] = 10 }
 					pcall(skinGalaxyCache._startOutfit, map[skinChangerSelection] or 9)
 				end
 				if Config.holdJumpEnabled then
@@ -29942,8 +29587,8 @@ end)();
 	end)
 	Config.Core.Register("SkinChanger", {
 		Start = function()
-			local skinChangerSelection = math.clamp(tonumber(Config.skinChangerSelection) or 1, 1, 5)
-			local map = { [1] = 9, [2] = 4, [3] = 5, [4] = 6, [5] = 10 }
+			local skinChangerSelection = math.clamp(tonumber(Config.skinChangerSelection) or 1, 1, 4)
+			local map = { [1] = 9, [2] = 4, [3] = 5, [4] = 10 }
 			return skinGalaxyCache._startOutfit(map[skinChangerSelection] or 9)
 		end,
 		Stop = function()

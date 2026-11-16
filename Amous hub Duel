@@ -335,8 +335,8 @@ Config = {
 	warningE01Scale = 1,
 	bgMode = "image",
 	fontStyle = "BLYRA Original",
-	billboardScale = 1,
-	statsBarEnabled = true,
+	billboardScale = 0.75,
+	statsBarEnabled = false,
 	_getBatTpStuds = function(arg)
 		if (type(arg) == "string" and arg or Config.batTpVersion or "V2") == "V1" then
 			return math.clamp(tonumber(Config.batTpStudsV1) or 8, 1, 20)
@@ -376,7 +376,7 @@ pcall(function()
 			return HttpService:JSONDecode(readfile("BlyraAntiBat.json"))
 		end)
 		if ok and type(result) == "table" and result.on ~= nil then
-			Config.antiBatToggled = not not result.on
+			Config.antiBatToggled = false
 		end
 	end
 end)
@@ -3868,8 +3868,6 @@ local tbl34 = {
 	"drop",
 	"tpDown",
 	"aimbot",
-	"laggerFunc",
-	"batLagger",
 	"batTp",
 	"smartBatTp",
 }
@@ -4288,7 +4286,7 @@ local function fn39()
 		Config.stealBarScale = math.clamp(tonumber(v23.stealBarScale) or 1, 0.5, 2)
 	end
 	if v23.stealBarStyle ~= nil then
-		Config.stealBarStyle = v23.stealBarStyle == "Compact" and "Compact" or "Classic"
+		Config.stealBarStyle = "Compact"
 	end
 	if v23.buttonShape ~= nil then
 		Config.buttonShape = v23.buttonShape == "Circle" and "Circle" or "Square"
@@ -4297,10 +4295,10 @@ local function fn39()
 		Config.fontStyle = v23.fontStyle
 	end
 	if v23.billboardScale ~= nil then
-		Config.billboardScale = math.clamp(tonumber(v23.billboardScale) or 1, 0.5, 2)
+		Config.billboardScale = 0.75
 	end
 	if v23.statsBarEnabled ~= nil then
-		Config.statsBarEnabled = v23.statsBarEnabled == true
+		Config.statsBarEnabled = false
 	end
 	if v23.openPopups ~= nil then
 		Config._openPopups = v23.openPopups
@@ -4356,9 +4354,6 @@ local function fn39()
 	if v23.batTpEnabled ~= nil then
 		Config.batTpEnabled = v23.batTpEnabled
 	end
-	if v23.laggerFuncEnabled ~= nil then
-		Config.laggerFuncEnabled = v23.laggerFuncEnabled
-	end
 	if v23.ragdollTimerEnabled ~= nil then
 		Config.ragdollTimerEnabled = v23.ragdollTimerEnabled
 	end
@@ -4381,8 +4376,6 @@ local function fn39()
 	antiRagdollEnabled("dropKey", "drop", nil)
 	antiRagdollEnabled("laggerKey", "lagger", nil)
 	antiRagdollEnabled("aimbotKey", "aimbot", nil)
-	antiRagdollEnabled("laggerFuncKey", "laggerFunc", nil)
-	antiRagdollEnabled("batLaggerKey", "batLagger", nil)
 	antiRagdollEnabled("batTpKey", "batTp", nil)
 	antiRagdollEnabled("smartBatTpKey", "smartBatTp", nil)
 	antiRagdollEnabled("tpDownKey", "tpDown", Enum.KeyCode.F)
@@ -4417,9 +4410,6 @@ local function fn39()
 	end
 	if v23.autoSwingEnabled ~= nil then
 		Config.autoSwingEnabled = v23.autoSwingEnabled == true
-	end
-	if v23.batLaggerToggled ~= nil then
-		Config.batLaggerToggled = v23.batLaggerToggled
 	end
 	if v23.autoStealEnabled ~= nil then
 		Config.autoStealEnabled = v23.autoStealEnabled
@@ -4508,7 +4498,7 @@ local function fn39()
 		Config.v2UseCarry = v23.v2UseCarry
 	end
 	if v23.speedMethod ~= nil then
-		Config.speedMethod = v23.speedMethod
+		Config.speedMethod = "V2"
 	end
 	Config.autoStealVersion = v23.autoStealVersion == "V2" and "V2" or "V1"
 	if v23.infJumpMode ~= nil then
@@ -4699,7 +4689,11 @@ local function fn39()
 			return
 		end
 		for k, v24 in pairs(arg) do
-			if v24 and v24.type and v24.value then
+			if v24 and v24.type and v24.value
+				and k ~= "laggerFunc"
+				and k ~= "antibat"
+				and k ~= "batLagger"
+			then
 				local v25 = tbl30[k]
 				if v25 then
 					if v24.type == "key" then
@@ -5008,9 +5002,6 @@ local function fn40(arg)
 				v2()
 			end
 		end
-		if arg.batLaggerToggled ~= nil then
-			Config.batLaggerToggled = arg.batLaggerToggled
-		end
 		if arg.autoStealVersion ~= nil then
 			Config.autoStealVersion = arg.autoStealVersion == "V2" and "V2" or "V1"
 		end
@@ -5282,17 +5273,6 @@ local function fn40(arg)
 				Config._setSmartBatTp(false, true)
 			end
 		end
-		if arg.laggerFuncEnabled ~= nil then
-			Config.laggerFuncEnabled = arg.laggerFuncEnabled
-			if arg.laggerFuncEnabled then
-				pcall(v3)
-			else
-				pcall(v4)
-			end
-			if setLagger_ then
-				setLagger_(arg.laggerFuncEnabled)
-			end
-		end
 		if arg.ragdollTimerEnabled ~= nil and setRagdollTimer_ then
 			Config.ragdollTimerEnabled = arg.ragdollTimerEnabled
 			setRagdollTimer_(arg.ragdollTimerEnabled)
@@ -5321,7 +5301,7 @@ local function fn40(arg)
 			Config.stealToggled = arg.stealToggled
 		end
 		if arg.speedMethod ~= nil then
-			Config.speedMethod = arg.speedMethod
+			Config.speedMethod = "V2"
 		end
 		if arg.v2UseCarry ~= nil then
 			Config.v2UseCarry = arg.v2UseCarry
@@ -5338,13 +5318,13 @@ local function fn40(arg)
 			end
 		end
 		if arg.billboardScale ~= nil then
-			Config._applyHeadDisplayScale(arg.billboardScale)
+			Config._applyHeadDisplayScale(0.75)
 			if Config._syncBillboardScaleChoice then
 				Config._syncBillboardScaleChoice()
 			end
 		end
 		if arg.statsBarEnabled ~= nil then
-			Config.statsBarEnabled = arg.statsBarEnabled == true
+			Config.statsBarEnabled = false
 			if Config._syncStatsBarToggle then
 				Config._syncStatsBarToggle(Config.statsBarEnabled)
 			else
@@ -5362,7 +5342,7 @@ local function fn40(arg)
 			end
 		end
 		if arg.stealBarStyle ~= nil then
-			Config.stealBarStyle = arg.stealBarStyle == "Compact" and "Compact" or "Classic"
+			Config.stealBarStyle = "Compact"
 			if Config._syncStealBarStyleChoice then
 				Config._syncStealBarStyleChoice()
 			else
@@ -10069,28 +10049,6 @@ tbl31 = {
 			NumberSequenceKeypoint.new(0.48, 0.18),
 			NumberSequenceKeypoint.new(1, 1),
 		})
-		uiGradient2 = Instance.new("Frame", uiGradient)
-		uiGradient2.Name = "ModernHeaderAccent"
-		uiGradient2.Size = UDim2.fromOffset(54, 2)
-		uiGradient2.Position = UDim2.fromOffset(60, 48)
-		uiGradient2.BackgroundColor3 = glass.accent
-		uiGradient2.BackgroundTransparency = 0.08
-		uiGradient2.BorderSizePixel = 0
-		uiGradient2.ZIndex = 11
-		mkCorner(uiGradient2, 2)
-		uiGradient2 = Instance.new("UIGradient", uiGradient2)
-		uiGradient2.Name = "ModernGlowGradient"
-		uiGradient2.Rotation = 0
-		uiGradient2.Color = ColorSequence.new({
-			ColorSequenceKeypoint.new(0, glass.accent2),
-			ColorSequenceKeypoint.new(0.5, glass.accent),
-			ColorSequenceKeypoint.new(1, glass.accent2),
-		})
-		uiGradient2.Transparency = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 1),
-			NumberSequenceKeypoint.new(0.5, 0),
-			NumberSequenceKeypoint.new(1, 1),
-		})
 		uiGradient2 = Instance.new("Frame", character)
 		uiGradient2.Size = UDim2.new(1, 0, 0, 1)
 		uiGradient2.Position = UDim2.new(0, 0, 0, 68)
@@ -10111,129 +10069,9 @@ tbl31 = {
 			ColorSequenceKeypoint.new(1, glass.accent),
 		})
 		local fn72
-		local flag6, frame3 = false, Instance.new("Frame", uiGradient)
-		frame3.Size = UDim2.new(0, 40, 0, 40)
-		frame3.Position = UDim2.new(0, 12, 0.5, -20)
-		frame3.BackgroundTransparency = 1
-		frame3.BorderSizePixel = 0
-		frame3.ZIndex = 11
-		frame3.ClipsDescendants = true
-		Instance.new("UICorner", frame3).CornerRadius = UDim.new(0, 12)
-		character = Instance.new("ImageLabel", frame3)
-		character.Size = UDim2.new(1, 0, 1, 0)
-		character.Position = UDim2.new(0, 0, 0, 0)
-		character.BackgroundTransparency = 1
-		character.BorderSizePixel = 0
-		character.Image = ""
-		character.ScaleType = Enum.ScaleType.Fit
-		character.ZIndex = 12
-		character.Visible = false
-		uiGradient2 = Instance.new("TextLabel", frame3)
-		uiGradient2.Size = UDim2.new(1, 0, 1, 0)
-		uiGradient2.BackgroundColor3 = glass.accent
-		uiGradient2.BackgroundTransparency = 0.08
-		uiGradient2.BorderSizePixel = 0
-		uiGradient2.Text = "BLYRA"
-		uiGradient2.TextColor3 = glass.bg
-		uiGradient2.Font = Enum.Font.GothamBlack
-		uiGradient2.TextSize = 12
-		uiGradient2.ZIndex = 12
-		mkCorner(uiGradient2, 12)
-		mkStroke(uiGradient2, glass.accent2, 0.8)
-		frame3 = Instance.new("UIGradient", uiGradient2)
-		frame3.Rotation = 35
-		frame3.Color = ColorSequence.new({
-			ColorSequenceKeypoint.new(0, glass.accent),
-			ColorSequenceKeypoint.new(1, glass.accent2),
-		})
-		uiGradient2 = Instance.new("TextLabel", uiGradient)
-		uiGradient2.Size = UDim2.new(0, 100, 1, 0)
-		uiGradient2.Position = UDim2.new(0, 60, 0, 0)
-		uiGradient2.BackgroundTransparency = 1
-		uiGradient2.Text = "BLYRA DUELS"
-		uiGradient2.TextColor3 = glass.text
-		uiGradient2.Font = Enum.Font.GothamBlack
-		uiGradient2.TextSize = 11
-		uiGradient2.TextXAlignment = Enum.TextXAlignment.Left
-		uiGradient2.TextYAlignment = Enum.TextYAlignment.Center
-		uiGradient2.ZIndex = 12
-		uiGradient2 = Instance.new("Frame", uiGradient)
-		uiGradient2.Name = "HeaderScaleControl"
-		uiGradient2.Size = UDim2.fromOffset(112, 30)
-		uiGradient2.Position = UDim2.fromOffset(164, 19)
-		uiGradient2.BackgroundColor3 = glass.panel
-		uiGradient2.BackgroundTransparency = 0.28
-		uiGradient2.BorderSizePixel = 0
-		uiGradient2.ZIndex = 12
-		mkCorner(uiGradient2, 10)
-		mkStroke(uiGradient2, glass.border, 0.7)
-		frame3 = Instance.new("TextButton", uiGradient2)
-		frame3.Size = UDim2.fromOffset(28, 30)
-		frame3.BackgroundTransparency = 1
-		frame3.Text = "-"
-		frame3.TextColor3 = glass.muted
-		frame3.Font = Enum.Font.GothamBold
-		frame3.TextSize = 15
-		frame3.ZIndex = 13
-		character = Instance.new("TextLabel", uiGradient2)
-		character.Size = UDim2.fromOffset(56, 30)
-		character.Position = UDim2.fromOffset(28, 0)
-		character.BackgroundTransparency = 1
-		character.Text = math.floor(Config.uiScale * 100 + 0.5) .. "%"
-		character.TextColor3 = glass.text
-		character.Font = Enum.Font.GothamBold
-		character.TextSize = 9
-		character.ZIndex = 13
-		local textButton = Instance.new("TextButton", uiGradient2)
-		textButton.Size = UDim2.fromOffset(28, 30)
-		textButton.Position = UDim2.fromOffset(84, 0)
-		textButton.BackgroundTransparency = 1
-		textButton.Text = "+"
-		textButton.TextColor3 = glass.muted
-		textButton.Font = Enum.Font.GothamBold
-		textButton.TextSize = 14
-		textButton.ZIndex = 13
-		Config._uiScaleLabels[character] = true
-		frame3.Activated:Connect(function()
-			Config._applyMainUIScale(Config.uiScale - 0.05, true)
-		end)
-		textButton.Activated:Connect(function()
-			Config._applyMainUIScale(Config.uiScale + 0.05, true)
-		end)
-		uiGradient2 = Instance.new("Frame", uiGradient)
-		uiGradient2.Size = UDim2.new(0, 64, 1, 0)
-		uiGradient2.AnchorPoint = Vector2.new(1, 0)
-		uiGradient2.Position = UDim2.new(1, -34, 0, 0)
-		uiGradient2.BackgroundTransparency = 1
-		frame3 = Instance.new("TextLabel", uiGradient2)
-		frame3.Size = UDim2.new(1, 0, 0, 14)
-		frame3.Position = UDim2.new(0, 0, 0, 4)
-		frame3.BackgroundTransparency = 1
-		frame3.Text = "Radius"
-		frame3.TextColor3 = Color3.fromRGB(185, 185, 195)
-		frame3.Font = Enum.Font.GothamBold
-		frame3.TextSize = 10
-		frame3.TextXAlignment = Enum.TextXAlignment.Right
-		frame3.TextYAlignment = Enum.TextYAlignment.Center
-		local textBox = Instance.new("TextBox", uiGradient2)
-		textBox.Size = UDim2.new(1, 0, 0, 18)
-		textBox.Position = UDim2.new(0, 0, 0, 18)
-		textBox.BackgroundTransparency = 1
-		textBox.Text = tostring(tbl17.StealRadius)
-		textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-		textBox.Font = Enum.Font.GothamBlack
-		textBox.TextSize = 13
-		textBox.TextXAlignment = Enum.TextXAlignment.Right
-		textBox.ClearTextOnFocus = false
-		textBox.ZIndex = 8
-		textBox.FocusLost:Connect(function()
-			local num = tonumber(textBox.Text)
-			if num and num >= 5 and num <= 300 then
-				tbl17.StealRadius = math.floor(num)
-			end
-			textBox.Text = tostring(tbl17.StealRadius)
-			fn34()
-		end)
+		local flag6, frame3 = false
+		local textButton
+		local textBox = Instance.new("TextBox")
 		local textButton2 = Instance.new("TextButton", uiGradient)
 		textButton2.Size = UDim2.new(0, 28, 0, 28)
 		textButton2.Position = UDim2.new(1, -32, 0.5, -14)
@@ -12671,39 +12509,8 @@ tbl31 = {
 		function buildSpeedSection()
 			makeSectionHeader("Speed")
 			makeGap(2)
-			local frame6 = Instance.new("Frame", v43)
-			frame6.Size = UDim2.new(1, 0, 0, 40)
-			frame6.BorderSizePixel = 0
-			frame6.LayoutOrder = LO()
-			frame6.BackgroundColor3 = glass.panel
-			frame6.BackgroundTransparency = 0.4
-			mkCorner(frame6, 10)
-			mkAnimStroke(frame6, 1)
-			local textLabel2 = Instance.new("TextLabel", frame6)
-			textLabel2.Size = UDim2.new(1, -192, 1, 0)
-			textLabel2.Position = UDim2.new(0, 14, 0, 0)
-			textLabel2.BackgroundTransparency = 1
-			textLabel2.Text = "Speed Changed Method"
-			textLabel2.TextColor3 = Color3.fromRGB(200, 200, 200)
-			textLabel2.Font = Enum.Font.GothamBold
-			textLabel2.TextSize = 12
-			textLabel2.TextXAlignment = Enum.TextXAlignment.Left
-			makeChoiceControl(frame6, { "V1", "V2" }, Config.speedMethod == "V2" and 2 or 1, function(speedMethod)
-				if Config.speedMethod ~= speedMethod then
-					Config.speedMethod = speedMethod
-					Config.v2UseCarry = false
-					Config._autoCarryFromSteal = false
-					Config._waitingForCarryPickup = false
-					Config._autoCarryGraceUntil = 0
-					Config._carryPickupWatchUntil = 0
-					Config._autoCarryReturnMode = nil
-					if speedMethod == "V2" then
-						Config.stealToggled = false
-						Config.isStealing = false
-					end
-				end
-				fn34()
-			end)
+			local frame6, textLabel2
+			Config.speedMethod = "V2"
 			makeGap(2)
 			local v45, v46, v47, v48, v49, v50, v51 = makeSpeedRow(
 				"Normal Speed",
@@ -14642,144 +14449,7 @@ tbl31 = {
 				end
 			end
 			mkAccordion(frame6)
-			makeGap(2)
-			uiListLayout2 = Instance.new("Frame", v43)
-			uiListLayout2.Size = UDim2.new(1, 0, 0, 0)
-			uiListLayout2.BackgroundTransparency = 1
-			uiListLayout2.BorderSizePixel = 0
-			uiListLayout2.LayoutOrder = LO()
-			uiListLayout2.AutomaticSize = Enum.AutomaticSize.Y
-			frame6 = Instance.new("UIListLayout", uiListLayout2)
-			frame6.SortOrder = Enum.SortOrder.LayoutOrder
-			frame6.Padding = UDim.new(0, 2)
-			uiListLayout = Instance.new("Frame", uiListLayout2)
-			uiListLayout.Size = UDim2.new(1, 0, 0, 40)
-			uiListLayout.BorderSizePixel = 0
-			uiListLayout.LayoutOrder = 1
-			uiListLayout.BackgroundColor3 = glass.panel
-			uiListLayout.BackgroundTransparency = 0.4
-			mkCorner(uiListLayout, 10)
-			mkAnimStroke(uiListLayout, 1)
-			frame6 = Instance.new("TextLabel", uiListLayout)
-			frame6.Size = UDim2.new(1, -54, 1, 0)
-			frame6.Position = UDim2.new(0, 14, 0, 0)
-			frame6.BackgroundTransparency = 1
-			frame6.Text = "Bat Lagger"
-			frame6.TextColor3 = Color3.fromRGB(200, 200, 200)
-			frame6.Font = Enum.Font.GothamBold
-			frame6.TextSize = 12
-			frame6.TextXAlignment = Enum.TextXAlignment.Left
-			frame6 = Instance.new("Frame", uiListLayout)
-			frame6.Size = UDim2.new(0, 28, 0, 28)
-			frame6.Position = UDim2.new(1, -40, 0.5, -14)
-			frame6.BackgroundColor3 = glass.panel
-			frame6.BackgroundTransparency = 0.4
-			frame6.BorderSizePixel = 0
-			frame6.ZIndex = 6
-			mkCorner(frame6, 14)
-			mkStroke(frame6, glass.border, 1.2)
-			local textLabel2 = Instance.new("TextLabel", frame6)
-			textLabel2.Size = UDim2.new(1, 0, 1, 0)
-			textLabel2.BackgroundTransparency = 1
-			textLabel2.Text = tbl11.batLagger and (getKeyDisplayName(tbl11.batLagger)) or "+"
-			textLabel2.TextColor3 = tbl11.batLagger and glass.text or glass.muted
-			textLabel2.Font = Enum.Font.GothamBlack
-			textLabel2.TextSize = 12
-			textLabel2.TextXAlignment = Enum.TextXAlignment.Center
-			textLabel2.ZIndex = 7
-			Config._bindSimpleKey(uiListLayout, frame6, textLabel2, "batLagger")
-			function _blToggle()
-				local batLaggerToggled = not Config.batLaggerToggled
-				Config.batLaggerToggled = batLaggerToggled
-				Config.batAimbotToggled = batLaggerToggled
-				fn14()
-				if stackBtnRefs.aimbot then
-					stackBtnRefs.aimbot.setOn(batLaggerToggled)
-				end
-				if setBatAimbot then
-					setBatAimbot(batLaggerToggled)
-				end
-				if batLaggerToggled then
-					batLaggerSavedApproach = tbl31 and tbl31.APPROACH_SPEED or 58
-					if tbl31 then
-						tbl31.APPROACH_SPEED = approachSpeed
-					end
-					pcall(v3)
-					pcall(v)
-				else
-					pcall(v4)
-					v2()
-					if tbl31 then
-						if batLaggerSavedApproach then
-							tbl31.APPROACH_SPEED = batLaggerSavedApproach
-							batLaggerSavedApproach = nil
-						end
-					end
-				end
-				fn34()
-			end
-			do
-				uiListLayout = Instance.new("Frame", uiListLayout2)
-				uiListLayout.Size = UDim2.new(1, 0, 0, 40)
-				uiListLayout.BorderSizePixel = 0
-				uiListLayout.LayoutOrder = 2
-				uiListLayout.BackgroundColor3 = glass.panel
-				uiListLayout.BackgroundTransparency = 0.4
-				mkCorner(uiListLayout, 10)
-				mkAnimStroke(uiListLayout, 1)
-				frame6 = Instance.new("TextLabel", uiListLayout)
-				frame6.Size = UDim2.new(1, -54, 1, 0)
-				frame6.Position = UDim2.new(0, 14, 0, 0)
-				frame6.BackgroundTransparency = 1
-				frame6.Text = "Bat Lagger Speed"
-				frame6.TextColor3 = Color3.fromRGB(200, 200, 200)
-				frame6.Font = Enum.Font.GothamBold
-				frame6.TextSize = 12
-				frame6.TextXAlignment = Enum.TextXAlignment.Left
-				textLabel2 = Instance.new("TextLabel", uiListLayout)
-				textLabel2.Size = UDim2.new(0, 46, 1, 0)
-				textLabel2.Position = UDim2.new(1, -126, 0, 0)
-				textLabel2.BackgroundTransparency = 1
-				textLabel2.Text = "Speed:"
-				textLabel2.TextColor3 = Color3.fromRGB(255, 255, 255)
-				textLabel2.Font = Enum.Font.GothamBold
-				textLabel2.TextSize = 10
-				textLabel2.TextXAlignment = Enum.TextXAlignment.Right
-				textLabel2.ZIndex = 6
-				local frame7 = Instance.new("Frame", uiListLayout)
-				frame7.Size = UDim2.new(0, 60, 0, 24)
-				frame7.Position = UDim2.new(1, -72, 0.5, -12)
-				frame7.BackgroundColor3 = glass.panel
-				frame7.BackgroundTransparency = 0.4
-				frame7.BorderSizePixel = 0
-				frame7.ZIndex = 6
-				mkCorner(frame7, 6)
-				mkStroke(frame7, Color3.fromRGB(72, 72, 82), 0.7)
-				local textBox2 = Instance.new("TextBox", frame7)
-				_batLaggerSpeedBox = textBox2
-				textBox2.Size = UDim2.new(1, -6, 1, 0)
-				textBox2.Position = UDim2.new(0, 3, 0, 0)
-				textBox2.BackgroundTransparency = 1
-				textBox2.Text = tostring(approachSpeed)
-				textBox2.TextColor3 = Color3.fromRGB(230, 230, 230)
-				textBox2.Font = Enum.Font.GothamBold
-				textBox2.TextSize = 10
-				textBox2.ClearTextOnFocus = false
-				textBox2.ZIndex = 7
-				textBox2.TextXAlignment = Enum.TextXAlignment.Center
-				textBox2.FocusLost:Connect(function()
-					local approachSpeed2 = tonumber(textBox2.Text)
-					if approachSpeed2 and approachSpeed2 > 0 and approachSpeed2 <= 500 then
-						approachSpeed = approachSpeed2
-						if Config.batLaggerToggled then
-							tbl31.APPROACH_SPEED = approachSpeed2
-						end
-					end
-					textBox2.Text = tostring(approachSpeed)
-					fn34()
-				end)
-			end
-			mkAccordion(uiListLayout2)
+			local textLabel2
 			makeGap(2)
 			uiListLayout2 = Instance.new("Frame", v43)
 			uiListLayout2.Size = UDim2.new(1, 0, 0, 0)
@@ -15273,173 +14943,6 @@ tbl31 = {
 			makeSectionHeader("Utility")
 			makeGap(2)
 			makeGap(2)
-			frame6 = Instance.new("Frame", v43)
-			frame6.Size = UDim2.new(1, 0, 0, 0)
-			frame6.BackgroundTransparency = 1
-			frame6.BorderSizePixel = 0
-			frame6.LayoutOrder = LO()
-			frame6.AutomaticSize = Enum.AutomaticSize.Y
-			textLabel2 = Instance.new("UIListLayout", frame6)
-			textLabel2.SortOrder = Enum.SortOrder.LayoutOrder
-			textLabel2.Padding = UDim.new(0, 2)
-			do
-				uiListLayout2 = Instance.new("Frame", frame6)
-				uiListLayout2.Size = UDim2.new(1, 0, 0, 40)
-				uiListLayout2.BorderSizePixel = 0
-				uiListLayout2.LayoutOrder = 1
-				uiListLayout2.BackgroundColor3 = glass.panel
-				uiListLayout2.BackgroundTransparency = 0.4
-				mkCorner(uiListLayout2, 10)
-				mkAnimStroke(uiListLayout2, 1)
-				uiListLayout = Instance.new("TextLabel", uiListLayout2)
-				uiListLayout.Size = UDim2.new(1, -54, 1, 0)
-				uiListLayout.Position = UDim2.new(0, 14, 0, 0)
-				uiListLayout.BackgroundTransparency = 1
-				uiListLayout.Text = "Lagger"
-				uiListLayout.TextColor3 = Color3.fromRGB(200, 200, 200)
-				uiListLayout.Font = Enum.Font.GothamBold
-				uiListLayout.TextSize = 12
-				uiListLayout.TextXAlignment = Enum.TextXAlignment.Left
-				textLabel2 = Instance.new("Frame", uiListLayout2)
-				textLabel2.Size = UDim2.new(0, 28, 0, 28)
-				textLabel2.Position = UDim2.new(1, -40, 0.5, -14)
-				textLabel2.BackgroundColor3 = glass.panel
-				textLabel2.BackgroundTransparency = 0.4
-				textLabel2.BorderSizePixel = 0
-				textLabel2.ZIndex = 6
-				mkCorner(textLabel2, 14)
-				mkStroke(textLabel2, glass.border, 1.2)
-				local textLabel3 = Instance.new("TextLabel", textLabel2)
-				textLabel3.Size = UDim2.new(1, 0, 1, 0)
-				textLabel3.BackgroundTransparency = 1
-				local laggerFunc = tbl30.laggerFunc
-				textLabel3.Text = Config._laggerKeyLabel(laggerFunc or tbl11.laggerFunc)
-				textLabel3.TextColor3 = (laggerFunc or tbl11.laggerFunc) and glass.text or glass.muted
-				textLabel3.Font = Enum.Font.GothamBlack
-				textLabel3.TextSize = 12
-				textLabel3.TextXAlignment = Enum.TextXAlignment.Center
-				textLabel3.ZIndex = 7
-				do
-					local flag14 = false
-					local function laggerMainKeySync()
-						local laggerFunc2 = tbl30.laggerFunc
-						textLabel3.Text = Config._laggerKeyLabel(laggerFunc2 or tbl11.laggerFunc)
-						textLabel3.TextColor3 = (laggerFunc2 or tbl11.laggerFunc) and glass.text or glass.muted
-					end
-					Config._laggerMainKeySync = laggerMainKeySync
-					laggerFunc = Instance.new("TextButton", uiListLayout2)
-					laggerFunc.Size = textLabel2.Size
-					laggerFunc.Position = textLabel2.Position
-					laggerFunc.BackgroundTransparency = 1
-					laggerFunc.Text = ""
-					laggerFunc.ZIndex = 10
-					laggerFunc.BorderSizePixel = 0
-					laggerFunc.Active = true
-					laggerFunc.Selectable = true
-					laggerFunc.Activated:Connect(function()
-						if flag14 then
-							return
-						end
-						flag14, flag10 = true, true
-						textLabel3.Text = "..."
-						textLabel3.TextColor3 = Color3.fromRGB(255, 255, 255)
-						local connection14
-						task.defer(function()
-							if not flag14 then
-								return
-							end
-							connection14 = UserInputService.InputBegan:Connect(function(input)
-								if not flag14 then
-									if connection14 then
-										connection14:Disconnect()
-										connection14 = nil
-									end
-									return
-								end
-								if
-									input.UserInputType ~= Enum.UserInputType.Keyboard
-									and not (tbl33 and tbl33[input.KeyCode])
-								then
-									return
-								end
-								if input.KeyCode == Enum.KeyCode.Escape then
-									flag14 = false
-									fn76()
-									laggerMainKeySync()
-									if connection14 then
-										connection14:Disconnect()
-										connection14 = nil
-									end
-									return
-								end
-								if input.KeyCode == Enum.KeyCode.Backspace or input.KeyCode == Enum.KeyCode.Delete then
-									Config._setLaggerKeybind(nil, true)
-									flag14 = false
-									fn76()
-									laggerMainKeySync()
-									if connection14 then
-										connection14:Disconnect()
-										connection14 = nil
-									end
-									return
-								end
-								Config._setLaggerKeybind({
-									type = tbl33 and tbl33[input.KeyCode] and "gamepad" or "key",
-									value = input.KeyCode,
-								}, true)
-								flag14 = false
-								fn76()
-								laggerMainKeySync()
-								if connection14 then
-									connection14:Disconnect()
-									connection14 = nil
-								end
-							end)
-						end)
-					end)
-				end
-				function _lagToggle()
-					local laggerFuncEnabled = not Config.laggerFuncEnabled
-					Config.laggerFuncEnabled = laggerFuncEnabled
-					if laggerFuncEnabled then
-						Config.Core.Call("Lagger", "Start")
-					else
-						Config.Core.Call("Lagger", "Stop")
-					end
-					fn34()
-				end
-			end
-			do
-				textLabel2 = Instance.new("Frame", frame6)
-				textLabel2.Size = UDim2.new(1, 0, 0, 40)
-				textLabel2.BorderSizePixel = 0
-				textLabel2.LayoutOrder = 2
-				textLabel2.BackgroundColor3 = glass.panel
-				textLabel2.BackgroundTransparency = 0.4
-				mkCorner(textLabel2, 10)
-				mkAnimStroke(textLabel2, 1)
-				uiListLayout2 = Instance.new("TextLabel", textLabel2)
-				uiListLayout2.Size = UDim2.new(1, -54, 1, 0)
-				uiListLayout2.Position = UDim2.new(0, 14, 0, 0)
-				uiListLayout2.BackgroundTransparency = 1
-				uiListLayout2.Text = "Lagger Mode"
-				uiListLayout2.TextColor3 = Color3.fromRGB(200, 200, 200)
-				uiListLayout2.Font = Enum.Font.GothamBold
-				uiListLayout2.TextSize = 12
-				uiListLayout2.TextXAlignment = Enum.TextXAlignment.Left
-				local tbl53, n20 =
-					{ LOW = 260, MID = 275, HIGH = 296 }, str == "HIGH" and 3 or (str == "MID" and 2 or 1)
-				Config._laggerMainModeSelect = makeChoiceControl(
-					textLabel2,
-					{ "LOW", "MID", "HIGH" },
-					n20,
-					function(arg, arg2)
-						n20 = arg2
-						Config._setLaggerPower(tbl53[arg], arg, true)
-					end
-				)
-			end
-			mkAccordion(frame6)
 			function setLagger(arg)
 				if arg then
 					Config.Core.Call("Lagger", "Start")
@@ -18505,13 +18008,6 @@ tbl31 = {
 							return Config.stealToggled == true or Config.speedToggled == true
 						end,
 					}, {
-						state = "lagger",
-						label = "Lagger",
-						key = "laggerFunc",
-						get = function()
-							return Config.laggerEnabled == true or Config.laggerFuncEnabled == true
-						end,
-					}, {
 						state = "instaResetEnabled",
 						label = "Insta Reset",
 						key = "instaReset",
@@ -18528,7 +18024,7 @@ tbl31 = {
 							end
 							return Config.autoLeftEnabled == true or Config.autoRightEnabled == true
 						end,
-					}, { state = "batTpEnabled", label = "Bat Tp", key = "batTp" }, { state = "batLaggerToggled", label = "Bat Lagger", key = "batLagger" }, { state = "dropEnabled", label = "Drop Brainrot", key = "drop" }, { state = "smartBatTpEnabled", label = "Smart BatTp", key = "smartBatTp" }, { state = "silentBatAim", label = "Silent Bat Aim", key = "silentBatAim" } }
+					}, { state = "batTpEnabled", label = "Bat Tp", key = "batTp" }, { state = "dropEnabled", label = "Drop Brainrot", key = "drop" }, { state = "smartBatTpEnabled", label = "Smart BatTp", key = "smartBatTp" }, { state = "silentBatAim", label = "Silent Bat Aim", key = "silentBatAim" } }
 				local function fn83(arg)
 					return arg.Name
 				end
@@ -19713,87 +19209,6 @@ tbl31 = {
 			end
 		end
 		function buildSettingsSection()
-			makeSectionHeader("Quick Menus")
-			makeGap(4)
-			do
-				local frame6 = Instance.new("Frame", v43)
-				frame6.Name = "BLYRAQuickMenus"
-				frame6.Size = UDim2.new(1, 0, 0, 82)
-				frame6.BackgroundTransparency = 1
-				frame6.LayoutOrder = LO()
-				local tbl53, tbl54 =
-					{}, { { key = "laggerFunc", label = "LAGGER" }, { key = "antibat", label = "ANTI BAT" } }
-				for i, v45 in ipairs(tbl54) do
-					local key, textButton3 = v45.key, Instance.new("TextButton", frame6)
-					textButton3.Name = key .. "MenuButton"
-					textButton3.Size = UDim2.new(0.5, -4, 1, 0)
-					textButton3.Position = UDim2.new((i - 1) * 0.5, (i - 1) * 4, 0, 0)
-					textButton3.BackgroundColor3 = glass.panelHover
-					textButton3.BackgroundTransparency = 0.12
-					textButton3.BorderSizePixel = 0
-					textButton3.Text = ""
-					textButton3.AutoButtonColor = false
-					textButton3.Selectable = true
-					mkCorner(textButton3, 12)
-					mkStroke(textButton3, glass.accent2, 0.35)
-					i = Instance.new("TextLabel", textButton3)
-					i.Size = UDim2.new(1, -16, 0, 28)
-					i.Position = UDim2.fromOffset(8, 12)
-					i.BackgroundTransparency = 1
-					i.Text = v45.label
-					i.TextColor3 = glass.text
-					i.Font = Enum.Font.GothamBold
-					i.TextSize = 17
-					v45 = Instance.new("TextLabel", textButton3)
-					v45.Size = UDim2.new(1, -16, 0, 20)
-					v45.Position = UDim2.fromOffset(8, 46)
-					v45.BackgroundTransparency = 1
-					v45.TextColor3 = glass.accent
-					v45.Font = Enum.Font.GothamBold
-					v45.TextSize = 11
-					tbl53[key] = { button = textButton3, action = v45 }
-					textButton3.Activated:Connect(function()
-						if flag10 then
-							return
-						end
-						local v46 = screenGui:FindFirstChild("BLYRA_Popup_" .. key)
-						if v46 then
-							savedPopupPositions[key] = v46.Position
-							pcall(saveUIPositions)
-							v46:Destroy()
-							for i2 = #Config._openPopups, 1, -1 do
-								if Config._openPopups[i2] == key then
-									table.remove(Config._openPopups, i2)
-								end
-							end
-							fn34()
-						elseif handlers[key] then
-							handlers[key]()
-						end
-					end)
-				end
-				local function fn82()
-					if not frame6.Parent then
-						return
-					end
-					for k, v45 in pairs(tbl53) do
-						local flag14 = screenGui:FindFirstChild("BLYRA_Popup_" .. k) ~= nil
-						v45.action.Text = flag14 and "CLOSE MENU" or "OPEN MENU"
-						v45.button.BackgroundColor3 = flag14 and glass.top or glass.panelHover
-					end
-				end
-				local connection14, connection15 =
-					screenGui.ChildAdded:Connect(function()
-						task.defer(fn82)
-					end), screenGui.ChildRemoved:Connect(function()
-						task.defer(fn82)
-					end)
-				frame6.Destroying:Connect(function()
-					connection14:Disconnect()
-					connection15:Disconnect()
-				end)
-				fn82()
-			end
 			makeGap(8)
 			makeSectionHeader("Safety")
 			makeGap(2)
@@ -19872,167 +19287,16 @@ tbl31 = {
 					end
 				end
 			end)
-			makeGap(8)
-			makeSectionHeader("On-Screen Information")
-			makeGap(2)
-			do
-				local frame6 = Instance.new("Frame", v43)
-				frame6.Size = UDim2.new(1, 0, 0, 44)
-				frame6.BorderSizePixel = 0
-				frame6.LayoutOrder = LO()
-				frame6.BackgroundColor3 = glass.panel
-				frame6.BackgroundTransparency = 0.3
-				mkCorner(frame6, 10)
-				mkAnimStroke(frame6, 1)
-				local textLabel2 = Instance.new("TextLabel", frame6)
-				textLabel2.Size = UDim2.new(1, -216, 1, 0)
-				textLabel2.Position = UDim2.fromOffset(14, 0)
-				textLabel2.BackgroundTransparency = 1
-				textLabel2.Text = "Billboard Size"
-				textLabel2.TextColor3 = glass.text
-				textLabel2.Font = Enum.Font.GothamBold
-				textLabel2.TextSize = 12
-				textLabel2.TextXAlignment = Enum.TextXAlignment.Left
-				textLabel2 = Instance.new("Frame", frame6)
-				textLabel2.Size = UDim2.fromOffset(194, 30)
-				textLabel2.Position = UDim2.new(1, -204, 0.5, -15)
-				textLabel2.BackgroundColor3 = glass.bg
-				textLabel2.BackgroundTransparency = 0.08
-				textLabel2.BorderSizePixel = 0
-				mkCorner(textLabel2, 9)
-				mkStroke(textLabel2, glass.border, 0.7)
-				frame6 = Instance.new("TextButton", textLabel2)
-				frame6.Size = UDim2.fromOffset(30, 30)
-				frame6.BackgroundTransparency = 1
-				frame6.Text = "<"
-				frame6.TextColor3 = glass.muted
-				frame6.Font = Enum.Font.GothamBold
-				frame6.TextSize = 15
-				frame6.ZIndex = 8
-				local textLabel3 = Instance.new("TextLabel", textLabel2)
-				textLabel3.Size = UDim2.new(1, -60, 1, 0)
-				textLabel3.Position = UDim2.fromOffset(30, 0)
-				textLabel3.BackgroundTransparency = 1
-				textLabel3.TextColor3 = glass.text
-				textLabel3.Font = Enum.Font.GothamBold
-				textLabel3.TextSize = 11
-				textLabel3.ZIndex = 8
-				local textButton3 = Instance.new("TextButton", textLabel2)
-				textButton3.Size = UDim2.fromOffset(30, 30)
-				textButton3.Position = UDim2.new(1, -30, 0, 0)
-				textButton3.BackgroundTransparency = 1
-				textButton3.Text = ">"
-				textButton3.TextColor3 = glass.muted
-				textButton3.Font = Enum.Font.GothamBold
-				textButton3.TextSize = 15
-				textButton3.ZIndex = 8
-				local tbl53, n21 = { 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2 }, 3
-				local function fn83()
-					local huge, n22 = math.huge, 1
-					for i, v45 in ipairs(tbl53) do
-						local n23 = math.abs(v45 - (tonumber(Config.billboardScale) or 1))
-						if n23 < huge then
-							huge, n22 = n23, i
-						end
-					end
-					return n22
-				end
-				local function fn84(arg, arg2)
-					n21 = (arg - 1) % #tbl53 + 1
-					arg = tbl53[n21]
-					Config._applyHeadDisplayScale(arg)
-					textLabel3.Text = tostring(math.floor(arg * 100 + 0.5)) .. "%"
-					if not arg2 then
-						fn34()
-					end
-				end
-				frame6.Activated:Connect(function()
-					fn84(n21 - 1, false)
-				end)
-				textButton3.Activated:Connect(function()
-					fn84(n21 + 1, false)
-				end)
-				function Config._syncBillboardScaleChoice()
-					n21 = fn83()
-					fn84(n21, true)
-				end
-				Config._syncBillboardScaleChoice()
-			end
-			makeGap(2)
-			do
-				local statsBarEnabled, frame6 = Config.statsBarEnabled ~= false, Instance.new("Frame", v43)
-				frame6.Size = UDim2.new(1, 0, 0, 40)
-				frame6.BorderSizePixel = 0
-				frame6.LayoutOrder = LO()
-				frame6.BackgroundColor3 = statsBarEnabled and glass.panelHover or glass.panel
-				frame6.BackgroundTransparency = 0.4
-				mkCorner(frame6, 10)
-				mkAnimStroke(frame6, 1)
-				local textLabel2 = Instance.new("TextLabel", frame6)
-				textLabel2.Size = UDim2.new(1, -54, 1, 0)
-				textLabel2.Position = UDim2.fromOffset(14, 0)
-				textLabel2.BackgroundTransparency = 1
-				textLabel2.Text = "Stats Bar"
-				textLabel2.TextColor3 = statsBarEnabled and glass.text or glass.muted
-				textLabel2.Font = Enum.Font.GothamBold
-				textLabel2.TextSize = 12
-				textLabel2.TextXAlignment = Enum.TextXAlignment.Left
-				local v45, v46 = mkSwitch(frame6, statsBarEnabled, function(statsBarEnabled2)
-					statsBarEnabled = statsBarEnabled2
-					Config.statsBarEnabled = statsBarEnabled2
-					textLabel2.TextColor3 = statsBarEnabled2 and glass.text or glass.muted
-					TweenService:Create(
-						frame6,
-						TweenInfo.new(0.15),
-						{ BackgroundColor3 = statsBarEnabled2 and glass.panelHover or glass.panel }
-					):Play()
-					Config.Core.Call("StatsBar", statsBarEnabled2 and "Start" or "Stop")
-					fn34()
-				end)
-				v45.Position = UDim2.new(1, -50, 0.5, -12)
-				function Config._syncStatsBarToggle(arg)
-					statsBarEnabled = arg ~= false
-					Config.statsBarEnabled = statsBarEnabled
-					v46(statsBarEnabled)
-					textLabel2.TextColor3 = statsBarEnabled and glass.text or glass.muted
-					frame6.BackgroundColor3 = statsBarEnabled and glass.panelHover or glass.panel
-					Config.Core.Call("StatsBar", statsBarEnabled and "Start" or "Stop")
-				end
-			end
+			Config.statsBarEnabled = false
+			Config.billboardScale = 0.75
+			pcall(Config._applyHeadDisplayScale, 0.75)
+			pcall(function()
+				Config.Core.Call("StatsBar", "Stop")
+			end)
 			makeGap(6)
 			makeSectionHeader("Steal Bar")
 			makeGap(2)
-			do
-				local frame6 = Instance.new("Frame", v43)
-				frame6.Size = UDim2.new(1, 0, 0, 40)
-				frame6.BorderSizePixel = 0
-				frame6.LayoutOrder = LO()
-				frame6.BackgroundColor3 = glass.panel
-				frame6.BackgroundTransparency = 0.4
-				mkCorner(frame6, 10)
-				mkAnimStroke(frame6, 1)
-				local textLabel2 = Instance.new("TextLabel", frame6)
-				textLabel2.Size = UDim2.new(1, -192, 1, 0)
-				textLabel2.Position = UDim2.fromOffset(14, 0)
-				textLabel2.BackgroundTransparency = 1
-				textLabel2.Text = "Steal Bar Style"
-				textLabel2.TextColor3 = Color3.fromRGB(200, 200, 200)
-				textLabel2.Font = Enum.Font.GothamBold
-				textLabel2.TextSize = 12
-				textLabel2.TextXAlignment = Enum.TextXAlignment.Left
-				local n21 = Config.stealBarStyle == "Compact" and 2 or 1
-				local v45 = makeChoiceControl(frame6, { "Classic", "Compact" }, n21, function(arg, arg2)
-					n21 = arg2
-					Config.stealBarStyle = arg == "Compact" and "Compact" or "Classic"
-					Config.Core.Call("StealBar", "Rebuild")
-					fn34()
-				end)
-				function Config._syncStealBarStyleChoice()
-					n21 = Config.stealBarStyle == "Compact" and 2 or 1
-					v45(n21, true)
-					Config.Core.Call("StealBar", "Rebuild")
-				end
-			end
+			Config.stealBarStyle = "Compact"
 			makeGap(2)
 			do
 				local frame6 = Instance.new("Frame", v43)
@@ -20427,15 +19691,11 @@ tbl31 = {
 						{ label = "Custom Carry", key = "customCarry", popupKey = nil },
 						{ label = "Lagger Carry", key = "laggerCarry", popupKey = nil },
 						{ label = "Bat Aimbot", key = "batAimbot", popupKey = nil },
-						{ label = "Bat Lagger", key = "batLagger", popupKey = nil },
 						{ label = "Bat Tp", key = "batTp", popupKey = "batTp" },
 						{ label = "Drop", key = "drop", popupKey = nil },
 						{ label = "TP Down", key = "tpDown", popupKey = nil },
-						{ label = "Lagger Function", key = "lagger", popupKey = "laggerFunc" },
-						{ label = "Anti Bat", key = "antibat", popupKey = "antibat" },
 						{ label = "Insta Reset", key = "instaReset", popupKey = nil },
 					}, {
-						batLagger = "batLagger",
 						batTp = "batTp",
 						carrySpeed = "carry",
 						customCarry = "customCarry",
@@ -20443,8 +19703,6 @@ tbl31 = {
 						batAimbot = "aimbot",
 						drop = "drop",
 						tpDown = "tpDown",
-						lagger = "laggerFunc",
-						antibat = "antibat",
 						instaReset = "instaReset",
 					}
 				local function fn83()
@@ -20837,17 +20095,8 @@ tbl31 = {
 					end
 					fn34()
 				end
-				function tbl4.batLagger()
-					fn89("batLagger", "BAT\nLAGGER")
-				end
 				function tbl4.batTp()
 					fn89("batTp", "BAT\nTP")
-				end
-				function tbl4.lagger()
-					fn89("lagger", "LAG")
-				end
-				function tbl4.antibat()
-					fn89("antibat", "ANTI\nBAT")
 				end
 				function tbl4.instaReset()
 					fn89("instaReset", "RESET")
@@ -24728,6 +23977,7 @@ tbl31 = {
 			end)()
 		end
 		function v3()
+			do return end
 			if thread2 then
 				return
 			end
@@ -29835,14 +29085,6 @@ tbl31 = {
 end)()
 task.spawn(function()
 	task.wait(0.2)
-	if tbl30.laggerFunc then
-		Config._setLaggerKeybind(tbl30.laggerFunc, false)
-	elseif tbl11.laggerFunc then
-		Config._setLaggerKeybind({ type = "key", value = tbl11.laggerFunc }, false)
-	end
-	if tbl30.antibat then
-		Config._setAntiBatKeybind(tbl30.antibat, false)
-	end
 	for i, openPopup in ipairs(Config._openPopups) do
 		if handlers[openPopup] then
 			task.wait()
@@ -30474,7 +29716,7 @@ end)();
 			return fn23()
 		end,
 		SetStyle = function(arg)
-			Config.stealBarStyle = arg == "Compact" and "Compact" or "Classic"
+			Config.stealBarStyle = "Compact"
 			if Config.autoStealEnabled then
 				return fn23()
 			end
@@ -30723,9 +29965,6 @@ Config._buildQuickGui = function()
 		{ key = "lagger", text = "LAGGER\nCARRY" },
 		{ key = "aimbot", text = "BAT\nAIMBOT" },
 		{ key = "batTp", text = "BAT\nTP" },
-		{ key = "batLagger", text = "BAT\nLAGGER" },
-		{ key = "laggerFunc", text = "LAGGER\nFUNC" },
-		{ key = "antibat", text = "ANTI\nBAT" },
 		{ key = "instaReset", text = "INSTA\nRESET" },
 	}
 	n23 = math.floor(

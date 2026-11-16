@@ -9860,6 +9860,31 @@ tbl31 = {
 		frame.Active = true
 		frame.ClipsDescendants = false
 		frame.Visible = false
+		do
+			local skip = { "Glow", "Shadow", "Overlay", "Ripple", "Shine", "Blur" }
+			local function makeOpaque(obj)
+				if not obj:IsA("GuiObject") then
+					return
+				end
+				for _, key in ipairs(skip) do
+					if string.find(obj.Name, key, 1, true) then
+						return
+					end
+				end
+				local function clamp()
+					local t = obj.BackgroundTransparency
+					if t > 0 and t < 0.95 then
+						obj.BackgroundTransparency = 0
+					end
+				end
+				clamp()
+				obj:GetPropertyChangedSignal("BackgroundTransparency"):Connect(clamp)
+			end
+			for _, d in ipairs(frame:GetDescendants()) do
+				makeOpaque(d)
+			end
+			frame.DescendantAdded:Connect(makeOpaque)
+		end
 		Config._startupGuiReady = false
 		do
 			local imageLabel = Instance.new("ImageLabel", frame)
@@ -9966,11 +9991,7 @@ tbl31 = {
 			ColorSequenceKeypoint.new(0.55, glass.bg),
 			ColorSequenceKeypoint.new(1, glass.panel),
 		})
-		character.Transparency = NumberSequence.new({
-			NumberSequenceKeypoint.new(0, 0.08),
-			NumberSequenceKeypoint.new(0.55, 0.28),
-			NumberSequenceKeypoint.new(1, 0.12),
-		})
+		character.Transparency = NumberSequence.new(0)
 		character = Instance.new("UIStroke", frame)
 		character.Color = Color3.fromRGB(255, 255, 255)
 		character.Thickness = 1.2
@@ -10012,12 +10033,13 @@ tbl31 = {
 		uiGradient.Size = UDim2.new(1, 0, 0, 68)
 		uiGradient.Position = UDim2.new(0, 0, 0, 0)
 		uiGradient.BackgroundColor3 = glass.top
-		uiGradient.BackgroundTransparency = 0.12
+		uiGradient.BackgroundTransparency = 0
 		uiGradient.BorderSizePixel = 0
 		uiGradient.Active = true
 		uiGradient.ZIndex = 10
 		mkCorner(uiGradient, 18)
 		do
+			local logoId = "rbxassetid://112454424363488"
 			local topLogo = Instance.new("ImageLabel")
 			topLogo.Name = "TopCenterLogo"
 			topLogo.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -10025,10 +10047,39 @@ tbl31 = {
 			topLogo.Size = UDim2.fromOffset(58, 58)
 			topLogo.BackgroundTransparency = 1
 			topLogo.BorderSizePixel = 0
-			topLogo.Image = "rbxassetid://112454424363488"
+			topLogo.Image = logoId
+			topLogo.ImageTransparency = 0
 			topLogo.ScaleType = Enum.ScaleType.Fit
-			topLogo.ZIndex = 12
+			topLogo.ZIndex = 50
 			topLogo.Parent = uiGradient
+			task.spawn(function()
+				-- If the ID is a Decal asset, resolve it to the real image id
+				local ok, res = pcall(function()
+					return game:GetObjects(logoId)
+				end)
+				if ok and type(res) == "table" and res[1] then
+					local o = res[1]
+					local tex
+					pcall(function()
+						if o:IsA("Decal") or o:IsA("Texture") then
+							tex = o.Texture
+						elseif o:IsA("ImageLabel") or o:IsA("ImageButton") then
+							tex = o.Image
+						else
+							local d = o:FindFirstChildWhichIsA("Decal", true) or o:FindFirstChildWhichIsA("Texture", true)
+							tex = d and d.Texture
+						end
+					end)
+					if tex and tex ~= "" and topLogo.Parent then
+						topLogo.Image = tex
+					end
+					pcall(function() o:Destroy() end)
+				end
+				task.wait(6)
+				if topLogo.Parent and not topLogo.IsLoaded then
+					warn("[logo] image did not load: " .. tostring(topLogo.Image))
+				end
+			end)
 		end
 		local uiGradient2 = Instance.new("UIGradient", uiGradient)
 		uiGradient2.Name = "ModernTopGradient"

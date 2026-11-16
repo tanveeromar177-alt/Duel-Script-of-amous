@@ -4680,7 +4680,7 @@ local function fn39()
 	if v23.autoPlayMode ~= nil then
 		Config.autoPlayMode = v23.autoPlayMode
 	end
-	Config.autoPlayVersion = v23.autoPlayVersion == "V1" and "V1" or "V2"
+	Config.autoPlayVersion = "V2"
 	if v23.batCounterMode ~= nil then
 		Config.batCounterMode = v23.batCounterMode == "TP Follow" and "TP Follow" or "Classic"
 	end
@@ -11175,6 +11175,96 @@ tbl31 = {
 				fn77(flag10)
 			end
 		end
+		function mkDropdown(arg)
+			local rows = {}
+			for i, child in ipairs(arg:GetChildren()) do
+				if child:IsA("Frame") then
+					table.insert(rows, child)
+				end
+			end
+			table.sort(rows, function(a, b)
+				return a.LayoutOrder < b.LayoutOrder
+			end)
+			local header = rows[1]
+			if not header then
+				return
+			end
+			local leftEdge = 0
+			for i, child in ipairs(header:GetChildren()) do
+				if child:IsA("GuiObject") and child.Position.X.Scale == 1 and child.Size.X.Scale == 0 then
+					local left = child.Position.X.Offset - child.AnchorPoint.X * child.Size.X.Offset
+					if left < leftEdge then
+						leftEdge = left
+					end
+				end
+			end
+			if leftEdge == 0 then
+				leftEdge = -10
+			end
+			for i = 2, #rows, 1 do
+				local row = rows[i]
+				local group = row:FindFirstChild("ModernChoiceGroup")
+				local buttons = {}
+				if group then
+					for j, child in ipairs(group:GetChildren()) do
+						if child:IsA("TextButton") then
+							table.insert(buttons, child)
+						end
+					end
+					table.sort(buttons, function(a, b)
+						return a.Position.X.Scale < b.Position.X.Scale
+					end)
+				end
+				if group and #buttons > 0 then
+					for j, child in ipairs(row:GetChildren()) do
+						if child:IsA("TextLabel") then
+							child:Destroy()
+						end
+					end
+					local itemHeight, itemGap = 28, 2
+					local groupHeight = 8 + #buttons * itemHeight + (#buttons - 1) * itemGap
+					row.Size = UDim2.new(1, 0, 0, groupHeight + 12)
+					row.Visible = false
+					group.Position = UDim2.new(0, 10, 0, 6)
+					group.Size = UDim2.new(1, -20, 0, groupHeight)
+					for j, button in ipairs(buttons) do
+						button.Size = UDim2.new(1, -8, 0, itemHeight)
+						button.Position = UDim2.new(0, 4, 0, 4 + (j - 1) * (itemHeight + itemGap))
+						button.TextSize = 11
+					end
+					local dropdown = Instance.new("TextButton", header)
+					dropdown.Name = "ChoiceDropdown"
+					dropdown.Size = UDim2.fromOffset(88, 26)
+					dropdown.AnchorPoint = Vector2.new(1, 0.5)
+					dropdown.Position = UDim2.new(1, leftEdge - 8, 0.5, 0)
+					dropdown.BackgroundColor3 = glass.panelHover
+					dropdown.BackgroundTransparency = 0.3
+					dropdown.BorderSizePixel = 0
+					dropdown.AutoButtonColor = false
+					dropdown.TextColor3 = glass.text
+					dropdown.Font = Enum.Font.GothamBold
+					dropdown.TextSize = 11
+					dropdown.ZIndex = 9
+					mkCorner(dropdown, 8)
+					mkStroke(dropdown, glass.border, 0.7).Transparency = 0.6
+					leftEdge = leftEdge - 8 - 88
+					local function refresh()
+						local selected = buttons[group:GetAttribute("ChoiceIndex") or 1]
+						dropdown.Text = (selected and selected.Text or "") .. " v"
+					end
+					refresh()
+					group:GetAttributeChangedSignal("ChoiceIndex"):Connect(refresh)
+					dropdown.MouseButton1Click:Connect(function()
+						row.Visible = not row.Visible
+					end)
+					for j, button in ipairs(buttons) do
+						button.MouseButton1Click:Connect(function()
+							row.Visible = false
+						end)
+					end
+				end
+			end
+		end
 		function makeSpeedRow(text, text2, arg, arg2, arg3, arg4, arg5, arg6, arg7)
 			local frame6 = Instance.new("Frame", v43)
 			frame6.Size = UDim2.new(1, 0, 0, 62)
@@ -12043,6 +12133,7 @@ tbl31 = {
 			mkStroke(frame6, glass.border, 0.75)
 			local tbl49, tbl50, n19 = {}, {}, 1 / #arg2
 			local function fn77()
+				frame6:SetAttribute("ChoiceIndex", arg3)
 				for i, v44 in ipairs(tbl49) do
 					local enabled = i == arg3
 					v44.BackgroundColor3 = enabled and glass.accent or glass.panel
@@ -12672,30 +12763,6 @@ tbl31 = {
 				textLabel2.Activated:Connect(fn81)
 			end
 			do
-				makeGap(1)
-				local v45 = Config._makeSettingsRow(Frame)
-				local textLabel2 = Instance.new("TextLabel", v45)
-				textLabel2.Size = UDim2.new(1, -192, 1, 0)
-				textLabel2.Position = UDim2.new(0, 14, 0, 0)
-				textLabel2.BackgroundTransparency = 1
-				textLabel2.Text = "Auto Play Version"
-				textLabel2.TextColor3 = Color3.fromRGB(200, 200, 200)
-				textLabel2.Font = Enum.Font.GothamBold
-				textLabel2.TextSize = 12
-				textLabel2.TextXAlignment = Enum.TextXAlignment.Left
-				local n20 = Config.autoPlayVersion == "V1" and 1 or 2
-				makeChoiceControl(v45, { "V1", "V2" }, n20, function(autoPlayVersion, arg)
-					local autoPlayVersion2 = Config.autoPlayVersion
-					n20 = arg
-					Config.autoPlayVersion = autoPlayVersion
-					arg = autoPlayVersion2 == "V2" and autoPlayVersion == "V1"
-					if arg then
-						flag13 = false
-					end
-					fn34()
-				end)
-			end
-			do
 				local v45 = Config._makeSettingsRow(Frame)
 				local textLabel2 = Instance.new("TextLabel", v45)
 				textLabel2.Size = UDim2.new(1, -192, 1, 0)
@@ -12713,7 +12780,7 @@ tbl31 = {
 					fn34()
 				end)
 			end
-			mkAccordion(Frame)
+			mkDropdown(Frame)
 			makeGap(1)
 			Frame = fn9("Frame", v43, {
 				Size = UDim2.new(1, 0, 0, 0),
@@ -13431,7 +13498,7 @@ tbl31 = {
 					v45(Config.infJumpMode == "hold" and 2 or 1)
 				end
 			end
-			mkAccordion(textLabel4)
+			mkDropdown(textLabel4)
 			Config.antiCollisionEnabled = true
 			function setAntiCollision()
 				Config.antiCollisionEnabled = true
@@ -14448,7 +14515,7 @@ tbl31 = {
 					v45(Config.batCounterMode == "TP Follow" and 2 or 1)
 				end
 			end
-			mkAccordion(frame6)
+			mkDropdown(frame6)
 			local textLabel2
 			makeGap(2)
 			uiListLayout2 = Instance.new("Frame", v43)
@@ -15404,7 +15471,7 @@ tbl31 = {
 					v45(n20, true)
 				end
 			end
-			mkAccordion(uiListLayout2)
+			mkDropdown(uiListLayout2)
 			function setDropBrainrot(arg)
 				if arg then
 					if Config.autoLeftEnabled then
@@ -22662,7 +22729,7 @@ tbl31 = {
 					fn34()
 				end)
 			end
-			mkAccordion(Frame)
+			mkDropdown(Frame)
 			makeGap(2)
 			do
 				local medusaCounterEnabled, frame6 = Config.medusaCounterEnabled, Instance.new("Frame", v43)

@@ -5600,6 +5600,7 @@ Config._setLaggerKeybind = function(laggerFunc, arg)
 	end
 end
 Config._setAntiBatKeybind = function(antibat, arg)
+	antibat = nil
 	antibat = if antibat and typeof(antibat) == "EnumItem"
 		then { type = tbl33 and tbl33[antibat] and "gamepad" or "key", value = antibat }
 		else if antibat and type(antibat) ~= "table" then nil else antibat
@@ -10441,8 +10442,8 @@ tbl31 = {
 			end
 		end)
 		local tbl45, tbl46, tbl47 =
-			{ "Main", "Other", "Visuals", "Config" },
-			{ Main = "MAIN", Other = "COMBAT", Visuals = "VISUALS", Config = "CONFIG" },
+			{ "Main", "Other", "Visuals", "Config", "Keys" },
+			{ Main = "MAIN", Other = "COMBAT", Visuals = "VISUALS", Config = "CONFIG", Keys = "KEYS" },
 			{}
 		frame3, frame2 = 1 / #tbl45, Instance.new("Frame", character)
 		frame2.Name = "BottomNavigation"
@@ -11595,7 +11596,8 @@ tbl31 = {
 			text2.ZIndex = 11
 			text2.BorderSizePixel = 0
 			text2.Selectable = true
-			text2.Activated:Connect(fn78)
+			text2.Visible = false
+frame9.Visible = false
 			text = Instance.new("TextButton", frame6)
 			text.Size = UDim2.new(1, 0, 1, 0)
 			text.BackgroundTransparency = 1
@@ -11782,6 +11784,8 @@ tbl31 = {
 			end
 		end
 		function Config._bindSimpleKey(arg, arg2, arg3, arg4)
+	if arg2 then arg2.Visible = false end
+	do return end
 			local flag11 = false
 			local function fn77()
 				arg3.Text = tbl11[arg4] and (getKeyDisplayName(tbl11[arg4])) or "+"
@@ -11858,6 +11862,7 @@ tbl31 = {
 			end)
 		end
 		function makeKeybindRow(text, arg, arg2, arg3)
+	if not Config._keysTabBuild then return nil end
 			local frame6 = Instance.new("Frame", v43)
 			frame6.Size = UDim2.new(1, 0, 0, 44)
 			frame6.BackgroundTransparency = 1
@@ -14099,6 +14104,8 @@ tbl31 = {
 					aimbot.BorderSizePixel = 0
 					aimbot.Active = true
 					aimbot.Selectable = true
+aimbot.Visible = false
+uiListLayout.Visible = false
 					aimbot.Activated:Connect(function()
 						if flag14 then
 							return
@@ -14898,6 +14905,8 @@ tbl31 = {
 			textLabel3.ZIndex = 7
 			do
 				local flag14, textButton3 = false, Instance.new("TextButton", v8)
+textButton3.Visible = false
+frame6.Visible = false
 				textButton3.Size = frame6.Size
 				textButton3.Position = frame6.Position
 				textButton3.BackgroundTransparency = 1
@@ -20318,6 +20327,7 @@ tbl31 = {
 								frame15.BorderSizePixel = 0
 								frame15.ZIndex = 61
 								mkCorner(frame15, 7)
+frame15.Visible = false
 								mkStroke(frame15, glass.border, 0.55)
 								local frame16 = Instance.new("Frame", frame15)
 								frame16.AnchorPoint = Vector2.new(0, 0.5)
@@ -21085,6 +21095,7 @@ tbl31 = {
 							frame8.BorderSizePixel = 0
 							frame8.ZIndex = 61
 							mkCorner(frame8, 19)
+frame8.Visible = false
 							if popupKey2 == "laggerFunc" then
 								popupKey, size = mkStroke, glass.border
 								popupKey(frame8, size, 0.48)
@@ -21403,6 +21414,7 @@ tbl31 = {
 							laggerPopupToggleSync.ZIndex = 63
 							laggerPopupToggleSync.BorderSizePixel = 0
 							laggerPopupToggleSync.Selectable = true
+laggerPopupToggleSync.Visible = false
 							laggerPopupToggleSync.Activated:Connect(function()
 								if flag15 then
 									fn95()
@@ -21974,7 +21986,7 @@ tbl31 = {
 			makeGap(2)
 			buildSpeedSection()
 			makeGap(6)
-			makeSectionHeader("Speed Keys")
+			makeGap(1)
 			makeGap(2)
 			makeKeybindRow("Carry Speed Key", tbl11.speed, function(speed)
 				tbl11.speed = speed
@@ -22243,11 +22255,117 @@ tbl31 = {
 			buildMiscVisualFeatures()
 		end)
 		RunService.Heartbeat:Wait()
-		buildPage("Config", function()
+		Config._keysTabBuild = true
+buildPage("Keys", function()
+	makeGap(2)
+	local rows = {}
+	local function reg(btn, get)
+		if btn then rows[#rows + 1] = { btn = btn, get = get } end
+		return btn
+	end
+	local function refreshAll()
+		for _, r in ipairs(rows) do
+			if r.btn and r.btn.Parent then
+				local ok, v = pcall(r.get)
+				r.btn.Text = (ok and v) and getKeyDisplayName(v) or "---"
+			end
+		end
+	end
+	local function later() task.defer(refreshAll) end
+
+	-- tbl11 based binds
+	local function bind11(label, id, after)
+		reg(makeKeybindRow(label, tbl11[id], function(k)
+			tbl11[id] = k
+			if k then fn37(tbl33[k] and "gamepad" or "key", k, id) end
+			if after then after(k) end
+			fn34(); later()
+		end, nil), function() return tbl11[id] end)
+	end
+	-- tbl12 (speed mode) binds
+	local function bind12(label, id)
+		reg(makeKeybindRow(label, tbl12[id] and tbl12[id].value or nil, function(k)
+			if k then
+				local t = tbl33[k] and "gamepad" or "key"
+				tbl12[id] = { type = t, value = k }
+				fn37(t, k, nil, id)
+			else
+				tbl12[id] = nil
+			end
+			if id == "Lagger" then Config._speedKeyLaggerCleared = (k == nil) end
+			fn34(); later()
+		end, nil), function() local v = tbl12[id]; return v and v.value end)
+	end
+
+	makeSectionHeader("Speed")
+	makeGap(2)
+	bind12("Normal Speed Key", "Normal")
+	bind12("Custom Speed Key", "Carry")
+	bind12("Lagger Speed Key", "Lagger")
+	bind11("Carry Speed Key", "speed", function(k) Config._speedKeyCleared = (k == nil) end)
+	bind11("Lagger Carry Speed Key", "lagger")
+	makeGap(6)
+
+	makeSectionHeader("Auto")
+	makeGap(2)
+	bind11("Auto Play", "autoPlay")
+	bind11("TP Down", "tpDown")
+	makeGap(6)
+
+	makeSectionHeader("Combat")
+	makeGap(2)
+	bind11("Bat Aimbot", "aimbot")
+	bind11("Bat TP", "batTp")
+	bind11("Drop Brainrot", "drop")
+	reg(makeKeybindRow("Insta Reset", tbl30.instaReset and tbl30.instaReset.value, function(k)
+		if k then
+			local t = tbl33[k] and "gamepad" or "key"
+			tbl30.instaReset = {
+				type = t, value = k,
+				_activateFn = function() pcall(instareset) end,
+				_deactivateFn = function() end,
+			}
+			fn37(t, k, "instaReset")
+		else
+			tbl30.instaReset = nil
+		end
+		later()
+	end, "instaReset"), function() return tbl30.instaReset and tbl30.instaReset.value end)
+	makeGap(6)
+
+	makeSectionHeader("Utility")
+	makeGap(2)
+	reg(makeKeybindRow("Lagger", (tbl30.laggerFunc and tbl30.laggerFunc.value) or tbl11.laggerFunc, function(k)
+		Config._setLaggerKeybind(k and { type = tbl33[k] and "gamepad" or "key", value = k } or nil, false)
+		later()
+	end, "laggerFunc"), function() return (tbl30.laggerFunc and tbl30.laggerFunc.value) or tbl11.laggerFunc end)
+	makeGap(6)
+
+	makeSectionHeader("Interface")
+	makeGap(2)
+	bind11("Hide GUI", "guiHide")
+	makeGap(6)
+
+	local hint = Instance.new("TextLabel", v43)
+	hint.Size = UDim2.new(1, 0, 0, 36)
+	hint.BackgroundTransparency = 1
+	hint.LayoutOrder = LO()
+	hint.Text = "Click a slot, then press a keyboard or controller button. ESC cancels; X or Backspace clears."
+	hint.TextColor3 = Color3.fromRGB(100, 100, 100)
+	hint.Font = Enum.Font.Gotham
+	hint.TextSize = 10
+	hint.TextWrapped = true
+	hint.TextXAlignment = Enum.TextXAlignment.Left
+	makeGap(10)
+	task.defer(refreshAll)
+end)
+Config._keysTabBuild = false
+RunService.Heartbeat:Wait()
+buildPage("Config", function()
 			makeGap(2)
 			buildSettingsSection()
 			makeGap(8)
-			makeSectionHeader("Interface Keys")
+			makeGap(1)
 			makeGap(2)
 			makeKeybindRow("Hide GUI", tbl11.guiHide, function(guiHide)
 				tbl11.guiHide = guiHide

@@ -10017,6 +10017,19 @@ tbl31 = {
 		uiGradient.Active = true
 		uiGradient.ZIndex = 10
 		mkCorner(uiGradient, 18)
+		do
+			local topLogo = Instance.new("ImageLabel")
+			topLogo.Name = "TopCenterLogo"
+			topLogo.AnchorPoint = Vector2.new(0.5, 0.5)
+			topLogo.Position = UDim2.new(0.5, 0, 0.5, 0)
+			topLogo.Size = UDim2.fromOffset(58, 58)
+			topLogo.BackgroundTransparency = 1
+			topLogo.BorderSizePixel = 0
+			topLogo.Image = "rbxassetid://112454424363488"
+			topLogo.ScaleType = Enum.ScaleType.Fit
+			topLogo.ZIndex = 12
+			topLogo.Parent = uiGradient
+		end
 		local uiGradient2 = Instance.new("UIGradient", uiGradient)
 		uiGradient2.Name = "ModernTopGradient"
 		uiGradient2.Rotation = 12

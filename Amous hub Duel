@@ -11098,6 +11098,34 @@ tbl31 = {
 					end
 				end
 				tbl49[1].LayoutOrder = -200
+				uiListLayout = Instance.new("TextButton", tbl49[1])
+				uiListLayout.Name = "SubcategoryToggle"
+				uiListLayout.Size = UDim2.fromOffset(22, 22)
+				uiListLayout.Position = UDim2.new(0, 10, 0.5, -11)
+				uiListLayout.BackgroundColor3 = glass.bg
+				uiListLayout.BackgroundTransparency = 0.18
+				uiListLayout.BorderSizePixel = 0
+				uiListLayout.Text = ""
+				uiListLayout.ZIndex = 20
+				mkCorner(uiListLayout, 7)
+				mkStroke(uiListLayout, glass.border, 0.7)
+				local frame7 = Instance.new("Frame", uiListLayout)
+				frame7.Size = UDim2.fromOffset(7, 2)
+				frame7.Position = UDim2.fromOffset(6, 7)
+				frame7.Rotation = 45
+				frame7.BackgroundColor3 = glass.accent
+				frame7.BorderSizePixel = 0
+				local clone = frame7:Clone()
+				clone.Position = UDim2.fromOffset(6, 12)
+				clone.Rotation = -45
+				clone.Parent = uiListLayout
+				frame7 = tbl49[1]:FindFirstChildOfClass("TextLabel")
+				if frame7 and frame7.Position.X.Offset < 36 then
+					clone = frame7.Position.X.Offset + frame7.Size.X.Offset
+					frame7.Position =
+						UDim2.new(frame7.Position.X.Scale, 38, frame7.Position.Y.Scale, frame7.Position.Y.Offset)
+					frame7.Size = UDim2.new(frame7.Size.X.Scale, clone - 38, frame7.Size.Y.Scale, frame7.Size.Y.Offset)
+				end
 			end
 			local function fn76()
 				local n19, n20 = 0, 0
@@ -11123,8 +11151,8 @@ tbl31 = {
 					):Play()
 				end
 			end
-			fn77(true)
-			local flag10, subcategoryToggle = true, #tbl49 > 0 and (tbl49[1]:FindFirstChild("SubcategoryToggle"))
+			fn77(false)
+			local flag10, subcategoryToggle = false, #tbl49 > 0 and (tbl49[1]:FindFirstChild("SubcategoryToggle"))
 			if subcategoryToggle then
 				subcategoryToggle.Activated:Connect(function()
 					flag10 = not flag10
@@ -11133,6 +11161,9 @@ tbl31 = {
 			end
 			return function(arg2)
 				local kind = type(arg2)
+				if kind == "boolean" then
+					flag10 = arg2
+				end
 				fn77(flag10)
 			end
 		end
@@ -30457,4 +30488,4 @@ Config.carrySpeed = Config.carrySpeed or 16
 
 -- Signal to any keysystem/loader that the hub finished bootstrapping.
 -- (Real core would set this after decrypting the LPH buffer.)
-_G.BLYRA_LOADED = trueby
+_G.BLYRA_LOADED = true

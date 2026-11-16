@@ -4436,7 +4436,7 @@ local function fn39()
 		Config.musicCurrentSong = v23.musicCurrentSong
 	end
 	if v23.musicSoundEnabled ~= nil then
-		Config.musicSoundEnabled = v23.musicSoundEnabled
+		Config.musicSoundEnabled = false
 	end
 	Config.skipIntroConfigured = v23.skipIntroConfigured == true
 	Config.skipIntro = Config.skipIntroConfigured and v23.skipIntro == true
@@ -5042,14 +5042,6 @@ local function fn40(arg)
 			Config.autoTPDownHeight = math.clamp(math.floor(tonumber(arg.autoTPDownHeight)), 1, 100000)
 			if Config._syncAutoTPDownHeightBox then
 				Config._syncAutoTPDownHeightBox()
-			end
-		end
-		if arg.musicSoundEnabled ~= nil then
-			Config.musicSoundEnabled = arg.musicSoundEnabled
-			if arg.musicSoundEnabled then
-				v6()
-			else
-				v7()
 			end
 		end
 		if arg.skipIntroConfigured ~= nil then
@@ -11106,34 +11098,6 @@ tbl31 = {
 					end
 				end
 				tbl49[1].LayoutOrder = -200
-				uiListLayout = Instance.new("TextButton", tbl49[1])
-				uiListLayout.Name = "SubcategoryToggle"
-				uiListLayout.Size = UDim2.fromOffset(22, 22)
-				uiListLayout.Position = UDim2.new(0, 10, 0.5, -11)
-				uiListLayout.BackgroundColor3 = glass.bg
-				uiListLayout.BackgroundTransparency = 0.18
-				uiListLayout.BorderSizePixel = 0
-				uiListLayout.Text = ""
-				uiListLayout.ZIndex = 20
-				mkCorner(uiListLayout, 7)
-				mkStroke(uiListLayout, glass.border, 0.7)
-				local frame7 = Instance.new("Frame", uiListLayout)
-				frame7.Size = UDim2.fromOffset(7, 2)
-				frame7.Position = UDim2.fromOffset(6, 7)
-				frame7.Rotation = 45
-				frame7.BackgroundColor3 = glass.accent
-				frame7.BorderSizePixel = 0
-				local clone = frame7:Clone()
-				clone.Position = UDim2.fromOffset(6, 12)
-				clone.Rotation = -45
-				clone.Parent = uiListLayout
-				frame7 = tbl49[1]:FindFirstChildOfClass("TextLabel")
-				if frame7 and frame7.Position.X.Offset < 36 then
-					clone = frame7.Position.X.Offset + frame7.Size.X.Offset
-					frame7.Position =
-						UDim2.new(frame7.Position.X.Scale, 38, frame7.Position.Y.Scale, frame7.Position.Y.Offset)
-					frame7.Size = UDim2.new(frame7.Size.X.Scale, clone - 38, frame7.Size.Y.Scale, frame7.Size.Y.Offset)
-				end
 			end
 			local function fn76()
 				local n19, n20 = 0, 0
@@ -11159,8 +11123,8 @@ tbl31 = {
 					):Play()
 				end
 			end
-			fn77(false)
-			local flag10, subcategoryToggle = false, #tbl49 > 0 and (tbl49[1]:FindFirstChild("SubcategoryToggle"))
+			fn77(true)
+			local flag10, subcategoryToggle = true, #tbl49 > 0 and (tbl49[1]:FindFirstChild("SubcategoryToggle"))
 			if subcategoryToggle then
 				subcategoryToggle.Activated:Connect(function()
 					flag10 = not flag10
@@ -11169,9 +11133,6 @@ tbl31 = {
 			end
 			return function(arg2)
 				local kind = type(arg2)
-				if kind == "boolean" then
-					flag10 = arg2
-				end
 				fn77(flag10)
 			end
 		end
@@ -12528,6 +12489,7 @@ tbl31 = {
 			scrollingFrame.ScrollBarImageColor3 = glass.accent2
 			scrollingFrame.ScrollBarImageTransparency = 0.28
 			scrollingFrame.ElasticBehavior = Enum.ElasticBehavior.Always
+			scrollingFrame.ScrollingDirection = Enum.ScrollingDirection.Y
 			scrollingFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
 			scrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
 			local uiListLayout = Instance.new("UIListLayout", scrollingFrame)
@@ -22800,55 +22762,6 @@ tbl31 = {
 		buildPage("Visuals", function()
 			makeGap(2)
 			buildMiscVisualFeatures()
-			makeGap(6)
-			makeSectionHeader("Music Sound")
-			makeGap(2)
-			do
-				local musicSoundEnabled, frame6 = Config.musicSoundEnabled, Instance.new("Frame", v43)
-				frame6.Size = UDim2.new(1, 0, 0, 40)
-				frame6.BorderSizePixel = 0
-				frame6.LayoutOrder = LO()
-				frame6.BackgroundColor3 = musicSoundEnabled and glass.panelHover or glass.panel
-				frame6.BackgroundTransparency = 0.4
-				mkCorner(frame6, 10)
-				mkAnimStroke(frame6, 1)
-				local textLabel2 = Instance.new("TextLabel", frame6)
-				textLabel2.Size = UDim2.new(0, 110, 1, 0)
-				textLabel2.Position = UDim2.new(0, 14, 0, 0)
-				textLabel2.BackgroundTransparency = 1
-				textLabel2.Text = "Music List"
-				textLabel2.TextColor3 = musicSoundEnabled and glass.text or glass.muted
-				textLabel2.Font = Enum.Font.GothamBold
-				textLabel2.TextSize = 12
-				textLabel2.TextXAlignment = Enum.TextXAlignment.Left
-				local function fn82(arg)
-					textLabel2.TextColor3 = arg and glass.text or glass.muted
-					TweenService
-						:Create(
-							frame6,
-							TweenInfo.new(0.15),
-							{ BackgroundColor3 = arg and glass.panelHover or glass.panel }
-						)
-						:Play()
-				end
-				local v45, v46 = mkSwitch(frame6, musicSoundEnabled, function(musicSoundEnabled2)
-					musicSoundEnabled = musicSoundEnabled2
-					Config.musicSoundEnabled = musicSoundEnabled2
-					fn82(musicSoundEnabled2)
-					if musicSoundEnabled2 then
-						pcall(v6)
-					else
-						pcall(v7)
-					end
-					fn34()
-				end)
-				v45.Position = UDim2.new(1, -50, 0.5, -12)
-				function setMusicSound(arg)
-					musicSoundEnabled = arg
-					v46(arg)
-					fn82(arg)
-				end
-			end
 		end)
 		RunService.Heartbeat:Wait()
 		buildPage("Config", function()

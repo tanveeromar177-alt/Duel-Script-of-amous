@@ -361,11 +361,9 @@ LAGGER_SPEED = 15
 LAGGER_CARRY_SPEED = 24.5
 MEDUSA_COOLDOWN = 25
 BAT_AIMBOT_SPEED = 58
-BYPASS_AIMBOT_SPEED = 60
 MOBILE_PANEL_WIDTH = 128
 MOBILE_PANEL_HEIGHT = 294
 CONFIG_FILE = "FictionHub.json"
-BAT_V2_HIT_DIST = 4.5
 _isDraggingButton = false
 
 backgroundIndex = 1
@@ -1467,31 +1465,15 @@ tryardHeartbeatConn = nil
 animSelectorLabel = nil
 
 -- ═══════════════════════════════════════════════════════════════
--- BAT BYPASS (antes Anti Bypass Aimbot) — Persecución con predicción de ping
+-- BAT AIMBOT (Bubble Hub) — state used by the hub GUI (module further down)
 -- ═══════════════════════════════════════════════════════════════
 autoBatV2Enabled      = false
 autoBatV2SetVisual    = nil
 
-selectedAimbotMode    = "Normal"
 autoSwingEnabled      = false
 
-_G.AceAntiBypassAimbotSpeed       = _G.AceAntiBypassAimbotSpeed or 60
-_G.AceAntiBypassLaggerAimbotSpeed = _G.AceAntiBypassLaggerAimbotSpeed or 40
-_G.AceAntiBypassAimbotOn          = _G.AceAntiBypassAimbotOn or false
 _G.AceNormalAimbotOn              = _G.AceNormalAimbotOn or false
 _G.AceCurrentSpeedMode            = _G.AceCurrentSpeedMode or "Normal"
-
-_G.AceAntiBypassAimbot = _G.AceAntiBypassAimbot or {
-    conn           = nil,
-    swingCooldown  = false,
-    prevAutoRotate = nil,
-}
-
-_G.AceAntiBypassSlapList = _G.AceAntiBypassSlapList or {
-    "Bat", "Slap", "Iron Slap", "Gold Slap", "Diamond Slap",
-    "Emerald Slap", "Ruby Slap", "Dark Matter Slap",
-    "Flame Slap", "Nuclear Slap", "Galaxy Slap", "Glitched Slap"
-}
 
 _G.AceSafeModeTryStart      = _G.AceSafeModeTryStart      or _G.AmbitiousSafeModeTryStart
 _G.AceStopAutoTPForAction   = _G.AceStopAutoTPForAction   or function()
@@ -5191,447 +5173,350 @@ function enableAutoBat()
 end
 
 -- ═══════════════════════════════════════════════════════════════
--- BAT BYPASS — Persecución autónoma con predicción de ping
--- (Reemplaza el módulo Anti Bypass anterior. Antes BAT V2.)
+-- BAT AIMBOT (Bubble Hub) — ported from Bubble Hub's final "Cypher" aimbot
+-- Chases the nearest living player with ping-compensated prediction, turns
+-- the character with angular velocity and swings the bat when in range.
+-- Replaces the old Bat Bypass module. The hub-side names (enableBatV2,
+-- disableBatV2, toggleBatV2, autoBatV2Enabled, KB.BatV2, floating button)
+-- are kept so the GUI, keybind, config and safe-mode code keep working.
+-- Not ported (Bubble-only systems that Haze does not have): TP Bat marker
+-- chase and the auto-drop-before-start step.
 -- ═══════════════════════════════════════════════════════════════
-
-BAT_V2_SPEED           = BAT_V2_SPEED           or 55
-BAT_V2_HIT_DIST        = BAT_V2_HIT_DIST        or 13
-BAT_V2_LEAD_STUDS      = BAT_V2_LEAD_STUDS      or 3
-BAT_V2_BODY_LOCK_RANGE = BAT_V2_BODY_LOCK_RANGE or 60
-
-local SnowVS = _G.SnowVS or {}
-_G.SnowVS = SnowVS
-
-SnowVS.BatBypass = SnowVS.BatBypass or {}
--- Alias legado para no romper referencias externas existentes
-SnowVS.AimbotBypassV2 = SnowVS.BatBypass
-
-local BB = SnowVS.BatBypass
-
-BB.Enabled    = BB.Enabled    or false
-BB.Connection = BB.Connection or nil
-
-BB.Z = BB.Z or {
-    targetPlayer          = nil,
-    lastTargetPos         = nil,
-    targetVelocity        = Vector3.zero,
-    smoothedVelocity      = Vector3.zero,
-    velocityHistory       = {},
-    accelerationHistory   = {},
-    aerialVelocityHistory = {},
-    previousDirection     = nil,
-    lastDirectionChangeTime = 0,
-    airborneTime          = 0,
-    lastActivationTime    = 0,
-    currentPing           = 0.1,
-    realPingMs            = 0,
-}
-
-BB.ZCFG = BB.ZCFG or {
-    FOLLOW_SPEED                    = BAT_V2_SPEED,
-    ACTIVATE_DISTANCE               = BAT_V2_HIT_DIST,
-    MIN_FOLLOW_DISTANCE             = 1,
-    PREDICTION_TIME                 = 0.22,
-    PREDICT_AHEAD                   = BAT_V2_LEAD_STUDS,
-    MAX_VELOCITY_CHANGE             = 150,
-    VELOCITY_SMOOTHING              = 0.2,
-    MAX_HORIZONTAL_VELOCITY         = 80,
-    SERVER_TICKRATE                 = 1 / 60,
-    MIN_PING_COMPENSATION           = 0.03,
-    MAX_PING_COMPENSATION           = 0.25,
-    ACCELERATION_PREDICTION_WEIGHT  = 0.3,
-    DIRECTION_CHANGE_DETECTION_TIME = 0.12,
-    QUICK_DIRECTION_CHANGE_MULTIPLIER = 1.5,
-    GRAVITY                         = 196.2,
-    AIR_CONTROL_FACTOR              = 0.8,
-    MIN_AIRBORNE_TIME               = 0.08,
-}
-
-local function bbAverageVector(history)
-    if #history == 0 then return Vector3.zero end
-    local total = Vector3.zero
-    for _, v in ipairs(history) do total += v end
-    return total / #history
-end
-
-local function bbPushHistory(history, value, maximum)
-    table.insert(history, value)
-    if #history > maximum then table.remove(history, 1) end
-end
-
-function BB.FindBat()
-    local char = LP.Character
-    if not char then return nil end
-    local equipped = char:FindFirstChildOfClass("Tool")
-    if equipped then
-        local n = equipped.Name:lower()
-        if n:find("bat", 1, true) or n:find("slap", 1, true) then
-            return equipped
-        end
+do
+    local previous = _G.HazeBubbleBatAimbot
+    if type(previous) == "table" and type(previous.Stop) == "function" then
+        pcall(previous.Stop)
     end
-    local bp = LP:FindFirstChildOfClass("Backpack")
-    if bp then
-        for _, tool in ipairs(bp:GetChildren()) do
-            if tool:IsA("Tool") then
-                local n = tool.Name:lower()
-                if n:find("bat", 1, true) or n:find("slap", 1, true) then
-                    return tool
+
+    local Bat = { Enabled = false, Connection = nil }
+    _G.HazeBubbleBatAimbot = Bat
+
+    -- Same values as Bubble Hub (CypherAimbotApproachSpeed = 55, clamp 1..120)
+    local CFG = {
+        ApproachSpeed                   = 55,
+        ACTIVATE_DISTANCE               = 13,
+        MIN_FOLLOW_DISTANCE             = 1,
+        PREDICTION_TIME                 = 0.22,
+        PREDICT_AHEAD                   = 3,
+        MAX_VELOCITY_CHANGE             = 150,
+        VELOCITY_SMOOTHING              = 0.2,
+        MAX_HORIZONTAL_VELOCITY         = 80,
+        SERVER_TICKRATE                 = 1 / 60,
+        MIN_PING_COMPENSATION           = 0.03,
+        MAX_PING_COMPENSATION           = 0.25,
+        ACCELERATION_PREDICTION_WEIGHT  = 0.3,
+        DIRECTION_CHANGE_DETECTION_TIME = 0.12,
+        QUICK_DIRECTION_CHANGE_MULTIPLIER = 1.5,
+        GRAVITY                         = 196.2,
+        AIR_CONTROL_FACTOR              = 0.8,
+        MIN_AIRBORNE_TIME               = 0.08,
+    }
+    Bat.Config = CFG
+
+    local S = {
+        targetPlayer          = nil,
+        lastTargetPos         = nil,
+        targetVelocity        = Vector3.zero,
+        smoothedVelocity      = Vector3.zero,
+        accelerationHistory   = {},
+        aerialVelocityHistory = {},
+        previousDirection     = nil,
+        lastDirectionChangeTime = 0,
+        airborneTime          = 0,
+        lastActivationTime    = 0,
+        currentPing           = 0.1,
+        realPingMs            = 0,
+    }
+
+    local function average(list)
+        if #list == 0 then return Vector3.zero end
+        local total = Vector3.zero
+        for _, v in ipairs(list) do total += v end
+        return total / #list
+    end
+
+    local function push(list, value, maximum)
+        table.insert(list, value)
+        if #list > maximum then table.remove(list, 1) end
+    end
+
+    local function resetTarget()
+        S.targetPlayer          = nil
+        S.lastTargetPos         = nil
+        S.targetVelocity        = Vector3.zero
+        S.smoothedVelocity      = Vector3.zero
+        S.accelerationHistory   = {}
+        S.aerialVelocityHistory = {}
+        S.previousDirection     = nil
+        S.airborneTime          = 0
+    end
+
+    local function findBat()
+        local char = LP.Character
+        if not char then return nil end
+        local equipped = char:FindFirstChildOfClass("Tool")
+        if equipped then
+            local n = equipped.Name:lower()
+            if n:find("bat", 1, true) or n:find("slap", 1, true) then return equipped end
+        end
+        local backpack = LP:FindFirstChildOfClass("Backpack")
+        if backpack then
+            for _, tool in ipairs(backpack:GetChildren()) do
+                if tool:IsA("Tool") then
+                    local n = tool.Name:lower()
+                    if n:find("bat", 1, true) or n:find("slap", 1, true) then return tool end
                 end
             end
         end
+        return nil
     end
-    return nil
-end
+    Bat.FindBat = findBat
 
-local function bbResetTarget()
-    local Z = BB.Z
-    Z.targetPlayer          = nil
-    Z.lastTargetPos         = nil
-    Z.targetVelocity        = Vector3.zero
-    Z.smoothedVelocity      = Vector3.zero
-    Z.velocityHistory       = {}
-    Z.accelerationHistory   = {}
-    Z.aerialVelocityHistory = {}
-    Z.previousDirection     = nil
-    Z.airborneTime          = 0
-end
-
-local function bbNearestTarget(root)
-    local nearest, nearestDistance = nil, math.huge
-    for _, candidate in ipairs(Players:GetPlayers()) do
-        if candidate ~= LP and candidate.Character then
-            local targetRoot     = candidate.Character:FindFirstChild("HumanoidRootPart")
-            local targetHumanoid = candidate.Character:FindFirstChildOfClass("Humanoid")
-            if targetRoot and targetHumanoid and targetHumanoid.Health > 0 then
-                local distance = (root.Position - targetRoot.Position).Magnitude
-                if distance < nearestDistance then
-                    nearest, nearestDistance = candidate, distance
+    local function nearestTarget(root)
+        local nearest, nearestDistance = nil, math.huge
+        for _, candidate in ipairs(Players:GetPlayers()) do
+            if candidate ~= LP and candidate.Character then
+                local targetRoot = candidate.Character:FindFirstChild("HumanoidRootPart")
+                local targetHum  = candidate.Character:FindFirstChildOfClass("Humanoid")
+                if targetRoot and targetHum and targetHum.Health > 0 then
+                    local distance = (root.Position - targetRoot.Position).Magnitude
+                    if distance < nearestDistance then
+                        nearest, nearestDistance = candidate, distance
+                    end
                 end
             end
         end
+        return nearest
     end
-    return nearest
-end
 
-local function bbRotateRoot(root, direction)
-    if direction.Magnitude < 0.01 then return end
-    local axis  = root.CFrame.LookVector:Cross(direction.Unit)
-    local angle = math.asin(math.clamp(axis.Magnitude, -1, 1))
-    root.AssemblyAngularVelocity = axis.Magnitude > 0.01
-        and axis.Unit * angle * 80
-        or  Vector3.zero
-end
+    local function rotateRoot(root, direction)
+        if direction.Magnitude < 0.01 then return end
+        local axis  = root.CFrame.LookVector:Cross(direction.Unit)
+        local angle = math.asin(math.clamp(axis.Magnitude, -1, 1))
+        root.AssemblyAngularVelocity = axis.Magnitude > 0.01
+            and axis.Unit * angle * 80
+            or  Vector3.zero
+    end
 
-local function bbSamplePing()
-    local ok, value = pcall(function()
-        return game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()
-    end)
-    local Z = BB.Z
-    if ok and type(value) == "number" then Z.realPingMs = math.floor(value) end
-    Z.currentPing = math.clamp(
-        Z.realPingMs / 1000,
-        BB.ZCFG.MIN_PING_COMPENSATION,
-        BB.ZCFG.MAX_PING_COMPENSATION
-    )
-end
+    local function samplePing()
+        local ok, value = pcall(function()
+            return game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()
+        end)
+        if ok and type(value) == "number" then S.realPingMs = math.floor(value) end
+        S.currentPing = math.clamp(S.realPingMs / 1000, CFG.MIN_PING_COMPENSATION, CFG.MAX_PING_COMPENSATION)
+    end
 
-BB.PingLoopStarted = BB.PingLoopStarted or false
-if not BB.PingLoopStarted then
-    BB.PingLoopStarted = true
     task.spawn(function()
-        while true do
-            pcall(bbSamplePing)
+        while _G.HazeBubbleBatAimbot == Bat do
+            pcall(samplePing)
             task.wait(0.5)
         end
     end)
-end
 
--- Stubs para compatibilidad con la API antigua (Body Lock ya no se usa aparte)
-function BB.StartBodyLock() end
-function BB.StopBodyLock()  end
-
-function BB.Stop()
-    local Z = BB.Z
-    BB.Enabled = false
-    if BB.Connection then
-        BB.Connection:Disconnect()
-        BB.Connection = nil
-    end
-    local char     = LP.Character
-    local humanoid = char and char:FindFirstChildOfClass("Humanoid")
-    local root     = char and char:FindFirstChild("HumanoidRootPart")
-    if humanoid then humanoid.AutoRotate = true end
-    if root     then root.AssemblyAngularVelocity = Vector3.zero end
-    bbResetTarget()
-    Z.lastActivationTime = 0
-end
-
-function BB.Start()
-    if BB.Connection then return end
-
-    local char     = LP.Character
-    local humanoid = char and char:FindFirstChildOfClass("Humanoid")
-    local root     = char and char:FindFirstChild("HumanoidRootPart")
-    if not humanoid or not root then return end
-
-    BB.Enabled = true
-    humanoid.AutoRotate = false
-
-    local bat = BB.FindBat()
-    if bat and bat.Parent ~= char then
-        pcall(function() humanoid:EquipTool(bat) end)
+    function Bat.Stop()
+        Bat.Enabled = false
+        if Bat.Connection then
+            Bat.Connection:Disconnect()
+            Bat.Connection = nil
+        end
+        local char = LP.Character
+        local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+        local root = char and char:FindFirstChild("HumanoidRootPart")
+        if humanoid then humanoid.AutoRotate = true end
+        if root then root.AssemblyAngularVelocity = Vector3.zero end
+        resetTarget()
+        S.lastActivationTime = 0
     end
 
-    BB.Connection = RunService.RenderStepped:Connect(function(dt)
-        if not BB.Enabled then BB.Stop(); return end
-        local Z     = BB.Z
-        local ZCFG  = BB.ZCFG
+    function Bat.Start(character)
+        character = character or LP.Character
+        local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+        local root = character and character:FindFirstChild("HumanoidRootPart")
+        if not humanoid or not root then return false end
 
-        -- Refresca velocidad según modo actual (Normal/Lagger/Lagger Carry)
-        if _G.AceGetAntiBypassAimbotSpeed then
-            ZCFG.FOLLOW_SPEED = _G.AceGetAntiBypassAimbotSpeed()
+        Bat.Stop()
+        Bat.Enabled = true
+        humanoid.AutoRotate = false
+
+        local startBat = findBat()
+        if startBat and startBat.Parent ~= character then
+            pcall(humanoid.EquipTool, humanoid, startBat)
         end
 
-        local currentChar     = LP.Character
-        local currentRoot     = currentChar and currentChar:FindFirstChild("HumanoidRootPart")
-        local currentHumanoid = currentChar and currentChar:FindFirstChildOfClass("Humanoid")
-        if not currentRoot or not currentHumanoid or currentHumanoid.Health <= 0 then return end
+        Bat.Connection = RunService.RenderStepped:Connect(function(dt)
+            if not Bat.Enabled then Bat.Stop() return end
 
-        currentHumanoid.AutoRotate = false
-        root, humanoid = currentRoot, currentHumanoid
+            local char = LP.Character
+            local myRoot = char and char:FindFirstChild("HumanoidRootPart")
+            local myHum  = char and char:FindFirstChildOfClass("Humanoid")
+            if not myRoot or not myHum or myHum.Health <= 0 then return end
 
-        bat = currentChar:FindFirstChildOfClass("Tool") or BB.FindBat()
-        if bat and bat.Parent ~= currentChar then
-            pcall(currentHumanoid.EquipTool, currentHumanoid, bat)
-        end
+            myHum.AutoRotate = false
 
-        Z.targetPlayer  = bbNearestTarget(root)
-        local targetChar = Z.targetPlayer and Z.targetPlayer.Character
-        local targetRoot = targetChar and targetChar:FindFirstChild("HumanoidRootPart")
-        local targetHumanoid = targetChar and targetChar:FindFirstChildOfClass("Humanoid")
-        if not targetRoot or not targetHumanoid or targetHumanoid.Health <= 0 then
-            bbResetTarget(); return
-        end
-
-        local targetPos = targetRoot.Position
-        local safeDt    = math.max(dt, 1 / 240)
-
-        -- Estima velocidad del rival filtrando outliers
-        if Z.lastTargetPos then
-            local rawVelocity   = (targetPos - Z.lastTargetPos) / safeDt
-            local velocityDelta = rawVelocity - Z.targetVelocity
-            if velocityDelta.Magnitude > ZCFG.MAX_VELOCITY_CHANGE then
-                rawVelocity = Z.targetVelocity + velocityDelta.Unit * ZCFG.MAX_VELOCITY_CHANGE
+            local tool = char:FindFirstChildOfClass("Tool") or findBat()
+            if tool and tool.Parent ~= char then
+                pcall(myHum.EquipTool, myHum, tool)
             end
-            local horizontal = Vector3.new(rawVelocity.X, 0, rawVelocity.Z)
-            if horizontal.Magnitude > ZCFG.MAX_HORIZONTAL_VELOCITY then
-                horizontal  = horizontal.Unit * ZCFG.MAX_HORIZONTAL_VELOCITY
-                rawVelocity = Vector3.new(horizontal.X, rawVelocity.Y, horizontal.Z)
+
+            S.targetPlayer = nearestTarget(myRoot)
+            local targetChar = S.targetPlayer and S.targetPlayer.Character
+            local targetRoot = targetChar and targetChar:FindFirstChild("HumanoidRootPart")
+            local targetHum  = targetChar and targetChar:FindFirstChildOfClass("Humanoid")
+            if not targetRoot or not targetHum or targetHum.Health <= 0 then
+                resetTarget()
+                return
             end
-            bbPushHistory(Z.accelerationHistory, (rawVelocity - Z.targetVelocity) / safeDt, 4)
-            bbPushHistory(Z.velocityHistory,     rawVelocity, 8)
-            Z.targetVelocity   = rawVelocity
-            Z.smoothedVelocity = Z.smoothedVelocity:Lerp(rawVelocity, ZCFG.VELOCITY_SMOOTHING)
-        end
-        Z.lastTargetPos = targetPos
 
-        -- Estado aéreo
-        local airborne = targetHumanoid.FloorMaterial == Enum.Material.Air
-        Z.airborneTime = airborne and (Z.airborneTime + safeDt) or 0
-        if airborne and Z.airborneTime >= ZCFG.MIN_AIRBORNE_TIME then
-            bbPushHistory(Z.aerialVelocityHistory, Z.targetVelocity, 6)
-        elseif not airborne then
-            Z.aerialVelocityHistory = {}
-        end
+            local targetPos = targetRoot.Position
+            local safeDt = math.max(dt, 1 / 240)
 
-        local predictionVelocity = Z.smoothedVelocity
-        if airborne and #Z.aerialVelocityHistory > 0 then
-            local aerial = bbAverageVector(Z.aerialVelocityHistory)
-            predictionVelocity = Vector3.new(aerial.X, Z.targetVelocity.Y, aerial.Z) * ZCFG.AIR_CONTROL_FACTOR
-        end
-
-        -- Detecta cambios bruscos de dirección
-        local quickTurn = false
-        local horizontalVelocity = Vector3.new(Z.targetVelocity.X, 0, Z.targetVelocity.Z)
-        if horizontalVelocity.Magnitude > 5 then
-            local direction = horizontalVelocity.Unit
-            if Z.previousDirection and Z.previousDirection:Dot(direction) < 0.5 then
-                quickTurn = tick() - Z.lastDirectionChangeTime < ZCFG.DIRECTION_CHANGE_DETECTION_TIME
-                Z.lastDirectionChangeTime = tick()
+            if S.lastTargetPos then
+                local rawVelocity = (targetPos - S.lastTargetPos) / safeDt
+                local velocityDelta = rawVelocity - S.targetVelocity
+                if velocityDelta.Magnitude > CFG.MAX_VELOCITY_CHANGE then
+                    rawVelocity = S.targetVelocity + velocityDelta.Unit * CFG.MAX_VELOCITY_CHANGE
+                end
+                local horizontal = Vector3.new(rawVelocity.X, 0, rawVelocity.Z)
+                if horizontal.Magnitude > CFG.MAX_HORIZONTAL_VELOCITY then
+                    horizontal = horizontal.Unit * CFG.MAX_HORIZONTAL_VELOCITY
+                    rawVelocity = Vector3.new(horizontal.X, rawVelocity.Y, horizontal.Z)
+                end
+                push(S.accelerationHistory, (rawVelocity - S.targetVelocity) / safeDt, 4)
+                S.targetVelocity = rawVelocity
+                S.smoothedVelocity = S.smoothedVelocity:Lerp(rawVelocity, CFG.VELOCITY_SMOOTHING)
             end
-            Z.previousDirection = direction
-        end
+            S.lastTargetPos = targetPos
 
-        local serverDelay = Z.currentPing + ZCFG.SERVER_TICKRATE
-        if quickTurn then serverDelay *= ZCFG.QUICK_DIRECTION_CHANGE_MULTIPLIER end
+            local airborne = targetHum.FloorMaterial == Enum.Material.Air
+            S.airborneTime = airborne and (S.airborneTime + safeDt) or 0
+            if airborne and S.airborneTime >= CFG.MIN_AIRBORNE_TIME then
+                push(S.aerialVelocityHistory, S.targetVelocity, 6)
+            elseif not airborne then
+                S.aerialVelocityHistory = {}
+            end
 
-        local predicted    = targetPos + predictionVelocity * serverDelay
-        local acceleration = bbAverageVector(Z.accelerationHistory)
-        predicted += acceleration * ZCFG.ACCELERATION_PREDICTION_WEIGHT * (serverDelay * serverDelay * 0.5)
+            local predictionVelocity = S.smoothedVelocity
+            if airborne and #S.aerialVelocityHistory > 0 then
+                local aerial = average(S.aerialVelocityHistory)
+                predictionVelocity = Vector3.new(aerial.X, S.targetVelocity.Y, aerial.Z) * CFG.AIR_CONTROL_FACTOR
+            end
 
-        local predictionTime = ZCFG.PREDICTION_TIME * 1.1
-        if airborne then
-            predicted += predictionVelocity * predictionTime
-            predicted += Vector3.new(0, -0.5 * ZCFG.GRAVITY * predictionTime * predictionTime, 0)
-        else
-            predicted += predictionVelocity * predictionTime
-        end
+            local quickTurn = false
+            local horizontalVelocity = Vector3.new(S.targetVelocity.X, 0, S.targetVelocity.Z)
+            if horizontalVelocity.Magnitude > 5 then
+                local direction = horizontalVelocity.Unit
+                if S.previousDirection and S.previousDirection:Dot(direction) < 0.5 then
+                    quickTurn = tick() - S.lastDirectionChangeTime < CFG.DIRECTION_CHANGE_DETECTION_TIME
+                    S.lastDirectionChangeTime = tick()
+                end
+                S.previousDirection = direction
+            end
 
-        local flatPrediction = Vector3.new(predictionVelocity.X, 0, predictionVelocity.Z)
-        if flatPrediction.Magnitude > 1 then
-            predicted += flatPrediction.Unit * ZCFG.PREDICT_AHEAD
-        end
+            local delay = S.currentPing + CFG.SERVER_TICKRATE
+            if quickTurn then delay = delay * CFG.QUICK_DIRECTION_CHANGE_MULTIPLIER end
 
-        local toTarget = predicted - root.Position
-        bbRotateRoot(root, toTarget)
+            local predicted = targetPos
+                + predictionVelocity * delay
+                + average(S.accelerationHistory) * CFG.ACCELERATION_PREDICTION_WEIGHT * (delay * delay * 0.5)
 
-        if (targetPos - root.Position).Magnitude <= ZCFG.ACTIVATE_DISTANCE
-        and tick() - Z.lastActivationTime >= 0.3 then
-            if bat then pcall(bat.Activate, bat) end
-            Z.lastActivationTime = tick()
-        end
+            local predictionTime = CFG.PREDICTION_TIME * 1.1
+            if airborne then
+                predicted = predicted + predictionVelocity * predictionTime
+                    + Vector3.new(0, -0.5 * CFG.GRAVITY * predictionTime * predictionTime, 0)
+            else
+                predicted = predicted + predictionVelocity * predictionTime
+            end
 
-        if toTarget.Magnitude > ZCFG.MIN_FOLLOW_DISTANCE then
-            root.AssemblyLinearVelocity = toTarget.Unit * ZCFG.FOLLOW_SPEED
-        else
-            root.AssemblyLinearVelocity = Vector3.new(0, root.AssemblyLinearVelocity.Y * 0.5, 0)
-        end
-    end)
-end
+            local flat = Vector3.new(predictionVelocity.X, 0, predictionVelocity.Z)
+            if flat.Magnitude > 1 then
+                predicted = predicted + flat.Unit * CFG.PREDICT_AHEAD
+            end
 
-function BB.Toggle()
-    if BB.Enabled then BB.Stop() else BB.Start() end
-end
+            local toTarget = predicted - myRoot.Position
+            rotateRoot(myRoot, toTarget)
 
--- ═══════════════════════════════════════════════════════════════
--- Compat wrappers (API externa usada por UI / config / visuales)
--- ═══════════════════════════════════════════════════════════════
+            if (targetPos - myRoot.Position).Magnitude <= CFG.ACTIVATE_DISTANCE
+            and tick() - S.lastActivationTime >= 0.3 then
+                if tool then pcall(tool.Activate, tool) end
+                S.lastActivationTime = tick()
+            end
 
-local function _aceSafeSave()
-    if type(saveAllSettings) == "function" then pcall(saveAllSettings) end
-end
-
-local function _aceCurrentSpeedMode()
-    if laggerCarryToggled then return "Lagger Carry" end
-    if laggerToggled      then return "Lagger" end
-    if speedMode          then return "Carry"  end
-    return "Normal"
-end
-
-_G.AceGetAntiBypassAimbotSpeed = function()
-    local mode = _aceCurrentSpeedMode()
-    if mode == "Lagger" or mode == "Lagger Carry" then
-        return tonumber(_G.AceAntiBypassLaggerAimbotSpeed) or 40
+            if toTarget.Magnitude > CFG.MIN_FOLLOW_DISTANCE then
+                local speed = math.clamp(tonumber(CFG.ApproachSpeed) or 55, 1, 120)
+                myRoot.AssemblyLinearVelocity = toTarget.Unit * speed
+            else
+                myRoot.AssemblyLinearVelocity = Vector3.new(0, myRoot.AssemblyLinearVelocity.Y * 0.5, 0)
+            end
+        end)
+        return true
     end
-    return tonumber(_G.AceAntiBypassAimbotSpeed) or 60
-end
 
-_G.AceRefreshAimbotVisual = function()
-    if _G.AceAimbotSetVisual then
-        _G.AceAimbotSetVisual(_G.AceAntiBypassAimbotOn == true)
-    end
-end
-
-_G.AceStartAntiBypassAimbot = function()
-    if _G.AceSafeModeTryStart and not _G.AceSafeModeTryStart() then
-        return false
-    end
-    if _G.AceStopAutoTPForAction then _G.AceStopAutoTPForAction() end
-    if _G.AceStopNormalAimbot    then _G.AceStopNormalAimbot()    end
-
-    selectedAimbotMode = "Bat Bypass"
-    _G.AceAntiBypassAimbotOn = true
-    SnowVS.BatBypass.ZCFG.FOLLOW_SPEED = _G.AceGetAntiBypassAimbotSpeed()
-    SnowVS.BatBypass.Start()
-
-    if _G.AceRefreshAimbotVisual then _G.AceRefreshAimbotVisual() end
-    _aceSafeSave()
-    return true
-end
-
-_G.AceStopAntiBypassAimbot = function(keepVisual)
-    SnowVS.BatBypass.Stop()
-    _G.AceAntiBypassAimbotOn = false
-    if keepVisual ~= false and _G.AceRefreshAimbotVisual then
-        _G.AceRefreshAimbotVisual()
-    end
-    _aceSafeSave()
-end
-
-_G.AceToggleSelectedAimbot = function()
-    if selectedAimbotMode == "Bat Bypass" then
-        if _G.AceAntiBypassAimbotOn then
-            _G.AceStopAntiBypassAimbot()
-        else
-            _G.AceStartAntiBypassAimbot()
+    function Bat.LoadConfig(data)
+        if type(data) ~= "table" then return end
+        local s = tonumber(data.bubbleBatAimbotSpeed)
+        if s and s == s and s > -math.huge and s < math.huge then
+            CFG.ApproachSpeed = math.clamp(s, 1, 120)
         end
     end
-    if _G.AceRefreshAimbotVisual then _G.AceRefreshAimbotVisual() end
-    _aceSafeSave()
-end
 
-_G.AceAntiBypassStart = _G.AceStartAntiBypassAimbot
-_G.AceAntiBypassStop  = _G.AceStopAntiBypassAimbot
+    -- ───────────────────────────────────────────────────────────
+    -- Hub integration (same global names the old Bat Bypass used)
+    -- ───────────────────────────────────────────────────────────
+    local function safeSave()
+        if type(saveAllSettings) == "function" then pcall(saveAllSettings) end
+    end
 
-function enableBatV2()
-    selectedAimbotMode = "Bat Bypass"
-    local ok = _G.AceStartAntiBypassAimbot()
-    if ok ~= false then
+    local function paintButton(on)
+        if batV2FloatingButton then
+            local frame = batV2FloatingButton:FindFirstChild("Frame")
+            if frame then paintFloatingBtn(frame, on) end
+        end
+    end
+
+    -- Bubble Hub stops autoplay when the aimbot starts; Haze's autoplay is Auto Left / Auto Right
+    local function stopAutoplayForAimbot()
+        if autoLeftEnabled then
+            autoLeftEnabled = false
+            if autoLeftSetVisual then autoLeftSetVisual(false) end
+            if mobSetAutoLeft then mobSetAutoLeft(false) end
+            stopAutoLeft()
+        end
+        if autoRightEnabled then
+            autoRightEnabled = false
+            if autoRightSetVisual then autoRightSetVisual(false) end
+            if mobSetAutoRight then mobSetAutoRight(false) end
+            stopAutoRight()
+        end
+    end
+
+    function enableBatV2()
+        if _G.AceSafeModeTryStart and not _G.AceSafeModeTryStart() then
+            if autoBatV2SetVisual then autoBatV2SetVisual(false) end
+            paintButton(false)
+            return
+        end
+        if _G.AceStopAutoTPForAction then _G.AceStopAutoTPForAction() end
+        if _G.AceStopNormalAimbot    then _G.AceStopNormalAimbot()    end
+        stopAutoplayForAimbot()
+
+        Bat.Start()
         autoBatV2Enabled = true
         if autoBatV2SetVisual then autoBatV2SetVisual(true) end
-        if batV2FloatingButton then
-            local btnFrame = batV2FloatingButton:FindFirstChild("Frame")
-            if btnFrame then paintFloatingBtn(btnFrame, true) end
-        end
-    end
-end
-
-function disableBatV2()
-    _G.AceStopAntiBypassAimbot()
-    autoBatV2Enabled = false
-    if autoBatV2SetVisual then autoBatV2SetVisual(false) end
-    if batV2FloatingButton then
-        local btnFrame = batV2FloatingButton:FindFirstChild("Frame")
-        if btnFrame then paintFloatingBtn(btnFrame, false) end
-    end
-end
-
-function toggleBatV2()
-    if autoBatV2Enabled then disableBatV2() else enableBatV2() end
-end
-
-_G.AceAntiBypassSaveToConfig = function(t)
-    t = t or {}
-    t.selectedAimbotMode              = selectedAimbotMode
-    t.ANTI_BYPASS_AIMBOT_SPEED        = _G.AceAntiBypassAimbotSpeed
-    t.ANTI_BYPASS_LAGGER_AIMBOT_SPEED = _G.AceAntiBypassLaggerAimbotSpeed
-    t.antiBypassAimbotEnabled         = _G.AceAntiBypassAimbotOn == true
-    return t
-end
-
-_G.AceAntiBypassLoadFromConfig = function(data)
-    if type(data) ~= "table" then return end
-    selectedAimbotMode = data.selectedAimbotMode or selectedAimbotMode
-    -- Migración de configs antiguas "Anti Bypass" → "Bat Bypass"
-    if selectedAimbotMode == "Anti Bypass" then
-        selectedAimbotMode = "Bat Bypass"
-    end
-    if selectedAimbotMode ~= "Bat Bypass" then
-        selectedAimbotMode = "Normal"
-    end
-    _G.AceAntiBypassAimbotSpeed =
-        tonumber(data.ANTI_BYPASS_AIMBOT_SPEED) or _G.AceAntiBypassAimbotSpeed or 60
-
-    if data.ANTI_BYPASS_LAGGER_AIMBOT_SPEED == nil
-       or tonumber(data.ANTI_BYPASS_LAGGER_AIMBOT_SPEED) == 58 then
-        _G.AceAntiBypassLaggerAimbotSpeed = 40
-    else
-        _G.AceAntiBypassLaggerAimbotSpeed =
-            tonumber(data.ANTI_BYPASS_LAGGER_AIMBOT_SPEED) or 40
+        paintButton(true)
+        safeSave()
     end
 
-    _G.AceAntiBypassAimbotOn = data.antiBypassAimbotEnabled == true
+    function disableBatV2()
+        Bat.Stop()
+        autoBatV2Enabled = false
+        if autoBatV2SetVisual then autoBatV2SetVisual(false) end
+        paintButton(false)
+        safeSave()
+    end
+
+    function toggleBatV2()
+        if autoBatV2Enabled then disableBatV2() else enableBatV2() end
+    end
 end
 
 -- ═══════════════════════════════════════════════════════════════
@@ -7422,10 +7307,7 @@ function buildConfigTable()
         neonWeather = neonWeatherEnabled,
         skyTheme = skyTheme,
         autoBatV2Enabled = autoBatV2Enabled,
-        selectedAimbotMode              = selectedAimbotMode,
-        ANTI_BYPASS_AIMBOT_SPEED        = _G.AceAntiBypassAimbotSpeed,
-        ANTI_BYPASS_LAGGER_AIMBOT_SPEED = _G.AceAntiBypassLaggerAimbotSpeed,
-        antiBypassAimbotEnabled         = _G.AceAntiBypassAimbotOn == true,
+        bubbleBatAimbotSpeed = _G.HazeBubbleBatAimbot and _G.HazeBubbleBatAimbot.Config.ApproachSpeed or 55,
         katanaSkinEnabled = katanaSkinEnabled,
         minecraftBatSkinEnabled = minecraftBatSkinEnabled,
         minecraftBatSkinColorMode = minecraftBatSkinColorMode,
@@ -7568,8 +7450,8 @@ function loadAllSettings()
     currentColorTheme = "Red"
     selectedColor = COLOR_THEMES["Red"]
 
-    _G.AceAntiBypassLoadFromConfig(data)
-    autoBatV2Enabled = _G.AceAntiBypassAimbotOn == true
+    if _G.HazeBubbleBatAimbot then _G.HazeBubbleBatAimbot.LoadConfig(data) end
+    autoBatV2Enabled = data.autoBatV2Enabled == true
     if autoBatV2Enabled then
         task.defer(function()
             enableBatV2()
@@ -8184,7 +8066,7 @@ local HIDE_BUTTONS_ITEMS = {
     { key = "autoPlay",     label = "Auto Play" },
     { key = "tpBat",        label = "TP Bat" },
     { key = "aimbot",       label = "Bat Aimbot" },
-    { key = "batV2",        label = "Bat Bypass" },
+    { key = "batV2",        label = "Bubble Bat Aimbot" },
     { key = "instaReset",   label = "Insta Reset" },
     { key = "antiTPBat",    label = "Anti TP Bat" },
     { key = "float",        label = "Float" },
@@ -10231,11 +10113,10 @@ function buildGui()
     end)
     if batDesyncTpSetVisual then batDesyncTpSetVisual(batDesyncTpEnabled) end
 
-    autoBatV2SetVisual = mkToggle(combatPage, "Bat Bypass", function(on)
+    autoBatV2SetVisual = mkToggle(combatPage, "Bubble Bat Aimbot", function(on)
         if on then enableBatV2() else disableBatV2() end
     end)
     if autoBatV2SetVisual then autoBatV2SetVisual(autoBatV2Enabled) end
-    _G.AceAimbotSetVisual = autoBatV2SetVisual
 
     mkSect(combatPage, "Counters")
     setBatCounterVisual = mkToggle(combatPage, "Bat Counter", function(on)
@@ -10980,7 +10861,7 @@ function buildGui()
     addKeybindRow(keyPage, "Auto Left", KB.AutoLeft)
     addKeybindRow(keyPage, "Auto Right", KB.AutoRight)
     addKeybindRow(keyPage, "TP BAT", KB.TPBat)
-    addKeybindRow(keyPage, "Bat Bypass", KB.BatV2)
+    addKeybindRow(keyPage, "Bubble Bat Aimbot", KB.BatV2)
     addKeybindRow(keyPage, "Insta Reset", KB.InstaReset)
     addKeybindRow(keyPage, "TP Down", KB.TPFloor)
     addKeybindRow(keyPage, "Drop Brainrot", KB.DropBrainrot)
@@ -11618,7 +11499,7 @@ function createBatV2FloatingButton()
     local label = Instance.new("TextLabel", btnFrame)
     label.Size = UDim2.new(1, 0, 1, 0)
     label.BackgroundTransparency = 1
-    label.Text = "BAT\nBYPASS"
+    label.Text = "BUBBLE\nAIMBOT"
     label.TextColor3 = Color3.fromRGB(255, 255, 255)
     label.Font = Enum.Font.GothamBlack
     label.TextSize = 10

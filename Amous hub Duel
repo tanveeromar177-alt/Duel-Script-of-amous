@@ -3,6 +3,311 @@ _G.BloodHoundsRunning = true
 
 repeat task.wait() until game:IsLoaded()
 
+-- ══════════════════════════════════════════════
+--   HAZE HUB INTRO ▫ GLITCH EDITION (B•W•Grey)
+--   Blocks here until the intro ends (song end, double tap/click, or
+--   8 s fail-safe). Everything below this block (the hub) loads after it.
+-- ══════════════════════════════════════════════
+do
+    local Players      = game:GetService("Players")
+    local TweenService = game:GetService("TweenService")
+    local UIS          = game:GetService("UserInputService")
+    local SoundService = game:GetService("SoundService")
+
+    local localPlayer = Players.LocalPlayer
+    local playerGui   = localPlayer:WaitForChild("PlayerGui")
+
+    local SONG_ID = "rbxassetid://120267378058133"
+
+    local introEnded = false
+    local connections = {}
+
+    -- old cleanup
+    local old = playerGui:FindFirstChild("HazeHubIntro")
+    if old then old:Destroy() end
+    for _, c in ipairs(SoundService:GetChildren()) do
+        if c:IsA("Sound") and c.Name == "HazeHubIntroSong" then c:Destroy() end
+    end
+
+    -- build sound
+    local sound = Instance.new("Sound")
+    sound.Name    = "HazeHubIntroSong"
+    sound.SoundId = SONG_ID
+    sound.Volume  = 0.7
+    sound.Looped  = false
+    sound.Parent  = SoundService
+    sound:Play()
+
+    -- load fail check
+    task.spawn(function()
+        task.wait(2)
+        if sound.Parent and sound.TimeLength == 0 then
+            warn("[HazeHub] Song load nahi hua — asset ID check karo (public hona chahiye)")
+        end
+    end)
+
+    -- GUI
+    local gui = Instance.new("ScreenGui")
+    gui.Name           = "HazeHubIntro"
+    gui.IgnoreGuiInset = true
+    gui.ResetOnSpawn   = false
+    gui.DisplayOrder   = 999
+    gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    gui.Parent         = playerGui
+
+    local bg = Instance.new("Frame")
+    bg.Size = UDim2.fromScale(1, 1)
+    bg.BackgroundColor3 = Color3.fromRGB(10, 10, 12)
+    bg.BackgroundTransparency = 1
+    bg.BorderSizePixel = 0
+    bg.ZIndex = 1
+    bg.Parent = gui
+    TweenService:Create(bg, TweenInfo.new(0.8), {BackgroundTransparency = 0.35}):Play()
+
+    -- particles
+    local particles = Instance.new("Frame")
+    particles.Size = UDim2.fromScale(1, 1)
+    particles.BackgroundTransparency = 1
+    particles.ZIndex = 2
+    particles.Parent = gui
+    local particlesOn = true
+    task.spawn(function()
+        while particlesOn and particles.Parent do
+            local dot = Instance.new("Frame")
+            local sz = math.random(2, 4)
+            dot.Size = UDim2.fromOffset(sz, sz)
+            dot.AnchorPoint = Vector2.new(0.5, 0.5)
+            dot.Position = UDim2.fromScale(math.random(), 1.05)
+            dot.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            dot.BackgroundTransparency = math.random(65, 90) / 100
+            dot.BorderSizePixel = 0
+            dot.Parent = particles
+            Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
+            local dur = math.random(30, 60) / 10
+            local tx = dot.Position.X.Scale + (math.random() - 0.5) * 0.12
+            TweenService:Create(dot, TweenInfo.new(dur, Enum.EasingStyle.Linear), {
+                Position = UDim2.fromScale(tx, -0.1),
+                BackgroundTransparency = 1,
+            }):Play()
+            task.delay(dur, function() if dot and dot.Parent then dot:Destroy() end end)
+            task.wait(math.random(3, 8) / 100)
+        end
+    end)
+
+    -- main title
+    local ORIG_TEXT = "HAZE HUB"
+    local title = Instance.new("TextLabel")
+    title.AutomaticSize = Enum.AutomaticSize.X
+    title.Size = UDim2.new(0, 0, 0, 130)
+    title.AnchorPoint = Vector2.new(0.5, 0.5)
+    title.Position = UDim2.fromScale(0.5, 0.44)
+    title.BackgroundTransparency = 1
+    title.Text = ORIG_TEXT
+    title.Font = Enum.Font.GothamBlack
+    title.TextSize = 88
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.TextTransparency = 1
+    title.ZIndex = 5
+    title.Parent = gui
+
+    local tGrad = Instance.new("UIGradient")
+    tGrad.Rotation = 90
+    tGrad.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(165, 165, 175)),
+    })
+    tGrad.Parent = title
+
+    local tStroke = Instance.new("UIStroke")
+    tStroke.Color = Color3.fromRGB(255, 255, 255)
+    tStroke.Thickness = 1
+    tStroke.Transparency = 0.5
+    tStroke.Parent = title
+
+    -- RGB ghost clones
+    local function makeGhost(color, zIndex)
+        local g = title:Clone()
+        g.TextColor3 = color
+        g.TextTransparency = 1
+        g.ZIndex = zIndex
+        g.Parent = gui
+        local s = g:FindFirstChildOfClass("UIStroke"); if s then s:Destroy() end
+        local gr = g:FindFirstChildOfClass("UIGradient"); if gr then gr:Destroy() end
+        return g
+    end
+    local redGhost  = makeGhost(Color3.fromRGB(255, 70, 70),  4)
+    local cyanGhost = makeGhost(Color3.fromRGB(70, 220, 255), 3)
+
+    -- reveal
+    local scale = Instance.new("UIScale")
+    scale.Scale = 0.85
+    scale.Parent = title
+    TweenService:Create(title, TweenInfo.new(0.9, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
+    TweenService:Create(scale, TweenInfo.new(0.9, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Scale = 1}):Play()
+
+    -- separator
+    local line = Instance.new("Frame")
+    line.Size = UDim2.new(0, 0, 0, 1)
+    line.Position = UDim2.fromScale(0.5, 0.6)
+    line.AnchorPoint = Vector2.new(0.5, 0.5)
+    line.BackgroundColor3 = Color3.fromRGB(220, 220, 230)
+    line.BackgroundTransparency = 0.3
+    line.BorderSizePixel = 0
+    line.ZIndex = 5
+    line.Parent = gui
+    task.wait(0.3)
+    TweenService:Create(line, TweenInfo.new(0.9, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(0, 380, 0, 1)}):Play()
+
+    -- loading bar
+    task.wait(0.4)
+    local barBg = Instance.new("Frame")
+    barBg.Size = UDim2.fromOffset(280, 2)
+    barBg.Position = UDim2.fromScale(0.5, 0.86)
+    barBg.AnchorPoint = Vector2.new(0.5, 0.5)
+    barBg.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    barBg.BackgroundTransparency = 0.85
+    barBg.BorderSizePixel = 0
+    barBg.ZIndex = 5
+    barBg.Parent = gui
+    Instance.new("UICorner", barBg).CornerRadius = UDim.new(1, 0)
+
+    local barFill = Instance.new("Frame")
+    barFill.Size = UDim2.fromScale(0, 1)
+    barFill.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    barFill.BorderSizePixel = 0
+    barFill.ZIndex = 6
+    barFill.Parent = barBg
+    Instance.new("UICorner", barFill).CornerRadius = UDim.new(1, 0)
+
+    -- GLITCH LOOP
+    local glitching = true
+    local glitchChars = "!@#$%&*<>?/\\|~-_=+[]{}01"
+    local basePos = UDim2.fromScale(0.5, 0.44)
+
+    local function corrupt(str)
+        local out = {}
+        for i = 1, #str do
+            local c = str:sub(i, i)
+            if c ~= " " and math.random() < 0.35 then
+                local idx = math.random(1, #glitchChars)
+                c = glitchChars:sub(idx, idx)
+            end
+            out[i] = c
+        end
+        return table.concat(out)
+    end
+
+    task.spawn(function()
+        while glitching and title.Parent do
+            task.wait(math.random(80, 220) / 100)
+            if not title.Parent or not glitching then break end
+
+            title.Position = UDim2.new(0.5, math.random(-12, 12), 0.44, math.random(-6, 6))
+            title.Text     = corrupt(ORIG_TEXT)
+
+            redGhost.Position  = UDim2.new(0.5, math.random(-18, 18), 0.44, math.random(-4, 4))
+            cyanGhost.Position = UDim2.new(0.5, math.random(-18, 18), 0.44, math.random(-4, 4))
+            redGhost.Text  = title.Text
+            cyanGhost.Text = title.Text
+            redGhost.TextTransparency  = 0.35
+            cyanGhost.TextTransparency = 0.35
+
+            if math.random() < 0.4 then
+                task.wait(0.04)
+                title.Position = UDim2.new(0.5, math.random(-15, 15), 0.44, math.random(-5, 5))
+                title.Text     = corrupt(ORIG_TEXT)
+            end
+
+            task.delay(0.09, function()
+                if glitching and title.Parent then
+                    title.Position = basePos
+                    title.Text     = ORIG_TEXT
+                end
+                if redGhost.Parent  then redGhost.TextTransparency  = 1 end
+                if cyanGhost.Parent then cyanGhost.TextTransparency = 1 end
+            end)
+        end
+    end)
+
+    -- LOADING BAR (song progress)
+    -- loops until the intro ends, so a slow-loading song doesn't kill it on the first tick
+    task.spawn(function()
+        while not introEnded and barFill.Parent do
+            if sound.Parent and sound.TimeLength > 0 then
+                local p = math.clamp(sound.TimePosition / sound.TimeLength, 0, 1)
+                barFill.Size = UDim2.fromScale(p, 1)
+            end
+            task.wait(0.1)
+        end
+        if barFill.Parent then barFill.Size = UDim2.fromScale(1, 1) end
+    end)
+
+    -- END
+    local function endIntro()
+        if introEnded then return end
+        introEnded = true
+        glitching = false
+        particlesOn = false
+
+        for _, conn in ipairs(connections) do
+            pcall(function() conn:Disconnect() end)
+        end
+        table.clear(connections)
+
+        if sound and sound.Parent then
+            TweenService:Create(sound, TweenInfo.new(0.6), {Volume = 0}):Play()
+            task.delay(0.7, function()
+                if sound then pcall(function() sound:Stop() end); sound:Destroy() end
+            end)
+        end
+
+        -- put the title back to its clean state so the fade-out looks normal
+        title.Text = ORIG_TEXT
+        title.Position = basePos
+
+        local fo = TweenInfo.new(0.8, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+        TweenService:Create(title,     fo, {TextTransparency = 1}):Play()
+        TweenService:Create(redGhost,  fo, {TextTransparency = 1}):Play()
+        TweenService:Create(cyanGhost, fo, {TextTransparency = 1}):Play()
+        TweenService:Create(tStroke,   fo, {Transparency = 1}):Play()
+        TweenService:Create(line,      fo, {BackgroundTransparency = 1}):Play()
+        TweenService:Create(barBg,     fo, {BackgroundTransparency = 1}):Play()
+        TweenService:Create(barFill,   fo, {BackgroundTransparency = 1}):Play()
+        TweenService:Create(bg,        fo, {BackgroundTransparency = 1}):Play()
+        task.delay(1, function()
+            if gui and gui.Parent then gui:Destroy() end
+        end)
+    end
+
+    -- song ends -> intro ends
+    table.insert(connections, sound.Ended:Connect(endIntro))
+
+    -- fail-safe: if the song never plays, end after 8 s
+    task.spawn(function()
+        task.wait(8)
+        if not introEnded and (sound.TimeLength == 0 or not sound.Playing) then
+            endIntro()
+        end
+    end)
+
+    -- DOUBLE TAP / DOUBLE CLICK TO SKIP -> hub loads right away
+    local lastTap = 0
+    table.insert(connections, UIS.InputBegan:Connect(function(input, gp)
+        if gp then return end
+        if input.UserInputType == Enum.UserInputType.Touch
+        or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            local now = tick()
+            if now - lastTap < 0.4 then endIntro() end
+            lastTap = now
+        end
+    end))
+
+    -- hold the hub back until the intro is done
+    while not introEnded do task.wait(0.1) end
+end
+-- ══════════════════ end of intro, Haze Hub starts here ══════════════════
+
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UIS = game:GetService("UserInputService")
@@ -330,15 +635,19 @@ do
     _G.VlonESpeedLogic = Speed
 
     -- ───────────────────────────────────────────────────────────
-    -- Auto carry (proximity to other bases' podiums, as in the Misty "V2" auto carry)
+    -- Auto carry (Bubble Hub logic)
+    -- Bubble Hub's "Auto Carry Speed": while the toggle is on and the game has
+    -- set the player attribute "Stealing" to true, the carry speed is used;
+    -- when the attribute goes away, the normal speed comes back. No proximity
+    -- scan, no latch and no grace timer, the attribute is read every frame.
     -- ───────────────────────────────────────────────────────────
     local manualCarry = false
     local laggerMode = 0
     local softEnabled = false
     local running = false
-    local softRadius = 10
-    local softStealSpeed = 30
-    local auto = { active = false, graceUntil = 0, conn = nil, latched = false, held = false, armed = true, spots = {}, nextScan = 0 }
+    local softRadius = 10        -- only stored/saved for old configs, no longer used
+    local softStealSpeed = 30    -- only stored/saved for old configs, no longer used
+    local auto = { active = false, conn = nil }
 
     local function syncProfile()
         local autoCarry = auto.active
@@ -347,115 +656,15 @@ do
         else Speed:SetProfile("normal", manualCarry or autoCarry) end
     end
 
-    local function isExcludedTool(name)
-        name = tostring(name or ""):lower()
-        return name:find("bat") or name:find("slap") or name:find("medusa") or name:find("head") or name:find("stone")
-    end
-
-    local function isCarryingBrainrot(char)
-        if not char then return false end
-        if LP:GetAttribute("Stealing") == true or LP:GetAttribute("AntiKick") == true
-           or char:GetAttribute("Stealing") == true then return true end
-        for _, name in ipairs({ "Carrying", "IsCarrying", "Grabbed", "Holding", "StealHold", "HasGrab" }) do
-            local obj = char:FindFirstChild(name, true)
-            if obj and ((obj:IsA("BoolValue") and obj.Value)
-                or (obj:IsA("ObjectValue") and obj.Value)
-                or (obj:IsA("StringValue") and obj.Value ~= "")) then
-                return true
-            end
-        end
-        for _, child in ipairs(char:GetChildren()) do
-            local lname = child.Name:lower()
-            if child:IsA("Tool") and not isExcludedTool(lname) then return true end
-            if child:IsA("Model") and child:FindFirstChildWhichIsA("BasePart", true)
-               and (lname:find("brainrot") or lname:find("animal") or lname:find("carry")
-                    or lname:find("grab") or lname:find("steal") or lname:find("hold")) then
-                return true
-            end
-        end
-        return false
-    end
-
-    local function scanSpots()
-        local spots = {}
-        local plots = Workspace:FindFirstChild("Plots")
-        if plots then
-            for _, plot in ipairs(plots:GetChildren()) do
-                local sign = plot:FindFirstChild("PlotSign")
-                local yourBase = sign and sign:FindFirstChild("YourBase")
-                local mine = yourBase and yourBase:IsA("BillboardGui") and yourBase.Enabled == true
-                if not mine then
-                    local podiums = plot:FindFirstChild("AnimalPodiums")
-                    if podiums then
-                        for _, podium in ipairs(podiums:GetChildren()) do
-                            local base = podium:FindFirstChild("Base")
-                            local sp = base and base:FindFirstChild("Spawn")
-                            if sp and sp:IsA("BasePart") then spots[#spots + 1] = sp.Position end
-                        end
-                    end
-                end
-            end
-        end
-        auto.spots = spots
-    end
-
-    local function inStealRange(char)
-        local hrp = char and char:FindFirstChild("HumanoidRootPart")
-        if not hrp then return false end
-        local now = _tick()
-        if now >= auto.nextScan then
-            auto.nextScan = now + 0.5
-            scanSpots()
-        end
-        for _, spot in ipairs(auto.spots) do
-            if (hrp.Position - spot).Magnitude <= softRadius then return true end
-        end
-        return false
-    end
-
-    local function autoRelease()
-        if not auto.active then return end
-        auto.active = false
-        syncProfile()
-    end
-
-    local function autoApply()
-        auto.graceUntil = _tick() + 0.75
-        if not auto.active then
-            auto.active = true
-            syncProfile()
-        end
+    local function isStealing()
+        return LP:GetAttribute("Stealing") == true
     end
 
     local function autoStep()
-        local char = LP.Character
-        local hum = char and char:FindFirstChildOfClass("Humanoid")
-        if not char or not hum or hum.Health <= 0 then
-            autoRelease()
-            return
-        end
-        local inRange = inStealRange(char)
-        local carrying = isCarryingBrainrot(char)
-        if not inRange then auto.armed = true end
-        if not inRange or not Speed.Carrying then auto.latched = false end
-        if inRange and auto.armed and not auto.latched then
-            auto.latched = true
-            auto.held = false
-            autoApply()
-        end
-        if auto.active then
-            if carrying then
-                auto.held = true
-                auto.graceUntil = _tick() + 0.75
-            elseif auto.held then
-                auto.held = false
-                auto.latched = false
-                auto.armed = false
-                autoRelease()
-            elseif not inRange and _tick() > auto.graceUntil then
-                auto.latched = false
-                autoRelease()
-            end
+        local stealing = isStealing()
+        if stealing ~= auto.active then
+            auto.active = stealing
+            syncProfile()
         end
     end
 
@@ -469,14 +678,18 @@ do
                 auto.conn:Disconnect()
                 auto.conn = nil
             end
-            auto.latched, auto.held, auto.armed = false, false, true
-            autoRelease()
+            if auto.active then
+                auto.active = false
+                syncProfile()
+            end
         end
     end
 
     LP.CharacterAdded:Connect(function()
-        auto.latched, auto.held, auto.armed = false, false, true
-        autoRelease()
+        if auto.active then
+            auto.active = false
+            syncProfile()
+        end
     end)
 
     -- Adapter: same fields and methods the old CarrySystem exposed.
@@ -515,7 +728,7 @@ do
         end,
     })
 
-    function CarrySystem:isCarrying() return isCarryingBrainrot(LP.Character) end
+    function CarrySystem:isCarrying() return isStealing() end
     function CarrySystem:getActiveSpeed() return Speed:GetSpeed() end
     function CarrySystem:getCurrentSpeed() return Speed:GetSpeed() end
     function CarrySystem:getStatus()

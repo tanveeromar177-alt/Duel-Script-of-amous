@@ -445,10 +445,10 @@ function updateAllUIThemeColors(color)
     if gui then searchAndUpdateText(gui) end
     for _, tab in ipairs(tabButtons or {}) do
         local active = tab:GetAttribute("TabActive") == true
-        tab.BackgroundColor3 = active and color or Color3.fromRGB(14, 14, 16)
-        tab.BackgroundTransparency = active and 0 or 0.3
+        tab.BackgroundColor3 = active and color or Color3.fromRGB(0, 0, 0)
+        tab.BackgroundTransparency = active and 0 or 0.35
         local caption = tab:FindFirstChild("Caption")
-        if caption then caption.TextColor3 = active and Color3.fromRGB(12, 12, 14) or Color3.fromRGB(240, 240, 240) end
+        if caption then caption.TextColor3 = active and Color3.fromRGB(12, 12, 14) or Color3.fromRGB(255, 255, 255) end
     end
     if main then
         local marker = main:FindFirstChild("SectionMarker")
@@ -6657,7 +6657,6 @@ function paintFloatingBtn(button, active)
     button.BackgroundTransparency = 0
     local gradient = button:FindFirstChild("BtnGrad")
     if gradient then
-        -- solid-like look matching Vampire (no fancy multi-stop gradient)
         if active then
             gradient.Color = ColorSequence.new(onBg, onBg:Lerp(Color3.fromRGB(0, 0, 0), 0.18))
         else
@@ -6672,16 +6671,11 @@ function paintFloatingBtn(button, active)
     end
     local label = button:FindFirstChild("TextLabel")
     if label then label.TextColor3 = white end
+    -- StatusDot and ON/OFF text removed
     local status = button:FindFirstChild("Status")
-    if status then
-        status.Text = active and "ON" or "OFF"
-        status.TextColor3 = white
-    end
+    if status then status.Visible = false end
     local dot = button:FindFirstChild("StatusDot")
-    if dot then
-        dot.BackgroundColor3 = active and white or Color3.fromRGB(80, 80, 85)
-        dot.BackgroundTransparency = active and 0 or 0.35
-    end
+    if dot then dot.Visible = false end
     local edge = button:FindFirstChild("AccentEdge")
     if edge then
         edge.BackgroundColor3 = color
@@ -8815,15 +8809,23 @@ function buildGui()
     mainUIScale = VapserUI.new("UIScale", main, {Scale = uiScaleValue / 100})
     local LEFT_W = 118
     local sidePanel = VapserUI.new("Frame", main, {Name = "SidePanel", Size = UDim2.new(0, LEFT_W, 1, 0),
-        BackgroundTransparency = 1, BorderSizePixel = 0, ZIndex = 1})
-    local bg = VapserUI.new("ImageLabel", sidePanel, {Name = "SideImage", Size = UDim2.new(1, 46, 1, 0),
-        Image = "rbxassetid://125362513304479", BackgroundTransparency = 1, ScaleType = Enum.ScaleType.Crop, ZIndex = 1})
-    VapserUI.new("UIGradient", bg, {Rotation = 0, Transparency = NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 0), NumberSequenceKeypoint.new(0.6, 0.04), NumberSequenceKeypoint.new(1, 1)})})
-    local sideShade = VapserUI.new("Frame", sidePanel, {Name = "SideShade", Size = UDim2.new(1, 46, 1, 0),
-        BackgroundColor3 = Color3.fromRGB(0, 0, 0), BorderSizePixel = 0, ZIndex = 2})
-    VapserUI.new("UIGradient", sideShade, {Rotation = 90, Transparency = NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.5, 0.9), NumberSequenceKeypoint.new(1, 0.2)})})
+        BackgroundColor3 = Color3.fromRGB(0, 0, 0), BackgroundTransparency = 0, BorderSizePixel = 0, ZIndex = 1})
+    -- Side panel solid black (no character image here anymore)
+    local bg = VapserUI.new("ImageLabel", sidePanel, {Name = "SideImage", Size = UDim2.new(1, 0, 1, 0),
+        Image = "", BackgroundTransparency = 1, ScaleType = Enum.ScaleType.Crop, ZIndex = 1, Visible = false})
+    local sideShade = VapserUI.new("Frame", sidePanel, {Name = "SideShade", Size = UDim2.new(1, 0, 1, 0),
+        BackgroundColor3 = Color3.fromRGB(0, 0, 0), BorderSizePixel = 0, ZIndex = 2, BackgroundTransparency = 0})
+    -- Character / art image moved to main content (black area of GUI)
+    local contentArt = VapserUI.new("ImageLabel", main, {Name = "BackgroundImage",
+        Size = UDim2.new(1, -(LEFT_W - 8), 1, 0), Position = UDim2.fromOffset(LEFT_W - 8, 0),
+        Image = "rbxassetid://125362513304479", BackgroundTransparency = 1,
+        ScaleType = Enum.ScaleType.Crop, ZIndex = 1})
+    VapserUI.new("UIGradient", contentArt, {Rotation = 0, Transparency = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 0.35), NumberSequenceKeypoint.new(0.45, 0.55), NumberSequenceKeypoint.new(1, 0.75)})})
+    local contentShade = VapserUI.new("Frame", main, {Name = "ContentShade",
+        Size = UDim2.new(1, -(LEFT_W - 8), 1, 0), Position = UDim2.fromOffset(LEFT_W - 8, 0),
+        BackgroundColor3 = Color3.fromRGB(0, 0, 0), BorderSizePixel = 0, ZIndex = 2, BackgroundTransparency = 0.45})
+    VapserUI.art = contentArt
     scriptLogoRef = VapserUI.text(sidePanel, "Vapser", UDim2.new(0, 16, 1, -60), UDim2.fromOffset(LEFT_W - 28, 28), 22, Color3.fromRGB(255, 255, 255), 8)
     scriptLogoRef.Font = Enum.Font.GothamBlack
     VapserUI.titleGradient = VapserUI.new("UIGradient", scriptLogoRef, {Rotation = 90,
@@ -8909,13 +8911,13 @@ function buildGui()
     tabButtons = {}
     local contentPages = {}
     for i, name in ipairs(tabs) do
-        local button = VapserUI.new("TextButton", tabBar, {Name = name, Text = "", Size = UDim2.new(1, 0, 0, 34),
-            BackgroundColor3 = Color3.fromRGB(14, 14, 16), BackgroundTransparency = 0.3, BorderSizePixel = 0,
+        local button = VapserUI.new("TextButton", tabBar, {Name = name, Text = "", Size = UDim2.new(1, 0, 0, 36),
+            BackgroundColor3 = Color3.fromRGB(0, 0, 0), BackgroundTransparency = 0.35, BorderSizePixel = 0,
             AutoButtonColor = false, ZIndex = 15, LayoutOrder = i})
-        VapserUI.round(button, 9)
-        local caption = VapserUI.text(button, titles[i], UDim2.fromOffset(0, 0), UDim2.fromScale(1, 1), 12, WHITE, 16)
+        VapserUI.round(button, 12)
+        local caption = VapserUI.text(button, titles[i], UDim2.fromOffset(0, 0), UDim2.fromScale(1, 1), 13, WHITE, 16)
         caption.Name = "Caption"
-        caption.Font = Enum.Font.GothamMedium
+        caption.Font = Enum.Font.GothamBold
         caption.TextXAlignment = Enum.TextXAlignment.Center
         local page = VapserUI.new("ScrollingFrame", tabContent, {Name = name, Size = UDim2.fromScale(1, 1),
             BackgroundTransparency = 1, BorderSizePixel = 0, ScrollBarThickness = 2, ScrollBarImageColor3 = getThemeColor(),
@@ -8936,9 +8938,9 @@ function buildGui()
             for _, b in ipairs(tabButtons) do
                 local on = b == button
                 b:SetAttribute("TabActive", on)
-                b.Caption.TextColor3 = on and Color3.fromRGB(12, 12, 14) or Color3.fromRGB(240, 240, 240)
-                TS:Create(b, TweenInfo.new(0.16), {BackgroundTransparency = on and 0 or 0.3,
-                    BackgroundColor3 = on and getThemeColor() or Color3.fromRGB(14, 14, 16)}):Play()
+                b.Caption.TextColor3 = on and Color3.fromRGB(12, 12, 14) or Color3.fromRGB(255, 255, 255)
+                TS:Create(b, TweenInfo.new(0.16), {BackgroundTransparency = on and 0 or 0.35,
+                    BackgroundColor3 = on and getThemeColor() or Color3.fromRGB(0, 0, 0)}):Play()
             end
         end
         button.Activated:Connect(select)
@@ -9962,20 +9964,15 @@ function createMobilePanel()
         VapserUI.new("UIGradient", btn, {Name = "BtnGrad", Rotation = 90,
             Color = ColorSequence.new(Color3.fromRGB(0, 0, 0), Color3.fromRGB(12, 12, 14))})
         VapserUI.stroke(btn, Color3.fromRGB(0, 0, 0), 0.55, 1.2)
-        local dot = VapserUI.new("Frame", btn, {Name = "StatusDot", Size = UDim2.fromOffset(4, 4),
-            Position = UDim2.new(1, -10, 0, 10), BackgroundColor3 = Color3.fromRGB(80, 80, 85), BorderSizePixel = 0, ZIndex = 11})
-        VapserUI.round(dot, 2)
-        local label = VapserUI.text(btn, text, UDim2.fromOffset(6, 10), UDim2.new(1, -12, 0, 37), 10,
+        -- No StatusDot / ON-OFF text (clean Vampire-style mobile buttons)
+        local label = VapserUI.text(btn, text, UDim2.fromOffset(4, 4), UDim2.new(1, -8, 1, -8), 11,
             Color3.fromRGB(255, 255, 255), 11)
         label.Name = "TextLabel"
         label.Font = Enum.Font.GothamBold
         label.TextXAlignment = Enum.TextXAlignment.Center
+        label.TextYAlignment = Enum.TextYAlignment.Center
         label.TextWrapped = true
         label.TextTruncate = Enum.TextTruncate.None
-        local status = VapserUI.text(btn, "OFF", UDim2.fromOffset(6, 52), UDim2.new(1, -12, 0, 8), 6,
-            Color3.fromRGB(255, 255, 255), 11)
-        status.Name = "Status"
-        status.TextXAlignment = Enum.TextXAlignment.Center
         local scale = VapserUI.new("UIScale", btn, {Scale = floatingButtonScale})
         table.insert(_floatingUIScales, scale)
         local active = false

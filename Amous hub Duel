@@ -230,11 +230,11 @@ do
             end
         end)
 
-        local night = make("Frame", screen, {Name = "Nightfall", Size = UDim2.fromScale(1, 1),
+        local night = make("Frame", screen, {Name = "IntroBackdrop", Size = UDim2.fromScale(1, 1),
             BackgroundColor3 = Color3.fromRGB(6, 8, 12), Active = true, ZIndex = 1})
         make("UIGradient", night, {Rotation = 32, Color = ColorSequence.new(
             Color3.fromRGB(6, 8, 12), Color3.fromRGB(31, 20, 17))})
-        local stage = make("Frame", screen, {Name = "NightfallStage", AnchorPoint = Vector2.new(0.5, 0.5),
+        local stage = make("Frame", screen, {Name = "IntroStage", AnchorPoint = Vector2.new(0.5, 0.5),
             Position = UDim2.fromScale(0.5, 0.48), Size = UDim2.fromOffset(720, 350), BackgroundTransparency = 1, ZIndex = 2})
         local scale = make("UIScale", stage, {Scale = 1})
         local viewConnection
@@ -266,41 +266,12 @@ do
                 NumberSequenceKeypoint.new(0, 0.4), NumberSequenceKeypoint.new(0.55, 0.1), NumberSequenceKeypoint.new(1, 0)})})
             shards[index] = {object = shard, position = shard.Position}
         end
-        local orbit = round(make("Frame", stage, {Name = "Orbit", Position = UDim2.fromOffset(433, 88),
-            Size = UDim2.fromOffset(176, 176), BackgroundTransparency = 1, Rotation = 18, ZIndex = 4}), 88)
-        make("UIStroke", orbit, {Color = amber, Transparency = 0.57, Thickness = 1})
-        local halo = round(make("Frame", stage, {Position = UDim2.fromOffset(450, 105),
-            Size = UDim2.fromOffset(142, 142), BackgroundColor3 = amber, BackgroundTransparency = 0.90, ZIndex = 4}), 71)
-        local function pumpkin(parent, position, size, z)
-            local root = make("Frame", parent, {Name = "Pumpkin", Position = position,
-                Size = UDim2.fromOffset(size, size), BackgroundTransparency = 1, ZIndex = z})
-            local function part(x, y, w, h, color, radius, rotation)
-                return round(make("Frame", root, {Position = UDim2.fromScale(x, y), Size = UDim2.fromScale(w, h),
-                    BackgroundColor3 = color, Rotation = rotation or 0, ZIndex = z + 1}), radius)
-            end
-            part(0.42, 0.02, 0.12, 0.23, Color3.fromRGB(112, 125, 65), 3, 16)
-            part(0.04, 0.22, 0.92, 0.68, Color3.fromRGB(164, 24, 100), size)
-            part(0.09, 0.20, 0.52, 0.70, Color3.fromRGB(246, 37, 151), size)
-            part(0.40, 0.20, 0.51, 0.70, Color3.fromRGB(222, 27, 133), size)
-            local lobe = part(0.29, 0.17, 0.43, 0.75, Color3.fromRGB(255, 63, 167), size)
-            make("UIGradient", lobe, {Rotation = 90, Color = ColorSequence.new(
-                Color3.fromRGB(255, 130, 198), Color3.fromRGB(218, 32, 133))})
-            part(0.24, 0.38, 0.16, 0.12, Color3.fromRGB(33, 20, 17), 2, -20)
-            part(0.61, 0.38, 0.16, 0.12, Color3.fromRGB(33, 20, 17), 2, 20)
-            part(0.33, 0.65, 0.35, 0.10, Color3.fromRGB(44, 24, 17), 3)
-            part(0.43, 0.62, 0.06, 0.08, Color3.fromRGB(255, 80, 175), 1)
-            part(0.55, 0.68, 0.06, 0.08, Color3.fromRGB(255, 80, 175), 1)
-            return root
-        end
-        local jack = pumpkin(stage, UDim2.fromOffset(470, 120), 106, 5)
         local edition = text(stage, "Edition", "Vapser  /  HALLOWEEN 26", 25, 54, 310, 22, 10, amber, 6)
         edition.TextXAlignment = Enum.TextXAlignment.Left
         local title = text(stage, "Title", "Vapser", 20, 81, 314, 108, 94, ivory, 6)
         title.TextXAlignment = Enum.TextXAlignment.Left
         title.Font = Enum.Font.GothamBlack
         make("UIGradient", title, {Rotation = 90, Color = ColorSequence.new(ivory, Color3.fromRGB(221, 169, 197))})
-        local subtitle = text(stage, "Nightfall", "N I G H T F A L L", 26, 191, 298, 30, 19, ivory, 6)
-        subtitle.TextXAlignment = Enum.TextXAlignment.Left
         local tagline = text(stage, "Tagline", "THE NIGHT IS YOURS.", 27, 228, 280, 20, 10, Color3.fromRGB(160, 150, 146), 6)
         tagline.TextXAlignment = Enum.TextXAlignment.Left
         for index = 1, 28 do
@@ -309,8 +280,6 @@ do
                 BackgroundColor3 = ivory, BackgroundTransparency = 0.66, ZIndex = 6})
             seams[#seams + 1] = line
         end
-        local serial = text(stage, "Serial", "01 / NIGHTFALL", 168, 277, 140, 22, 8, Color3.fromRGB(157, 121, 141), 6)
-        serial.TextXAlignment = Enum.TextXAlignment.Left
         local progressTrack = round(make("Frame", stage, {Position = UDim2.fromOffset(26, 320),
             Size = UDim2.fromOffset(660, 2), BackgroundColor3 = Color3.fromRGB(61, 31, 47), ZIndex = 6}), 2)
         local fill = round(make("Frame", progressTrack, {Size = UDim2.fromScale(0, 1), BackgroundColor3 = amber, ZIndex = 7}), 2)
@@ -353,11 +322,7 @@ do
             local reveal = math.clamp(elapsed / 0.75, 0, 1)
             local ease = 1 - (1 - reveal) ^ 3
             title.TextTransparency = 1 - ease
-            subtitle.TextTransparency = 1 - ease
             title.Position = UDim2.fromOffset(20 - (1 - ease) * 26, 81)
-            jack.Position = UDim2.fromOffset(470, 120 + math.sin(elapsed * 1.5) * 5)
-            jack.Rotation = math.sin(elapsed * 0.9) * 3
-            halo.BackgroundTransparency = 0.9 + math.sin(elapsed * 1.4) * 0.035
             for index, shard in ipairs(shards) do
                 shard.object.Position = shard.position + UDim2.fromOffset((1 - ease) * (30 + index * 10), math.sin(elapsed + index) * 3)
                 shard.object.ImageTransparency = 0.20 + (1 - ease) * 0.8
@@ -452,8 +417,8 @@ _isDraggingButton = false
 
 backgroundIndex = 1
 backgroundImages = {"73963271683049", "87425565124554", "93776108213038"}
-VapserUI = {effects = true, animated = {}, cards = {}, tweens = {}, backgroundRevision = 0}
-useVenixCarryEngine = false
+VapserUI = {effects = false, animated = {}, cards = {}, tweens = {}, backgroundRevision = 0}
+useVenixCarryEngine = true
 
 backgroundImageTransparency = 0
 backgroundMode = "Background 1"
@@ -695,16 +660,17 @@ function updateAllUIThemeColors(color)
     end
     if gui then searchAndUpdateText(gui) end
     for _, tab in ipairs(tabButtons or {}) do
-        local active = tab:FindFirstChild("Underline") and tab.Underline.Visible
-        local underline = tab:FindFirstChild("Underline")
-        if underline then underline.BackgroundColor3 = color end
-        local stroke = tab:FindFirstChild("TabStroke")
-        if stroke then stroke.Color = color; stroke.Transparency = active and 0.42 or 1 end
-        tab.BackgroundColor3 = active and Color3.fromRGB(53, 24, 40) or Color3.fromRGB(15, 18, 23)
-        tab.BackgroundTransparency = active and 0.05 or 1
+        local active = tab:GetAttribute("TabActive") == true
+        tab.BackgroundColor3 = active and color or Color3.fromRGB(14, 14, 16)
+        tab.BackgroundTransparency = active and 0 or 0.3
         local caption = tab:FindFirstChild("Caption")
-        if caption then caption.TextColor3 = active and Color3.fromRGB(249, 242, 229) or Color3.fromRGB(155, 157, 156) end
-        if VapserUI.colorSectionIcon then VapserUI.colorSectionIcon(tab:FindFirstChild("SectionIcon"), active and color or Color3.fromRGB(144, 147, 150)) end
+        if caption then caption.TextColor3 = active and Color3.fromRGB(12, 12, 14) or Color3.fromRGB(240, 240, 240) end
+    end
+    if main then
+        local marker = main:FindFirstChild("SectionMarker")
+        if marker then marker.BackgroundColor3 = color end
+        local rule = main:FindFirstChild("TitleRule", true)
+        if rule then rule.BackgroundColor3 = color end
     end
     if _G.__VapserRefreshESPTheme then pcall(_G.__VapserRefreshESPTheme, color) end
     if main then
@@ -6742,29 +6708,6 @@ function VapserUI.text(parent, text, position, size, fontSize, color, z)
         Font = Enum.Font.GothamMedium, TextSize = fontSize or 12, ZIndex = z or 8,
         TextXAlignment = Enum.TextXAlignment.Left, TextTruncate = Enum.TextTruncate.AtEnd})
 end
-function VapserUI.pumpkin(parent, position, size, z)
-    local root = VapserUI.new("Frame", parent, {Name = "Pumpkin", Size = UDim2.fromOffset(size, size),
-        Position = position, BackgroundTransparency = 1, ZIndex = z, Active = false})
-    local function part(x, y, w, h, color, radius, rotation)
-        local object = VapserUI.new("Frame", root, {Size = UDim2.fromScale(w, h), Position = UDim2.fromScale(x, y),
-            BackgroundColor3 = color, BorderSizePixel = 0, Rotation = rotation or 0, ZIndex = z + 1})
-        VapserUI.round(object, radius)
-        return object
-    end
-    part(0.42, 0.02, 0.12, 0.23, Color3.fromRGB(112, 125, 65), 3, 16)
-    part(0.04, 0.22, 0.92, 0.68, Color3.fromRGB(164, 24, 100), size)
-    part(0.09, 0.20, 0.52, 0.70, Color3.fromRGB(246, 37, 151), size)
-    part(0.40, 0.20, 0.51, 0.70, Color3.fromRGB(222, 27, 133), size)
-    local lobe = part(0.29, 0.17, 0.43, 0.75, Color3.fromRGB(255, 63, 167), size)
-    VapserUI.new("UIGradient", lobe, {Rotation = 90, Color = ColorSequence.new(
-        Color3.fromRGB(255, 130, 198), Color3.fromRGB(218, 32, 133))})
-    part(0.24, 0.38, 0.16, 0.12, Color3.fromRGB(33, 20, 17), 2, -20)
-    part(0.61, 0.38, 0.16, 0.12, Color3.fromRGB(33, 20, 17), 2, 20)
-    part(0.33, 0.65, 0.35, 0.10, Color3.fromRGB(44, 24, 17), 3)
-    part(0.43, 0.62, 0.06, 0.08, Color3.fromRGB(255, 80, 175), 1)
-    part(0.55, 0.68, 0.06, 0.08, Color3.fromRGB(255, 80, 175), 1)
-    return root
-end
 function VapserUI.web(parent, position, size, z)
     local root = VapserUI.new("Frame", parent, {Name = "Web", Position = position,
         Size = UDim2.fromOffset(size, size), BackgroundTransparency = 1, ZIndex = z})
@@ -6847,9 +6790,9 @@ function VapserUI.fit()
     local cam = Workspace.CurrentCamera
     if not cam then return end
     local viewport = cam.ViewportSize
-    local width = 350
-    local scale = math.max(0.25, math.min(uiScaleValue / 100, (viewport.X - 24) / width, (viewport.Y - 24) / 460))
-    local height = math.min(570, math.floor((viewport.Y - 24) / scale))
+    local width = 510
+    local scale = math.max(0.25, math.min(uiScaleValue / 100, (viewport.X - 24) / width, (viewport.Y - 24) / 300))
+    local height = math.min(360, math.floor((viewport.Y - 24) / scale))
     mainUIScale.Scale = scale
     VapserUI.width, VapserUI.height = width, height
     main.Size = UDim2.fromOffset(width, height)
@@ -7454,25 +7397,25 @@ function loadAllSettings()
         antiRagdollMode = data.antiRagdoll and "v2" or "off"
     end
     antiDieEnabled = boolOr(data.antiDieEnabled, false)
-    antiBatEnabled = boolOr(data.antiBat, false)
+    antiBatEnabled = false
     antiFlingEnabled = boolOr(data.antiFling, false)
     CONFIG.AUTO_STEAL_ENABLED = boolOr(data.autoSteal, false)
     autoBatEnabled = boolOr(data.autoBat, false)
     autoLeftEnabled = boolOr(data.autoLeft, false)
     autoRightEnabled = boolOr(data.autoRight, false)
     setAutoStealMode(data.autoStealMode or "75")
-    useVenixCarryEngine = boolOr(data.useVenixCarryEngine, false)
+    useVenixCarryEngine = true
     VapserVenixCarry.softStealSpeed = _clamp(num(data.softCarrySpeed, 30), 1, 500)
     VapserVenixCarry.softStealRadius = _clamp(num(data.softCarryRadius, 10), 1, 200)
     VapserVenixCarry:setSoftStealEnabled(boolOr(data.softCarry, false))
-    VapserUI.effects = boolOr(data.uiEffects, true)
+    VapserUI.effects = false
     mobileButtonsLocked = boolOr(data.mobileButtonsLocked, false)
     if _G.__VapserRefreshSpeedEngine then pcall(_G.__VapserRefreshSpeedEngine) end
     InfiniteJump.mode = data.infiniteJumpMode == "manual" and "manual" or "hold"
     InfiniteJump.enabled = boolOr(data.infiniteJumpEnabled, false)
     medusaCounterEnabled = boolOr(data.medusaCounter, false)
     batCounterEnabled = boolOr(data.batCounter, false)
-    batCounterV2Enabled = boolOr(data.batCounterV2, false)
+    batCounterV2Enabled = false
     unwalkEnabled = boolOr(data.unwalkEnabled, boolOr(data.unwalk, false))
     antiLagEnabled = boolOr(data.antiLag, false)
     laggerToggled = boolOr(data.laggerToggled, false)
@@ -7485,7 +7428,7 @@ function loadAllSettings()
     espLineEnabled = boolOr(data.espLineEnabled, false)
     if espEnabled then pcall(toggleESP, true) else pcall(toggleESP, false) end
 
-    vividGraphicsEnabled = boolOr(data.vividGraphics, false)
+    vividGraphicsEnabled = false
     hideButtonsEnabled = boolOr(data.hideButtons, false)
 
     TPBatState.enabled = false
@@ -7494,9 +7437,6 @@ function loadAllSettings()
     selectedColor = COLOR_THEMES[currentColorTheme]
     task.defer(function() updateAllUIThemeColors(selectedColor) end)
 
-    if data.rivalTitleTheme and RIVAL_TITLE_THEMES[data.rivalTitleTheme] then
-        task.defer(function() applyRivalTitleTheme(data.rivalTitleTheme) end)
-    end
 
     skyTheme = data.skyTheme or "Off"
     if skyTheme ~= "Off" then pcall(applyCustomSky, skyTheme) end
@@ -7557,44 +7497,12 @@ function loadAllSettings()
     backgroundIndex = _clamp(_floor(num(data.backgroundIndex, 1)), 1, #backgroundImages)
     backgroundImageTransparency = _clamp(num(data.backgroundImageTransparency, 0), 0, 1)
 
-    if data.backgroundMode == "None" then
-        backgroundMode = "None"
-    else
-        local savedN = nil
-        if type(data.backgroundMode) == "string" then
-            savedN = tonumber(string.match(data.backgroundMode, "^Background%s+(%d+)$"))
-        end
-        if type(savedN) == "number" and savedN >= 1 and savedN <= #backgroundImages then
-            backgroundIndex = savedN
-        end
-        backgroundMode = "Background " .. backgroundIndex
-    end
+    backgroundIndex = 1
+    backgroundMode = "Background 1"
 
     floatingButtonScale = _clamp(num(data.floatingButtonScale, 1), 0.5, 2)
 
-    if type(data.outfitIndex) == "number"
-       and type(OUTFITS) == "table"
-       and #OUTFITS > 0
-       and data.outfitIndex >= 1
-       and data.outfitIndex <= #OUTFITS then
-        currentOutfitIndex = data.outfitIndex
-        task.defer(function()
-            pcall(function() applyOutfitByIndex(currentOutfitIndex) end)
-            if outfitSelectorLabel and OUTFITS[currentOutfitIndex] then
-                outfitSelectorLabel.Text = OUTFITS[currentOutfitIndex].label
-            end
-        end)
-    end
-
-    if type(data.vx7AvatarIndex) == "number"
-       and data.vx7AvatarIndex >= 1
-       and data.vx7AvatarIndex <= #VX7A.labels - 1 then
-        local _vx7Saved = data.vx7AvatarIndex
-        task.defer(function()
-            task.wait(1.5)
-            pcall(VX7A.apply, _vx7Saved)
-        end)
-    end
+    currentOutfitIndex = 1
 
     if vividGraphicsEnabled then
         task.defer(function() pcall(enableVividGraphics) end)
@@ -7769,12 +7677,12 @@ function resetToFactoryDefaults()
         uiLocked = false; mobileButtonsLocked = false
         CONFIG.AUTO_STEAL_ENABLED = false
         setAutoStealMode("75")
-        useVenixCarryEngine = false
+        useVenixCarryEngine = true
         VapserVenixCarry:stop()
         VapserVenixCarry.softStealEnabled = false
         VapserVenixCarry.softStealSpeed = 30
         VapserVenixCarry.softStealRadius = 10
-        VapserUI.effects = true
+        VapserUI.effects = false
         if _G._VapserStealModeSetter then pcall(_G._VapserStealModeSetter, "V1") end
         BAT_AIMBOT_SPEED = 55
         BYPASS_AIMBOT_SPEED = BAT_AIMBOT_SPEED
@@ -9080,7 +8988,7 @@ function buildGui()
     local ROW_BORDER = Color3.fromRGB(87, 59, 74)
     local WHITE = Color3.fromRGB(249, 242, 229)
     local INP = Color3.fromRGB(12, 15, 19)
-    local GUI_W, GUI_H = 350, 570
+    local GUI_W, GUI_H = 510, 360
     for _, parent in ipairs({CoreGui, pgui}) do
         for _, name in ipairs({"Vapser", "VapserMobilePanel", "VapserSpeedIndicator", "VapserBootErrors"}) do
             pcall(function() local old = parent:FindFirstChild(name); if old then old:Destroy() end end)
@@ -9092,73 +9000,34 @@ function buildGui()
     local ok = pcall(function() gui.Parent = CoreGui end)
     if not ok then gui.Parent = pgui end
     main = VapserUI.new("Frame", gui, {Name = "Main", Size = UDim2.fromOffset(GUI_W, GUI_H),
-        Position = UDim2.fromOffset(18, 16), BackgroundColor3 = Color3.fromRGB(9, 12, 16),
+        Position = UDim2.fromOffset(18, 16), BackgroundColor3 = Color3.fromRGB(5, 5, 7),
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
     VapserUI.round(main, 18)
     local border = VapserUI.stroke(main, Color3.fromRGB(210, 83, 152), 0.35, 1.2)
     border.Name = "MainBorder"
     mainUIScale = VapserUI.new("UIScale", main, {Scale = uiScaleValue / 100})
-    local bg = VapserUI.new("ImageLabel", main, {Name = "BackgroundImage", Size = UDim2.fromScale(1, 1),
-        Image = "rbxassetid://" .. backgroundImages[backgroundIndex], ImageTransparency = backgroundImageTransparency,
-        BackgroundTransparency = 1, ScaleType = Enum.ScaleType.Crop, ZIndex = 0})
-    VapserUI.round(bg, 18)
-    local veil = VapserUI.new("Frame", main, {Name = "BackgroundVeil", Size = UDim2.fromScale(1, 1),
-        BackgroundColor3 = Color3.fromRGB(7, 11, 16), BackgroundTransparency = 0.20, BorderSizePixel = 0, ZIndex = 2})
-    VapserUI.new("UIGradient", veil, {Rotation = 35, Transparency = NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 0.04), NumberSequenceKeypoint.new(0.6, 0.22), NumberSequenceKeypoint.new(1, 0.10)})})
-    VapserUI.round(veil, 18)
-    local innerBorder = VapserUI.new("Frame", main, {Name = "PanelInset", Position = UDim2.fromOffset(3, 3),
-        Size = UDim2.new(1, -6, 1, -6), BackgroundTransparency = 1, BorderSizePixel = 0, ZIndex = 3})
-    VapserUI.round(innerBorder, 15)
-    VapserUI.stroke(innerBorder, Color3.fromRGB(239, 157, 202), 0.93, 1)
-    local topLight = VapserUI.new("Frame", main, {Name = "TopLight", Position = UDim2.fromOffset(28, 1),
-        Size = UDim2.new(1, -56, 0, 1), BackgroundColor3 = Color3.fromRGB(255, 126, 196), BorderSizePixel = 0, ZIndex = 4})
-    VapserUI.new("UIGradient", topLight, {Transparency = NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.5, 0.25), NumberSequenceKeypoint.new(1, 1)})})
-    local header = VapserUI.new("Frame", main, {Name = "ScriptHeader", Position = UDim2.fromOffset(14, 6),
-        Size = UDim2.new(1, -28, 0, 72), BackgroundColor3 = Color3.fromRGB(18, 20, 25),
-        BorderSizePixel = 0, ClipsDescendants = true, ZIndex = 5})
-    VapserUI.round(header, 15)
-    VapserUI.stroke(header, Color3.fromRGB(152, 68, 114), 0.65, 1)
-    VapserUI.art = VapserUI.new("ImageLabel", header, {Name = "Scene", Size = UDim2.fromScale(1, 1),
-        Image = bg.Image, ImageTransparency = 0.22, BackgroundTransparency = 1, ScaleType = Enum.ScaleType.Crop, ZIndex = 5})
-    local shade = VapserUI.new("Frame", header, {Name = "ArtworkShade", Size = UDim2.fromScale(1, 1), BorderSizePixel = 0,
-        BackgroundColor3 = Color3.fromRGB(6, 10, 15), BackgroundTransparency = 0.1, ZIndex = 6})
-    VapserUI.new("UIGradient", shade, {Rotation = 0, Transparency = NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 0.02), NumberSequenceKeypoint.new(0.52, 0.2), NumberSequenceKeypoint.new(1, 0.7)})})
-    local badge = VapserUI.new("Frame", header, {Name = "Edition", Position = UDim2.fromOffset(13, 5),
-        Size = UDim2.fromOffset(97, 17), BackgroundColor3 = Color3.fromRGB(60, 24, 44),
-        BackgroundTransparency = 0.12, BorderSizePixel = 0, ZIndex = 7})
-    VapserUI.round(badge, 5)
-    local edition = VapserUI.text(badge, "HALLOWEEN '26", UDim2.fromOffset(7, 0), UDim2.new(1, -14, 1, 0), 8,
-        Color3.fromRGB(253, 117, 191), 8)
-    edition.Font = Enum.Font.GothamBold
-    scriptLogoRef = VapserUI.text(header, "Vapser", UDim2.fromOffset(11, 17), UDim2.fromOffset(155, 39), 36, WHITE, 8)
+    local LEFT_W = 170
+    local sidePanel = VapserUI.new("Frame", main, {Name = "SidePanel", Size = UDim2.new(0, LEFT_W, 1, 0),
+        BackgroundTransparency = 1, BorderSizePixel = 0, ZIndex = 1})
+    local bg = VapserUI.new("ImageLabel", sidePanel, {Name = "SideImage", Size = UDim2.new(1, 46, 1, 0),
+        Image = "rbxassetid://125362513304479", BackgroundTransparency = 1, ScaleType = Enum.ScaleType.Crop, ZIndex = 1})
+    VapserUI.new("UIGradient", bg, {Rotation = 0, Transparency = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 0), NumberSequenceKeypoint.new(0.6, 0.04), NumberSequenceKeypoint.new(1, 1)})})
+    local sideShade = VapserUI.new("Frame", sidePanel, {Name = "SideShade", Size = UDim2.new(1, 46, 1, 0),
+        BackgroundColor3 = Color3.fromRGB(0, 0, 0), BorderSizePixel = 0, ZIndex = 2})
+    VapserUI.new("UIGradient", sideShade, {Rotation = 90, Transparency = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.5, 0.9), NumberSequenceKeypoint.new(1, 0.2)})})
+    scriptLogoRef = VapserUI.text(sidePanel, "Vapser", UDim2.new(0, 16, 1, -54), UDim2.fromOffset(LEFT_W - 28, 28), 22, WHITE, 8)
     scriptLogoRef.Font = Enum.Font.GothamBlack
     VapserUI.titleGradient = VapserUI.new("UIGradient", scriptLogoRef, {Rotation = 90,
         Color = ColorSequence.new(WHITE, Color3.fromRGB(247, 120, 189))})
-    VapserUI.text(header, "N I G H T F A L L", UDim2.fromOffset(14, 56), UDim2.fromOffset(162, 14), 8,
-        Color3.fromRGB(205, 164, 186), 8)
-    local glow = VapserUI.new("Frame", header, {Name = "PumpkinGlow", AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = UDim2.new(1, -56, 0.54, 0), Size = UDim2.fromOffset(64, 64),
-        BackgroundColor3 = getThemeColor(), BackgroundTransparency = 0.91, BorderSizePixel = 0, ZIndex = 7})
-    VapserUI.round(glow, 50)
-    local ring = VapserUI.new("Frame", header, {Name = "PumpkinRing", AnchorPoint = Vector2.new(0.5, 0.5),
-        Position = glow.Position, Size = UDim2.fromOffset(58, 58), BackgroundTransparency = 1, ZIndex = 7})
-    VapserUI.round(ring, 50)
-    VapserUI.stroke(ring, Color3.fromRGB(255, 127, 197), 0.63, 1)
-    local pumpkin = VapserUI.pumpkin(header, UDim2.new(1, -82, 0.54, -26), 52, 8)
-    table.insert(VapserUI.animated, {object = pumpkin, position = pumpkin.Position, y = 2.5, rotate = 2})
-    for i = 1, 4 do
-        local ember = VapserUI.new("Frame", header, {Name = "Ember", Size = UDim2.fromOffset(2, 2),
-            Position = UDim2.new(0.58 + i * 0.07, 0, 0.14 + (i % 3) * 0.25, 0),
-            BackgroundColor3 = Color3.fromRGB(255, 120, 193), BackgroundTransparency = 0.5,
-            BorderSizePixel = 0, ZIndex = 8})
-        table.insert(VapserUI.animated, {object = ember, position = ember.Position, x = 2, y = 4})
-    end
+    local titleRule = VapserUI.new("Frame", sidePanel, {Name = "TitleRule", Position = UDim2.new(0, 16, 1, -25),
+        Size = UDim2.fromOffset(LEFT_W - 66, 1), BackgroundColor3 = getThemeColor(), BorderSizePixel = 0, ZIndex = 8})
+    VapserUI.text(sidePanel, "made by vasps-3", UDim2.new(0, 16, 1, -21), UDim2.fromOffset(LEFT_W - 28, 14), 9,
+        Color3.fromRGB(196, 176, 188), 8)
 
     local close = VapserUI.new("TextButton", main, {Name = "Close", Size = UDim2.fromOffset(26, 26),
-        Position = UDim2.new(1, -39, 0, 15), Text = "−", TextSize = 20, Font = Enum.Font.GothamMedium,
+        Position = UDim2.new(1, -36, 0, 8), Text = "−", TextSize = 20, Font = Enum.Font.GothamMedium,
         TextColor3 = WHITE, BackgroundColor3 = INP, BackgroundTransparency = 0.06,
         BorderSizePixel = 0, AutoButtonColor = false, ZIndex = 18})
     VapserUI.round(close, 8)
@@ -9169,10 +9038,8 @@ function buildGui()
     VapserUI.round(miniBtn, 11)
     VapserUI.stroke(miniBtn, getThemeColor(), 0.35, 1.2)
     VapserUI.new("UIGradient", miniBtn, {Rotation = 0, Color = ColorSequence.new(Color3.fromRGB(34, 28, 24), Color3.fromRGB(11, 15, 20))})
-    VapserUI.pumpkin(miniBtn, UDim2.fromOffset(9, 7), 32, 26)
-    local miniTitle = VapserUI.text(miniBtn, "Vapser", UDim2.fromOffset(50, 7), UDim2.fromOffset(62, 18), 15, WHITE, 28)
+    local miniTitle = VapserUI.text(miniBtn, "Vapser", UDim2.fromOffset(16, 0), UDim2.fromOffset(100, 46), 15, WHITE, 28)
     miniTitle.Font = Enum.Font.GothamBlack
-    VapserUI.text(miniBtn, "NIGHTFALL", UDim2.fromOffset(50, 26), UDim2.fromOffset(68, 12), 7, getThemeColor(), 28)
     VapserUI.text(miniBtn, "›", UDim2.new(1, -22, 0, 8), UDim2.fromOffset(17, 30), 22, WHITE, 28)
     miniBackgroundImage = nil
     local animating, animationId, tween = false, 0, nil
@@ -9204,60 +9071,45 @@ function buildGui()
     main:GetPropertyChangedSignal("Position"):Connect(function()
         if not animating then _G.__VapserMainOriginalPos = main.Position end
     end)
-    drag(main, 80)
-    local tabBar = VapserUI.new("Frame", main, {Name = "Navigation", Size = UDim2.new(1, -28, 0, 60),
-        Position = UDim2.new(0, 14, 1, -100), BackgroundColor3 = Color3.fromRGB(10, 14, 19),
-        BackgroundTransparency = 0.06, BorderSizePixel = 0, ZIndex = 14})
-    VapserUI.round(tabBar, 16)
-    VapserUI.stroke(tabBar, Color3.fromRGB(127, 62, 97), 0.62, 1)
-    VapserUI.new("UIListLayout", tabBar, {FillDirection = Enum.FillDirection.Horizontal,
-        HorizontalAlignment = Enum.HorizontalAlignment.Center, VerticalAlignment = Enum.VerticalAlignment.Center,
-        Padding = UDim.new(0, 5), SortOrder = Enum.SortOrder.LayoutOrder})
-    local headingPanel = VapserUI.new("Frame", main, {Name = "SectionPanel", Position = UDim2.fromOffset(14, 85),
-        Size = UDim2.new(1, -28, 0, 27), BackgroundColor3 = Color3.fromRGB(21, 24, 29),
-        BackgroundTransparency = 0.12, BorderSizePixel = 0, ZIndex = 6})
-    VapserUI.round(headingPanel, 8)
-    VapserUI.stroke(headingPanel, Color3.fromRGB(128, 72, 102), 0.82, 1)
-    local pageHeading = VapserUI.text(main, "01   /   MOVEMENT", UDim2.fromOffset(25, 87), UDim2.new(1, -50, 0, 23), 11, WHITE, 8)
+    drag(main, 44)
+    local tabBar = VapserUI.new("Frame", sidePanel, {Name = "Navigation", Position = UDim2.fromOffset(12, 50),
+        Size = UDim2.new(1, -24, 1, -120), BackgroundTransparency = 1, BorderSizePixel = 0, ZIndex = 14})
+    VapserUI.new("UIListLayout", tabBar, {FillDirection = Enum.FillDirection.Vertical,
+        HorizontalAlignment = Enum.HorizontalAlignment.Center, VerticalAlignment = Enum.VerticalAlignment.Top,
+        Padding = UDim.new(0, 6), SortOrder = Enum.SortOrder.LayoutOrder})
+    local sectionMarker = VapserUI.new("Frame", main, {Name = "SectionMarker", Position = UDim2.fromOffset(LEFT_W + 10, 11),
+        Size = UDim2.fromOffset(3, 20), BackgroundColor3 = getThemeColor(), BorderSizePixel = 0, ZIndex = 8})
+    VapserUI.round(sectionMarker, 2)
+    local pageHeading = VapserUI.text(main, "MOVEMENT", UDim2.fromOffset(LEFT_W + 22, 8), UDim2.new(1, -(LEFT_W + 70), 0, 26), 11, WHITE, 8)
     pageHeading.Name = "SectionHeading"
     pageHeading.Font = Enum.Font.GothamBold
-    local headingRule = VapserUI.new("Frame", main, {Position = UDim2.fromOffset(20, 114),
-        Size = UDim2.new(1, -44, 0, 1), BackgroundColor3 = ROW_BORDER, BackgroundTransparency = 0.48, BorderSizePixel = 0, ZIndex = 7})
-    local tabContent = VapserUI.new("Frame", main, {Name = "Content", Size = UDim2.new(1, -16, 1, -230),
-        Position = UDim2.fromOffset(8, 120), BackgroundTransparency = 1, ClipsDescendants = true, ZIndex = 6})
-    local footer = VapserUI.new("Frame", main, {Name = "Footer", Position = UDim2.new(0, 14, 1, -34),
-        Size = UDim2.new(1, -28, 0, 25), BackgroundTransparency = 1, ZIndex = 8})
+    local tabContent = VapserUI.new("Frame", main, {Name = "Content", Size = UDim2.new(1, -(LEFT_W + 8), 1, -78),
+        Position = UDim2.fromOffset(LEFT_W + 4, 40), BackgroundTransparency = 1, ClipsDescendants = true, ZIndex = 6})
+    local footer = VapserUI.new("Frame", main, {Name = "Footer", Position = UDim2.new(0, LEFT_W + 10, 1, -34),
+        Size = UDim2.new(1, -(LEFT_W + 20), 0, 25), BackgroundTransparency = 1, ZIndex = 8})
     VapserUI.new("Frame", footer, {Size = UDim2.new(1, 0, 0, 1), BackgroundColor3 = ROW_BORDER,
         BackgroundTransparency = 0.62, BorderSizePixel = 0, ZIndex = 8})
     local avatar = VapserUI.new("ImageLabel", footer, {Position = UDim2.fromOffset(2, 6), Size = UDim2.fromOffset(17, 17),
         Image = "rbxthumb://type=AvatarHeadShot&id=" .. LP.UserId .. "&w=150&h=150", BackgroundColor3 = INP, BorderSizePixel = 0, ZIndex = 8})
     VapserUI.round(avatar, 5)
     VapserUI.text(footer, "@" .. LP.Name, UDim2.fromOffset(27, 5), UDim2.new(0.5, -32, 0, 18), 9, Color3.fromRGB(179, 177, 169), 9)
-    VapserUI.footerStats = VapserUI.text(footer, "Vapser  /  NIGHTFALL", UDim2.new(0.5, 0, 0, 5), UDim2.new(0.5, -3, 0, 18), 8,
+    VapserUI.footerStats = VapserUI.text(footer, "Vapser", UDim2.new(0.5, 0, 0, 5), UDim2.new(0.5, -3, 0, 18), 8,
         Color3.fromRGB(211, 108, 164), 9)
     VapserUI.footerStats.TextXAlignment = Enum.TextXAlignment.Right
     local tabs = {"Speed", "Custom", "Visual", "Settings", "Keybinds"}
-    local titles = {"MOVE", "COMBAT", "LOOK", "STEAL", "BINDS"}
+    local titles = {"Move", "Combat", "Look", "Steal", "Binds"}
     local headings = {"MOVEMENT", "COMBAT", "APPEARANCE", "AUTO STEAL", "KEYBINDS"}
     tabButtons = {}
     local contentPages = {}
     for i, name in ipairs(tabs) do
-        local button = VapserUI.new("TextButton", tabBar, {Name = name, Text = "", Size = UDim2.fromOffset(56, 48),
-            BackgroundColor3 = Color3.fromRGB(25, 25, 24), BackgroundTransparency = 1, BorderSizePixel = 0,
-            Font = Enum.Font.GothamBold, TextSize = 9, TextColor3 = WHITE,
+        local button = VapserUI.new("TextButton", tabBar, {Name = name, Text = "", Size = UDim2.new(1, 0, 0, 30),
+            BackgroundColor3 = Color3.fromRGB(14, 14, 16), BackgroundTransparency = 0.3, BorderSizePixel = 0,
             AutoButtonColor = false, ZIndex = 15, LayoutOrder = i})
-        VapserUI.round(button, 8)
-        local stroke = VapserUI.stroke(button, getThemeColor(), 1, 1)
-        stroke.Name = "TabStroke"
-        VapserUI.new("UIGradient", button, {Name = "TabBgGrad", Enabled = false,
-            Color = ColorSequence.new(Color3.fromRGB(55, 25, 41), Color3.fromRGB(24, 24, 25)), Rotation = 90})
-        VapserUI.sectionIcon(button, name, UDim2.fromOffset(18, 6), 20, getThemeColor(), 16)
-        local caption = VapserUI.text(button, titles[i], UDim2.fromOffset(0, 30), UDim2.fromOffset(56, 11), 7, WHITE, 16)
+        VapserUI.round(button, 9)
+        local caption = VapserUI.text(button, titles[i], UDim2.fromOffset(0, 0), UDim2.fromScale(1, 1), 12, WHITE, 16)
         caption.Name = "Caption"
+        caption.Font = Enum.Font.GothamMedium
         caption.TextXAlignment = Enum.TextXAlignment.Center
-        local underline = VapserUI.new("Frame", button, {Name = "Underline", Size = UDim2.fromOffset(18, 2),
-            Position = UDim2.fromOffset(19, 44), BackgroundColor3 = getThemeColor(), BorderSizePixel = 0, Visible = i == 1, ZIndex = 16})
-        VapserUI.round(underline, 2)
         local page = VapserUI.new("ScrollingFrame", tabContent, {Name = name, Size = UDim2.fromScale(1, 1),
             BackgroundTransparency = 1, BorderSizePixel = 0, ScrollBarThickness = 2, ScrollBarImageColor3 = getThemeColor(),
             ScrollBarImageTransparency = 0.36, AutomaticCanvasSize = Enum.AutomaticSize.Y, CanvasSize = UDim2.new(),
@@ -9269,20 +9121,17 @@ function buildGui()
         contentPages[name] = page
         table.insert(tabButtons, button)
         local function select()
-            pageHeading.Text = string.format("%02d   /   %s", i, headings[i])
+            pageHeading.Text = headings[i]
             for _, p in pairs(contentPages) do p.Visible = false end
             page.Visible = true
             page.Position = UDim2.fromOffset(VapserUI.effects and 8 or 0, 0)
             TS:Create(page, TweenInfo.new(0.18), {Position = UDim2.fromOffset(0, 0)}):Play()
             for _, b in ipairs(tabButtons) do
                 local on = b == button
-                b.Underline.Visible = on
-                b.TabBgGrad.Enabled = false
-                b.TabStroke.Transparency = on and 0.42 or 1
-                b.Caption.TextColor3 = on and WHITE or Color3.fromRGB(155, 157, 156)
-                VapserUI.colorSectionIcon(b:FindFirstChild("SectionIcon"), on and getThemeColor() or Color3.fromRGB(144, 147, 150))
-                TS:Create(b, TweenInfo.new(0.16), {BackgroundTransparency = on and 0.05 or 1,
-                    BackgroundColor3 = on and Color3.fromRGB(53, 24, 40) or Color3.fromRGB(15, 18, 23)}):Play()
+                b:SetAttribute("TabActive", on)
+                b.Caption.TextColor3 = on and Color3.fromRGB(12, 12, 14) or Color3.fromRGB(240, 240, 240)
+                TS:Create(b, TweenInfo.new(0.16), {BackgroundTransparency = on and 0 or 0.3,
+                    BackgroundColor3 = on and getThemeColor() or Color3.fromRGB(14, 14, 16)}):Play()
             end
         end
         button.Activated:Connect(select)
@@ -9462,15 +9311,6 @@ function buildGui()
     do local row = mkRow(speedPage, 42); mkLabel(row, "Lagger Carry Speed"); lagger2Box = mkBox(row, LAGGER_CARRY_SPEED, 50, 56, function(v) if v == v and v > 0 and v < math.huge then LAGGER_CARRY_SPEED = v; if _G.__VapserApplySpeedNow then pcall(_G.__VapserApplySpeedNow) end end end) end
 
     mkSect(speedPage, "Speed Engine")
-    do
-        local row = mkRow(speedPage, 46)
-        mkLabel(row, "Speed Motor")
-        VapserUI.motorLabel = mkSelector(row, useVenixCarryEngine and "Carry Boost" or "Direct", {"Direct", "Carry Boost"}, function(direction, update)
-            useVenixCarryEngine = not useVenixCarryEngine
-            update(useVenixCarryEngine and "Carry Boost" or "Direct")
-            if _G.__VapserRefreshSpeedEngine then _G.__VapserRefreshSpeedEngine() end
-        end)
-    end
     VapserUI.carrySetter = mkToggle(speedPage, "Auto Carry", function(on)
         VapserVenixCarry:setSoftStealEnabled(on)
         if on then useVenixCarryEngine = true end
@@ -9556,9 +9396,6 @@ function buildGui()
     local combatPage = contentPages["Custom"]
 
     mkSect(combatPage, "Defense")
-    setAntiBatVisual = mkToggle(combatPage, "Anti Bat", function(on)
-        if on then startAntiBat() else stopAntiBat() end
-    end)
     setAntiFlingVisual = mkToggle(combatPage, "Anti Fling", function(on)
         antiFlingEnabled = on
         if on then startAntiFling() else stopAntiFling() end
@@ -9625,10 +9462,6 @@ function buildGui()
         batCounterEnabled = on
         if on then startBatCounter() else stopBatCounter() end
     end)
-    setBatCounterV2Visual = mkToggle(combatPage, "Bat Counter V2", function(on)
-        batCounterV2Enabled = on
-        if on then startBatCounterV2() else stopBatCounterV2() end
-    end)
     setMedusaVisual = mkToggle(combatPage, "Medusa Counter", function(on)
         medusaCounterEnabled = on
         if on then
@@ -9662,64 +9495,11 @@ function buildGui()
     local visualPage = contentPages["Visual"]
 
     mkSect(visualPage, "Interface")
-    do
-        local row = mkRow(visualPage, 42)
-        mkLabel(row, "Background")
-
-        local options = {"None"}
-        for i = 1, #backgroundImages do
-            table.insert(options, "Background " .. i)
-        end
-
-        local function currentOptionIndex()
-            if backgroundMode == "None" then return 1 end
-            local n = tonumber(string.match(backgroundMode, "^Background%s+(%d+)$")) or 1
-            return _clamp(n + 1, 1, #options)
-        end
-
-        backgroundSelectorLabel = mkSelector(row, backgroundMode, options, function(direction, updateLabel)
-            local idx = currentOptionIndex() + direction
-            if idx < 1 then idx = #options end
-            if idx > #options then idx = 1 end
-            applyBackgroundMode(options[idx])
-            updateLabel(backgroundMode)
-        end)
-        applyBackgroundMode(backgroundMode)
-    end
-    do
-        local row = mkRow(visualPage, 95)
-        row.BackgroundTransparency = 1
-        local border = row:FindFirstChildOfClass("UIStroke"); if border then border:Destroy() end
-        for i, asset in ipairs(backgroundImages) do
-            local card = VapserUI.new("ImageButton", row, {Size = UDim2.new(1 / 3, -6, 1, 0),
-                Position = UDim2.new((i - 1) / 3, (i - 1) * 3, 0, 0), Image = "rbxassetid://" .. asset,
-                ScaleType = Enum.ScaleType.Crop, BackgroundColor3 = Color3.fromRGB(12, 16, 21),
-                BorderSizePixel = 0, AutoButtonColor = false, ClipsDescendants = true, ZIndex = 8})
-            VapserUI.round(card, 12)
-            VapserUI.stroke(card, getThemeColor(), 0.72, 1.7)
-            local scrim = VapserUI.new("Frame", card, {Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.fromRGB(8, 12, 17),
-                BackgroundTransparency = 0.6, BorderSizePixel = 0, ZIndex = 9})
-            VapserUI.round(scrim, 12)
-            local badge = VapserUI.new("Frame", card, {Name = "Selected", Size = UDim2.fromOffset(16, 16),
-                Position = UDim2.new(1, -22, 0, 6), BackgroundColor3 = getThemeColor(), BorderSizePixel = 0,
-                Visible = false, ZIndex = 10})
-            VapserUI.round(badge, 6)
-            local check = VapserUI.text(badge, "✓", UDim2.fromOffset(0, 0), UDim2.fromScale(1, 1), 11, WHITE, 11)
-            check.TextXAlignment = Enum.TextXAlignment.Center
-            local label = VapserUI.text(card, "SCENE 0" .. i,
-                UDim2.new(0, 8, 1, -25), UDim2.new(1, -12, 0, 19), 9, WHITE, 10)
-            label.Font = Enum.Font.GothamBold
-            card.Activated:Connect(function() applyBackgroundMode("Background " .. i); pcall(saveAllSettings, true) end)
-            VapserUI.cards[i] = card
-        end
-        applyBackgroundMode(backgroundMode)
-    end
     setLockUIVisual = mkToggle(visualPage, "Lock UI", function(on) toggleLockUI(on) end)
     setHideButtonsVisual = mkToggle(visualPage, "Hide Button", function(on) toggleHideButtons(on) end)
     if setHideButtonsVisual then setHideButtonsVisual(hideButtonsEnabled) end
 
     VapserUI.lockButtonsSetter = mkToggle(visualPage, "Lock Mobile Buttons", function(on) mobileButtonsLocked = on end)
-    VapserUI.effectsSetter = mkToggle(visualPage, "Halloween Effects", function(on) VapserUI.effects = on end)
     mkSect(visualPage, "Display")
     do
         local row = mkRow(visualPage, 42)
@@ -9805,184 +9585,7 @@ function buildGui()
         leftBtn.MouseButton1Click:Connect(function() updateAnimSelector(-1) end)
         rightBtn.MouseButton1Click:Connect(function() updateAnimSelector(1) end)
     end
-    do
-        local row = mkRow(visualPage, 42)
-        mkLabel(row, "Outfit")
-        local container = Instance.new("Frame", row)
-        container.Size = UDim2.new(0, 160, 1, 0)
-        container.Position = UDim2.new(1, -168, 0, 0)
-        container.BackgroundTransparency = 1
-        container.ZIndex = 8
-        local leftBtn = Instance.new("TextButton", container)
-        leftBtn.Size = UDim2.new(0, 28, 0, 26)
-        leftBtn.Position = UDim2.new(0, 0, 0.5, -13)
-        leftBtn.BackgroundColor3 = INP
-        leftBtn.BackgroundTransparency = 0.10
-        leftBtn.BorderSizePixel = 0
-        leftBtn.Text = "<"
-        leftBtn.TextColor3 = WHITE
-        leftBtn.Font = Enum.Font.GothamBold
-        leftBtn.TextSize = 13
-        leftBtn.AutoButtonColor = false
-        leftBtn.ZIndex = 9
-        Instance.new("UICorner", leftBtn).CornerRadius = UDim.new(0, 6)
-        outfitSelectorLabel = Instance.new("TextLabel", container)
-        outfitSelectorLabel.Size = UDim2.new(0, 80, 0, 26)
-        outfitSelectorLabel.Position = UDim2.new(0.5, -40, 0.5, -13)
-        outfitSelectorLabel.BackgroundTransparency = 1
-        outfitSelectorLabel.Text = OUTFITS[currentOutfitIndex].label
-        outfitSelectorLabel.TextColor3 = WHITE
-        outfitSelectorLabel.Font = Enum.Font.GothamBold
-        outfitSelectorLabel.TextSize = 12
-        outfitSelectorLabel.TextXAlignment = Enum.TextXAlignment.Center
-        outfitSelectorLabel.ZIndex = 9
-        local rightBtn = Instance.new("TextButton", container)
-        rightBtn.Size = UDim2.new(0, 28, 0, 26)
-        rightBtn.Position = UDim2.new(1, -28, 0.5, -13)
-        rightBtn.BackgroundColor3 = INP
-        rightBtn.BackgroundTransparency = 0.10
-        rightBtn.BorderSizePixel = 0
-        rightBtn.Text = ">"
-        rightBtn.TextColor3 = WHITE
-        rightBtn.Font = Enum.Font.GothamBold
-        rightBtn.TextSize = 13
-        rightBtn.AutoButtonColor = false
-        rightBtn.ZIndex = 9
-        Instance.new("UICorner", rightBtn).CornerRadius = UDim.new(0, 6)
-        local function updateOutfit(direction)
-            pcall(VX7A.stop)
-            local newIdx = currentOutfitIndex + direction
-            if newIdx < 1 then newIdx = #OUTFITS end
-            if newIdx > #OUTFITS then newIdx = 1 end
-            currentOutfitIndex = newIdx
-            pcall(function() applyOutfitByIndex(currentOutfitIndex) end)
-            if outfitSelectorLabel then outfitSelectorLabel.Text = OUTFITS[currentOutfitIndex].label end
-            saveAllSettings()
-        end
-        leftBtn.MouseButton1Click:Connect(function() updateOutfit(-1) end)
-        rightBtn.MouseButton1Click:Connect(function() updateOutfit(1) end)
-    end
-
-    do
-        local row = mkRow(visualPage, 42)
-        mkLabel(row, "Best Avatars")
-        local container = Instance.new("Frame", row)
-        container.Size = UDim2.new(0, 160, 1, 0)
-        container.Position = UDim2.new(1, -168, 0, 0)
-        container.BackgroundTransparency = 1
-        container.ZIndex = 8
-        local leftBtn = Instance.new("TextButton", container)
-        leftBtn.Size = UDim2.new(0, 28, 0, 26)
-        leftBtn.Position = UDim2.new(0, 0, 0.5, -13)
-        leftBtn.BackgroundColor3 = INP
-        leftBtn.BackgroundTransparency = 0.10
-        leftBtn.BorderSizePixel = 0
-        leftBtn.Text = "<"
-        leftBtn.TextColor3 = WHITE
-        leftBtn.Font = Enum.Font.GothamBold
-        leftBtn.TextSize = 13
-        leftBtn.AutoButtonColor = false
-        leftBtn.ZIndex = 9
-        Instance.new("UICorner", leftBtn).CornerRadius = UDim.new(0, 6)
-        VX7A.label = Instance.new("TextLabel", container)
-        VX7A.label.Size = UDim2.new(0, 80, 0, 26)
-        VX7A.label.Position = UDim2.new(0.5, -40, 0.5, -13)
-        VX7A.label.BackgroundTransparency = 1
-        VX7A.label.Text = VX7A.labels[VX7A.index + 1] or "OFF"
-        VX7A.label.TextColor3 = WHITE
-        VX7A.label.Font = Enum.Font.GothamBold
-        VX7A.label.TextSize = 12
-        VX7A.label.TextXAlignment = Enum.TextXAlignment.Center
-        VX7A.label.ZIndex = 9
-        local rightBtn = Instance.new("TextButton", container)
-        rightBtn.Size = UDim2.new(0, 28, 0, 26)
-        rightBtn.Position = UDim2.new(1, -28, 0.5, -13)
-        rightBtn.BackgroundColor3 = INP
-        rightBtn.BackgroundTransparency = 0.10
-        rightBtn.BorderSizePixel = 0
-        rightBtn.Text = ">"
-        rightBtn.TextColor3 = WHITE
-        rightBtn.Font = Enum.Font.GothamBold
-        rightBtn.TextSize = 13
-        rightBtn.AutoButtonColor = false
-        rightBtn.ZIndex = 9
-        Instance.new("UICorner", rightBtn).CornerRadius = UDim.new(0, 6)
-        local function stepVX7Avatar(direction)
-            local pos = VX7A.index + 1 + direction
-            if pos < 1 then pos = #VX7A.labels end
-            if pos > #VX7A.labels then pos = 1 end
-            VX7A.apply(pos - 1)
-            task.defer(function() pcall(saveAllSettings) end)
-        end
-        leftBtn.MouseButton1Click:Connect(function() stepVX7Avatar(-1) end)
-        rightBtn.MouseButton1Click:Connect(function() stepVX7Avatar(1) end)
-    end
-
     mkSect(visualPage, "Effects")
-    do
-        local row = mkRow(visualPage, 42)
-        mkLabel(row, "Vapser Title Color")
-        local container = Instance.new("Frame", row)
-        container.Size = UDim2.new(0, 160, 1, 0)
-        container.Position = UDim2.new(1, -168, 0, 0)
-        container.BackgroundTransparency = 1
-        container.ZIndex = 8
-        local leftBtn = Instance.new("TextButton", container)
-        leftBtn.Size = UDim2.new(0, 28, 0, 26)
-        leftBtn.Position = UDim2.new(0, 0, 0.5, -13)
-        leftBtn.BackgroundColor3 = INP
-        leftBtn.BackgroundTransparency = 0.10
-        leftBtn.BorderSizePixel = 0
-        leftBtn.Text = "<"
-        leftBtn.TextColor3 = WHITE
-        leftBtn.Font = Enum.Font.GothamBold
-        leftBtn.TextSize = 13
-        leftBtn.AutoButtonColor = false
-        leftBtn.ZIndex = 9
-        Instance.new("UICorner", leftBtn).CornerRadius = UDim.new(0, 6)
-        rivalTitleSelectorLabel = Instance.new("TextLabel", container)
-        rivalTitleSelectorLabel.Size = UDim2.new(0, 80, 0, 26)
-        rivalTitleSelectorLabel.Position = UDim2.new(0.5, -40, 0.5, -13)
-        rivalTitleSelectorLabel.BackgroundTransparency = 1
-        rivalTitleSelectorLabel.Text = currentRivalTitleTheme
-        rivalTitleSelectorLabel.TextColor3 = WHITE
-        rivalTitleSelectorLabel.Font = Enum.Font.GothamBold
-        rivalTitleSelectorLabel.TextSize = 12
-        rivalTitleSelectorLabel.TextXAlignment = Enum.TextXAlignment.Center
-        rivalTitleSelectorLabel.ZIndex = 9
-        local rightBtn = Instance.new("TextButton", container)
-        rightBtn.Size = UDim2.new(0, 28, 0, 26)
-        rightBtn.Position = UDim2.new(1, -28, 0.5, -13)
-        rightBtn.BackgroundColor3 = INP
-        rightBtn.BackgroundTransparency = 0.10
-        rightBtn.BorderSizePixel = 0
-        rightBtn.Text = ">"
-        rightBtn.TextColor3 = WHITE
-        rightBtn.Font = Enum.Font.GothamBold
-        rightBtn.TextSize = 13
-        rightBtn.AutoButtonColor = false
-        rightBtn.ZIndex = 9
-        Instance.new("UICorner", rightBtn).CornerRadius = UDim.new(0, 6)
-
-        local RIVAL_THEME_LIST = { "Pink", "Orange", "Blue", "Red", "Green", "Black", "Gray" }
-        local function cycleRivalTitle(dir)
-            local idx = 1
-            for i, name in ipairs(RIVAL_THEME_LIST) do
-                if name == currentRivalTitleTheme then idx = i; break end
-            end
-            local newIdx = idx + dir
-            if newIdx < 1 then newIdx = #RIVAL_THEME_LIST end
-            if newIdx > #RIVAL_THEME_LIST then newIdx = 1 end
-            applyRivalTitleTheme(RIVAL_THEME_LIST[newIdx])
-        end
-        leftBtn.MouseButton1Click:Connect(function() cycleRivalTitle(-1) end)
-        rightBtn.MouseButton1Click:Connect(function() cycleRivalTitle(1) end)
-    end
-    setVividVisual = mkToggle(visualPage, "Vivid Graphics", function(on)
-        toggleVividGraphics(on)
-        if setVividVisual then setVividVisual(on) end
-    end)
-    if setVividVisual then setVividVisual(vividGraphicsEnabled) end
     do
         local row = mkRow(visualPage, 42)
         mkLabel(row, "Stretch Rez")
@@ -10112,190 +9715,6 @@ function buildGui()
                 saveAllSettings()
             end
         end)
-    end
-
-    mkSect(configPage, "Tools")
-    do
-        local row = mkRow(configPage, 44)
-        row.Size = UDim2.new(1, 0, 0, 44)
-        local pingBtn = Instance.new("TextButton", row)
-        pingBtn.Size = UDim2.new(1, -12, 0.8, 0)
-        pingBtn.Position = UDim2.new(0, 6, 0.1, 0)
-        pingBtn.BackgroundColor3 = Color3.fromRGB(27, 30, 33)
-        pingBtn.BorderSizePixel = 0
-        pingBtn.Text = "OPEN PING LAGGER"
-        pingBtn.TextColor3 = Color3.fromRGB(240, 175, 210)
-        pingBtn.Font = Enum.Font.GothamBold
-        pingBtn.TextSize = 13
-        pingBtn.AutoButtonColor = false
-        pingBtn.ZIndex = 8
-        Instance.new("UICorner", pingBtn).CornerRadius = UDim.new(0, 6)
-        local pingStroke = Instance.new("UIStroke", pingBtn)
-        pingStroke.Color = getThemeColor()
-        pingStroke.Thickness = 1.5
-        pingStroke.Transparency = 0.4
-        pingBtn.MouseEnter:Connect(function()
-            TS:Create(pingBtn, TweenInfo.new(0.15), {BackgroundColor3 = getThemeColor()}):Play()
-            TS:Create(pingBtn, TweenInfo.new(0.15), {TextColor3 = Color3.fromRGB(255,255,255)}):Play()
-        end)
-        pingBtn.MouseLeave:Connect(function()
-            TS:Create(pingBtn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(27, 30, 33)}):Play()
-            TS:Create(pingBtn, TweenInfo.new(0.15), {TextColor3 = Color3.fromRGB(240, 175, 210)}):Play()
-        end)
-        pingBtn.MouseButton1Click:Connect(function()
-            local okPing, errPing = pcall(openVapserPingLagger)
-            if not okPing then warn("[Vapser Ping Lagger] " .. tostring(errPing)) end
-        end)
-    end
-
-    mkSect(configPage, "Music")
-    do
-        local row = mkRow(configPage, 44)
-        row.Size = UDim2.new(1, 0, 0, 44)
-        local musicBtn = Instance.new("TextButton", row)
-        musicBtn.Size = UDim2.new(1, -12, 0.8, 0)
-        musicBtn.Position = UDim2.new(0, 6, 0.1, 0)
-        musicBtn.BackgroundColor3 = Color3.fromRGB(27, 30, 33)
-        musicBtn.BorderSizePixel = 0
-        musicBtn.Text = "REDRUM 0:00"
-        musicBtn.TextColor3 = Color3.fromRGB(240, 175, 210)
-        musicBtn.Font = Enum.Font.GothamBold
-        musicBtn.TextSize = 13
-        musicBtn.AutoButtonColor = false
-        musicBtn.ZIndex = 8
-        Instance.new("UICorner", musicBtn).CornerRadius = UDim.new(0, 6)
-
-        local musicStroke = Instance.new("UIStroke", musicBtn)
-        musicStroke.Color = getThemeColor()
-        musicStroke.Thickness = 1.5
-        musicStroke.Transparency = 0.4
-
-        local function refreshMusicButton()
-            local playing = VapserFullRedrumSound and VapserFullRedrumSound.Parent and VapserFullRedrumSound.Playing
-            musicBtn.Text = playing and VapserFullRedrumSound.Name == "VapserRedrumFull" and "STOP REDRUM" or "REDRUM 0:00"
-        end
-
-        table.insert(VapserMusicRefreshers, refreshMusicButton)
-
-        musicBtn.MouseEnter:Connect(function()
-            TS:Create(musicBtn, TweenInfo.new(0.15), {BackgroundColor3 = getThemeColor()}):Play()
-            TS:Create(musicBtn, TweenInfo.new(0.15), {TextColor3 = Color3.fromRGB(255,255,255)}):Play()
-        end)
-        musicBtn.MouseLeave:Connect(function()
-            TS:Create(musicBtn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(27, 30, 33)}):Play()
-            TS:Create(musicBtn, TweenInfo.new(0.15), {TextColor3 = Color3.fromRGB(240, 175, 210)}):Play()
-        end)
-
-        musicBtn.MouseButton1Click:Connect(function()
-            local same = VapserFullRedrumSound and VapserFullRedrumSound.Name == "VapserRedrumFull"
-            stopVapserFullRedrum()
-            for _, refresh in ipairs(VapserMusicRefreshers) do refresh() end
-            if same then return end
-
-            local sound = makeVapserRedrumSound(0, "VapserRedrumFull")
-            if sound then
-                pcall(function()
-                    sound.TimePosition = 0
-                end)
-                VapserFullRedrumSound = sound
-                refreshMusicButton()
-                sound.Ended:Connect(function()
-                    if VapserFullRedrumSound == sound then
-                        pcall(function() sound:Destroy() end)
-                        VapserFullRedrumSound = nil
-                        refreshMusicButton()
-                    end
-                end)
-            end
-        end)
-    end
-
-    do
-        local songs = {
-            {name="Gané",file="Vapser_Gane.mp3",url=""},
-            {name="CARNIVAL",file="Vapser_Carnival.mp3",url=""},
-            {name="Type Shit",file="Vapser_TypeShit.mp3",url=""},
-            {name="El Black",file="Vapser_ElBlack.mp3",url=""},
-            {name="X.O.X.O",file="Vapser_XOXO.mp3",url="",coverUrl=""},
-            {name="Selfish",file="Vapser_Selfish.mp3",url=""},
-            {name="Me Paseo",file="Vapser_MePaseo.mp3",url=""},
-            {name="Gassed Up",file="Vapser_GassedUp.mp3",url=""},
-        }
-        local function refreshAll()
-            for _,refresh in ipairs(VapserMusicRefreshers) do refresh() end
-        end
-        for _,entry in ipairs(songs) do
-            local song=entry
-            local row=mkRow(configPage,44)
-            local button=VapserUI.new("TextButton",row,{Size=UDim2.new(1,-12,1,-8),Position=UDim2.fromOffset(6,4),
-                Text=song.name.." 0:00",TextSize=13,Font=Enum.Font.GothamBold,TextColor3=WHITE,
-                BackgroundColor3=INP,BorderSizePixel=0,AutoButtonColor=false,ZIndex=8})
-            if song.coverUrl then
-                button.Position=UDim2.fromOffset(44,4)
-                button.Size=UDim2.new(1,-50,1,-8)
-                local cover=VapserUI.new("ImageLabel",row,{Name="SongCover",Position=UDim2.fromOffset(6,6),
-                    Size=UDim2.fromOffset(32,32),BackgroundTransparency=1,Image="",ScaleType=Enum.ScaleType.Fit,ZIndex=8})
-                VapserUI.round(cover,5)
-                task.spawn(function()
-                    pcall(function()
-                        local loader=getcustomasset or getsynasset
-                        if type(loader)~="function" or type(writefile)~="function"then return end
-                        local file="Vapser_XOXO_Cover.jpg"
-                        if not (type(isfile)=="function" and isfile(file))then
-                            local data=game:HttpGet(song.coverUrl)
-                            if type(data)~="string" or #data<512 then return end
-                            writefile(file,data)
-                        end
-                        local asset=loader(file)
-                        if cover.Parent then cover.Image=asset end
-                    end)
-                end)
-            end
-            VapserUI.round(button,6)
-            VapserUI.stroke(button,getThemeColor(),.4,1)
-            local loading=false
-            local function refresh()
-                local current=VapserFullRedrumSound
-                local playing=current and current.Parent and current.Playing and current.Name==song.file
-                button.Text=loading and ("CARGANDO "..song.name) or (playing and "STOP " or "")..song.name..(playing and "" or " 0:00")
-            end
-            table.insert(VapserMusicRefreshers,refresh)
-            button.Activated:Connect(function()
-                if loading then return end
-                local current=VapserFullRedrumSound
-                local same=current and current.Name==song.file
-                stopVapserFullRedrum()
-                refreshAll()
-                if same then return end
-                local token=VapserMusicRequest
-                loading=true;refresh()
-                task.spawn(function()
-                    local ok,err=pcall(function()
-                        local loader=getcustomasset or getsynasset
-                        assert(type(loader)=="function" and type(writefile)=="function","custom assets unavailable")
-                        local exists=type(isfile)=="function" and isfile(song.file)
-                        if not exists then
-                            local data=game:HttpGet(song.url)
-                            assert(type(data)=="string" and #data>256,"audio download failed")
-                            writefile(song.file,data)
-                        end
-                        local asset=loader(song.file)
-                        if token~=VapserMusicRequest then return end
-                        local sound=Instance.new("Sound")
-                        sound.Name=song.file;sound.SoundId=asset;sound.Volume=.85;sound.Looped=false
-                        sound.Parent=SoundService;sound.TimePosition=0
-                        VapserFullRedrumSound=sound
-                        sound.Ended:Connect(function()
-                            if VapserFullRedrumSound==sound then VapserFullRedrumSound=nil;refreshAll() end
-                            sound:Destroy()
-                        end)
-                        sound:Play()
-                    end)
-                    loading=false;refreshAll()
-                    if not ok then warn("[Vapser Music] "..tostring(err))end
-                end)
-            end)
-        end
     end
 
     mkSect(configPage, "Management")
@@ -10476,8 +9895,7 @@ function buildGui()
         Size = UDim2.new(1, -6, 1, -6), BackgroundTransparency = 1, BorderSizePixel = 0, ZIndex = 51})
     VapserUI.round(inset, 12)
     VapserUI.stroke(inset, Color3.fromRGB(245, 155, 204), 0.91, 1)
-    VapserUI.pumpkin(pbFrame, UDim2.fromOffset(10, 7), 32, 51)
-    local title = VapserUI.text(pbFrame, "Vapser", UDim2.fromOffset(50, 7), UDim2.fromOffset(150, 19), 10, WHITE, 53)
+    local title = VapserUI.text(pbFrame, "Vapser", UDim2.fromOffset(14, 7), UDim2.fromOffset(150, 19), 10, WHITE, 53)
     title.Font = Enum.Font.GothamBlack
     local modePill = VapserUI.new("Frame", pbFrame, {Name = "ModeBadge", Size = UDim2.fromOffset(41, 19),
         Position = UDim2.new(1, -53, 0, 8), BackgroundColor3 = Color3.fromRGB(58, 27, 44),
@@ -10488,7 +9906,7 @@ function buildGui()
     stealHud.mode.Name = "StealMode"
     stealHud.mode.TextXAlignment = Enum.TextXAlignment.Center
     stealHud.mode.Font = Enum.Font.GothamBold
-    progressStatus = VapserUI.text(pbFrame, stealHud.state, UDim2.fromOffset(50, 28), UDim2.fromOffset(88, 14), 8,
+    progressStatus = VapserUI.text(pbFrame, stealHud.state, UDim2.fromOffset(14, 28), UDim2.fromOffset(88, 14), 8,
         Color3.fromRGB(183, 179, 169), 53)
     progressStatus.Name = "StealProgressStatus"
     stealHud.stats = VapserUI.text(pbFrame, stealHud.statsText, UDim2.new(1, -137, 0, 29), UDim2.fromOffset(125, 14), 8,

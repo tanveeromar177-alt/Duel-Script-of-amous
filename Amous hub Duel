@@ -202,7 +202,7 @@ BAT_V2_HIT_DIST = 4.5
 _isDraggingButton = false
 
 backgroundIndex = 1
-backgroundImages = {"73963271683049", "87425565124554", "93776108213038"}
+backgroundImages = {"125362513304479", "73963271683049", "87425565124554", "93776108213038"}
 VapserUI = {effects = false, animated = {}, cards = {}, tweens = {}, backgroundRevision = 0}
 useVenixCarryEngine = true
 
@@ -8807,33 +8807,44 @@ function buildGui()
     local border = VapserUI.stroke(main, Color3.fromRGB(210, 83, 152), 0.35, 1.2)
     border.Name = "MainBorder"
     mainUIScale = VapserUI.new("UIScale", main, {Scale = uiScaleValue / 100})
-    local LEFT_W = 118
+    -- SPEEX-style thin left rail
+    local LEFT_W = 46
     local sidePanel = VapserUI.new("Frame", main, {Name = "SidePanel", Size = UDim2.new(0, LEFT_W, 1, 0),
-        BackgroundColor3 = Color3.fromRGB(0, 0, 0), BackgroundTransparency = 0, BorderSizePixel = 0, ZIndex = 1})
-    -- Side panel solid black (no character image here anymore)
+        BackgroundColor3 = Color3.fromRGB(8, 8, 10), BackgroundTransparency = 0, BorderSizePixel = 0, ZIndex = 12})
     local bg = VapserUI.new("ImageLabel", sidePanel, {Name = "SideImage", Size = UDim2.new(1, 0, 1, 0),
         Image = "", BackgroundTransparency = 1, ScaleType = Enum.ScaleType.Crop, ZIndex = 1, Visible = false})
     local sideShade = VapserUI.new("Frame", sidePanel, {Name = "SideShade", Size = UDim2.new(1, 0, 1, 0),
-        BackgroundColor3 = Color3.fromRGB(0, 0, 0), BorderSizePixel = 0, ZIndex = 2, BackgroundTransparency = 0})
-    -- Character / art image moved to main content (black area of GUI)
+        BackgroundColor3 = Color3.fromRGB(8, 8, 10), BorderSizePixel = 0, ZIndex = 2, BackgroundTransparency = 0})
+    -- Background art on content area (forced asset 125362513304479)
     local contentArt = VapserUI.new("ImageLabel", main, {Name = "BackgroundImage",
-        Size = UDim2.new(1, -(LEFT_W - 8), 1, 0), Position = UDim2.fromOffset(LEFT_W - 8, 0),
+        Size = UDim2.new(1, -LEFT_W, 1, 0), Position = UDim2.fromOffset(LEFT_W, 0),
         Image = "rbxassetid://125362513304479", BackgroundTransparency = 1,
         ScaleType = Enum.ScaleType.Crop, ZIndex = 1})
     VapserUI.new("UIGradient", contentArt, {Rotation = 0, Transparency = NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 0.35), NumberSequenceKeypoint.new(0.45, 0.55), NumberSequenceKeypoint.new(1, 0.75)})})
+        NumberSequenceKeypoint.new(0, 0.25), NumberSequenceKeypoint.new(0.5, 0.5), NumberSequenceKeypoint.new(1, 0.72)})})
     local contentShade = VapserUI.new("Frame", main, {Name = "ContentShade",
-        Size = UDim2.new(1, -(LEFT_W - 8), 1, 0), Position = UDim2.fromOffset(LEFT_W - 8, 0),
-        BackgroundColor3 = Color3.fromRGB(0, 0, 0), BorderSizePixel = 0, ZIndex = 2, BackgroundTransparency = 0.45})
+        Size = UDim2.new(1, -LEFT_W, 1, 0), Position = UDim2.fromOffset(LEFT_W, 0),
+        BackgroundColor3 = Color3.fromRGB(0, 0, 0), BorderSizePixel = 0, ZIndex = 2, BackgroundTransparency = 0.4})
     VapserUI.art = contentArt
-    scriptLogoRef = VapserUI.text(sidePanel, "Vapser", UDim2.new(0, 16, 1, -60), UDim2.fromOffset(LEFT_W - 28, 28), 22, Color3.fromRGB(255, 255, 255), 8)
-    scriptLogoRef.Font = Enum.Font.GothamBlack
-    VapserUI.titleGradient = VapserUI.new("UIGradient", scriptLogoRef, {Rotation = 90,
-        Color = ColorSequence.new(Color3.fromRGB(255, 255, 255))})
-    local titleRule = VapserUI.new("Frame", sidePanel, {Name = "TitleRule", Position = UDim2.new(0, 16, 1, -31),
-        Size = UDim2.fromOffset(LEFT_W - 66, 1), BackgroundColor3 = getThemeColor(), BorderSizePixel = 0, ZIndex = 8})
-    VapserUI.text(sidePanel, "made by vasps-3", UDim2.new(0, 16, 1, -27), UDim2.fromOffset(LEFT_W - 28, 14), 9,
-        Color3.fromRGB(196, 176, 188), 8)
+    -- SPEEX-like vertical tab rail: up / HOME / down
+    local tabRail = VapserUI.new("Frame", sidePanel, {Name = "TabRail", Size = UDim2.fromScale(1, 1),
+        BackgroundTransparency = 1, BorderSizePixel = 0, ZIndex = 14})
+    local upBtn = VapserUI.new("TextButton", tabRail, {Name = "Up", Size = UDim2.new(1, 0, 0, 36),
+        Position = UDim2.new(0, 0, 0.5, -90), Text = "⌃", TextSize = 18, Font = Enum.Font.GothamBold,
+        TextColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 1, BorderSizePixel = 0,
+        AutoButtonColor = false, ZIndex = 15})
+    local railLabel = VapserUI.new("TextLabel", tabRail, {Name = "RailLabel", Size = UDim2.new(1, 0, 0, 120),
+        Position = UDim2.new(0, 0, 0.5, -50), BackgroundTransparency = 1, Text = "HOME",
+        TextColor3 = Color3.fromRGB(255, 255, 255), Font = Enum.Font.GothamBlack, TextSize = 14,
+        TextXAlignment = Enum.TextXAlignment.Center, TextYAlignment = Enum.TextYAlignment.Center,
+        Rotation = -90, ZIndex = 15})
+    local downBtn = VapserUI.new("TextButton", tabRail, {Name = "Down", Size = UDim2.new(1, 0, 0, 36),
+        Position = UDim2.new(0, 0, 0.5, 54), Text = "⌄", TextSize = 18, Font = Enum.Font.GothamBold,
+        TextColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 1, BorderSizePixel = 0,
+        AutoButtonColor = false, ZIndex = 15})
+    scriptLogoRef = railLabel
+    VapserUI.titleGradient = nil
+    local titleRule = VapserUI.new("Frame", sidePanel, {Name = "TitleRule", Visible = false})
 
     local close = VapserUI.new("TextButton", main, {Name = "Close", Size = UDim2.fromOffset(26, 26),
         Position = UDim2.new(1, -46, 0, 14), Text = "−", TextSize = 20, Font = Enum.Font.GothamMedium,
@@ -8881,17 +8892,12 @@ function buildGui()
         if not animating then _G.__VapserMainOriginalPos = main.Position end
     end)
     drag(main, 44)
-    local tabBar = VapserUI.new("Frame", sidePanel, {Name = "Navigation", Position = UDim2.fromOffset(12, 50),
-        Size = UDim2.new(1, -24, 1, -120), BackgroundTransparency = 1, BorderSizePixel = 0, ZIndex = 14})
-    VapserUI.new("UIListLayout", tabBar, {FillDirection = Enum.FillDirection.Vertical,
-        HorizontalAlignment = Enum.HorizontalAlignment.Center, VerticalAlignment = Enum.VerticalAlignment.Center,
-        Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder})
-    local sectionMarker = VapserUI.new("Frame", main, {Name = "SectionMarker", Position = UDim2.fromOffset(LEFT_W + 10, 11),
+    local sectionMarker = VapserUI.new("Frame", main, {Name = "SectionMarker", Position = UDim2.fromOffset(LEFT_W + 12, 11),
         Size = UDim2.fromOffset(3, 20), BackgroundColor3 = getThemeColor(), BorderSizePixel = 0, ZIndex = 8})
     VapserUI.round(sectionMarker, 2)
-    local pageHeading = VapserUI.text(main, "HOME", UDim2.fromOffset(LEFT_W + 22, 8), UDim2.new(1, -(LEFT_W + 70), 0, 26), 11, WHITE, 8)
+    local pageHeading = VapserUI.text(main, "HOME", UDim2.fromOffset(LEFT_W + 24, 8), UDim2.new(1, -(LEFT_W + 70), 0, 26), 13, WHITE, 8)
     pageHeading.Name = "SectionHeading"
-    pageHeading.Font = Enum.Font.GothamBold
+    pageHeading.Font = Enum.Font.GothamBlack
     local tabContent = VapserUI.new("Frame", main, {Name = "Content", Size = UDim2.new(1, -(LEFT_W + 8), 1, -78),
         Position = UDim2.fromOffset(LEFT_W + 4, 40), BackgroundTransparency = 1, ClipsDescendants = true, ZIndex = 6})
     local footer = VapserUI.new("Frame", main, {Name = "Footer", Position = UDim2.new(0, LEFT_W + 10, 1, -34),
@@ -8910,15 +8916,9 @@ function buildGui()
     local headings = {"HOME", "COMBAT", "CONFIG", "KEYS"}
     tabButtons = {}
     local contentPages = {}
+    local currentTabIndex = 1
+    local selectTab
     for i, name in ipairs(tabs) do
-        local button = VapserUI.new("TextButton", tabBar, {Name = name, Text = "", Size = UDim2.new(1, 0, 0, 36),
-            BackgroundColor3 = Color3.fromRGB(0, 0, 0), BackgroundTransparency = 0.35, BorderSizePixel = 0,
-            AutoButtonColor = false, ZIndex = 15, LayoutOrder = i})
-        VapserUI.round(button, 12)
-        local caption = VapserUI.text(button, titles[i], UDim2.fromOffset(0, 0), UDim2.fromScale(1, 1), 13, WHITE, 16)
-        caption.Name = "Caption"
-        caption.Font = Enum.Font.GothamBold
-        caption.TextXAlignment = Enum.TextXAlignment.Center
         local page = VapserUI.new("ScrollingFrame", tabContent, {Name = name, Size = UDim2.fromScale(1, 1),
             BackgroundTransparency = 1, BorderSizePixel = 0, ScrollBarThickness = 2, ScrollBarImageColor3 = getThemeColor(),
             ScrollBarImageTransparency = 0.36, AutomaticCanvasSize = Enum.AutomaticSize.Y, CanvasSize = UDim2.new(),
@@ -8928,24 +8928,35 @@ function buildGui()
         VapserUI.new("UIPadding", page, {PaddingLeft = UDim.new(0, 12), PaddingRight = UDim.new(0, 12),
             PaddingTop = UDim.new(0, 3), PaddingBottom = UDim.new(0, 18)})
         contentPages[name] = page
-        table.insert(tabButtons, button)
-        local function select()
-            pageHeading.Text = headings[i]
-            for _, p in pairs(contentPages) do p.Visible = false end
+        -- invisible stub buttons so existing theme code that loops tabButtons does not error
+        local stub = Instance.new("Frame")
+        stub.Name = name
+        stub:SetAttribute("TabActive", i == 1)
+        local cap = Instance.new("TextLabel")
+        cap.Name = "Caption"
+        cap.Parent = stub
+        table.insert(tabButtons, stub)
+    end
+    selectTab = function(index)
+        index = ((index - 1) % #tabs) + 1
+        currentTabIndex = index
+        local name = tabs[index]
+        pageHeading.Text = headings[index]
+        if railLabel then railLabel.Text = headings[index] end
+        for _, p in pairs(contentPages) do p.Visible = false end
+        local page = contentPages[name]
+        if page then
             page.Visible = true
             page.Position = UDim2.fromOffset(VapserUI.effects and 8 or 0, 0)
             TS:Create(page, TweenInfo.new(0.18), {Position = UDim2.fromOffset(0, 0)}):Play()
-            for _, b in ipairs(tabButtons) do
-                local on = b == button
-                b:SetAttribute("TabActive", on)
-                b.Caption.TextColor3 = on and Color3.fromRGB(12, 12, 14) or Color3.fromRGB(255, 255, 255)
-                TS:Create(b, TweenInfo.new(0.16), {BackgroundTransparency = on and 0 or 0.35,
-                    BackgroundColor3 = on and getThemeColor() or Color3.fromRGB(0, 0, 0)}):Play()
-            end
         end
-        button.Activated:Connect(select)
-        if i == 1 then select() end
+        for i, b in ipairs(tabButtons) do
+            b:SetAttribute("TabActive", i == index)
+        end
     end
+    upBtn.Activated:Connect(function() selectTab(currentTabIndex - 1) end)
+    downBtn.Activated:Connect(function() selectTab(currentTabIndex + 1) end)
+    selectTab(1)
     local pageCounters = {}
     local function getNextOrder(page)
         pageCounters[page] = (pageCounters[page] or 0) + 1

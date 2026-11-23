@@ -6790,9 +6790,9 @@ function VapserUI.fit()
     local cam = Workspace.CurrentCamera
     if not cam then return end
     local viewport = cam.ViewportSize
-    local width = 510
-    local scale = math.max(0.25, math.min(uiScaleValue / 100, (viewport.X - 24) / width, (viewport.Y - 24) / 300))
-    local height = math.min(360, math.floor((viewport.Y - 24) / scale))
+    local width = 430
+    local scale = math.max(0.25, math.min(uiScaleValue / 100, (viewport.X - 24) / width, (viewport.Y - 24) / 340))
+    local height = math.min(470, math.floor((viewport.Y - 24) / scale))
     mainUIScale.Scale = scale
     VapserUI.width, VapserUI.height = width, height
     main.Size = UDim2.fromOffset(width, height)
@@ -8988,7 +8988,7 @@ function buildGui()
     local ROW_BORDER = Color3.fromRGB(87, 59, 74)
     local WHITE = Color3.fromRGB(249, 242, 229)
     local INP = Color3.fromRGB(12, 15, 19)
-    local GUI_W, GUI_H = 510, 360
+    local GUI_W, GUI_H = 430, 470
     for _, parent in ipairs({CoreGui, pgui}) do
         for _, name in ipairs({"Vapser", "VapserMobilePanel", "VapserSpeedIndicator", "VapserBootErrors"}) do
             pcall(function() local old = parent:FindFirstChild(name); if old then old:Destroy() end end)
@@ -9006,7 +9006,7 @@ function buildGui()
     local border = VapserUI.stroke(main, Color3.fromRGB(210, 83, 152), 0.35, 1.2)
     border.Name = "MainBorder"
     mainUIScale = VapserUI.new("UIScale", main, {Scale = uiScaleValue / 100})
-    local LEFT_W = 170
+    local LEFT_W = 118
     local sidePanel = VapserUI.new("Frame", main, {Name = "SidePanel", Size = UDim2.new(0, LEFT_W, 1, 0),
         BackgroundTransparency = 1, BorderSizePixel = 0, ZIndex = 1})
     local bg = VapserUI.new("ImageLabel", sidePanel, {Name = "SideImage", Size = UDim2.new(1, 46, 1, 0),
@@ -9076,7 +9076,7 @@ function buildGui()
         Size = UDim2.new(1, -24, 1, -120), BackgroundTransparency = 1, BorderSizePixel = 0, ZIndex = 14})
     VapserUI.new("UIListLayout", tabBar, {FillDirection = Enum.FillDirection.Vertical,
         HorizontalAlignment = Enum.HorizontalAlignment.Center, VerticalAlignment = Enum.VerticalAlignment.Top,
-        Padding = UDim.new(0, 6), SortOrder = Enum.SortOrder.LayoutOrder})
+        Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder})
     local sectionMarker = VapserUI.new("Frame", main, {Name = "SectionMarker", Position = UDim2.fromOffset(LEFT_W + 10, 11),
         Size = UDim2.fromOffset(3, 20), BackgroundColor3 = getThemeColor(), BorderSizePixel = 0, ZIndex = 8})
     VapserUI.round(sectionMarker, 2)
@@ -9096,13 +9096,13 @@ function buildGui()
     VapserUI.footerStats = VapserUI.text(footer, "Vapser", UDim2.new(0.5, 0, 0, 5), UDim2.new(0.5, -3, 0, 18), 8,
         Color3.fromRGB(211, 108, 164), 9)
     VapserUI.footerStats.TextXAlignment = Enum.TextXAlignment.Right
-    local tabs = {"Speed", "Custom", "Visual", "Settings", "Keybinds"}
-    local titles = {"Move", "Combat", "Look", "Steal", "Binds"}
-    local headings = {"MOVEMENT", "COMBAT", "APPEARANCE", "AUTO STEAL", "KEYBINDS"}
+    local tabs = {"Speed", "Custom", "Visual", "Keybinds"}
+    local titles = {"Move", "Combat", "Look", "Binds"}
+    local headings = {"MOVEMENT", "COMBAT", "APPEARANCE", "KEYBINDS"}
     tabButtons = {}
     local contentPages = {}
     for i, name in ipairs(tabs) do
-        local button = VapserUI.new("TextButton", tabBar, {Name = name, Text = "", Size = UDim2.new(1, 0, 0, 30),
+        local button = VapserUI.new("TextButton", tabBar, {Name = name, Text = "", Size = UDim2.new(1, 0, 0, 34),
             BackgroundColor3 = Color3.fromRGB(14, 14, 16), BackgroundTransparency = 0.3, BorderSizePixel = 0,
             AutoButtonColor = false, ZIndex = 15, LayoutOrder = i})
         VapserUI.round(button, 9)
@@ -9166,34 +9166,37 @@ function buildGui()
     local function mkLabel(row, text)
         return VapserUI.text(row, text, UDim2.fromOffset(14, 0), UDim2.new(0.48, -8, 1, 0), 12, WHITE, 8)
     end
+    local TOGGLE_OFF_BG = Color3.fromRGB(0, 0, 0)
+    local TOGGLE_OFF_KNOB = Color3.fromRGB(120, 120, 120)
+    local TOGGLE_ON_BG = Color3.fromRGB(220, 45, 45)
+    local TOGGLE_ON_KNOB = Color3.fromRGB(245, 245, 245)
+    local KNOB_OFF_POS = UDim2.new(0, 3, 0.5, -9)
+    local KNOB_ON_POS = UDim2.new(1, -23, 0.5, -9)
     local function mkPill(row)
-        local pill = VapserUI.new("Frame", row, {Name = "Track", Size = UDim2.fromOffset(56, 27),
+        local pill = VapserUI.new("Frame", row, {Name = "Track", Size = UDim2.fromOffset(47, 23),
             AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -13, 0.5, 0),
-            BackgroundColor3 = Color3.fromRGB(11, 15, 20), BorderSizePixel = 0, ZIndex = 8})
+            BackgroundColor3 = TOGGLE_OFF_BG, BorderSizePixel = 0, ZIndex = 8})
         VapserUI.round(pill, 12)
-        VapserUI.stroke(pill, ROW_BORDER, 0.57, 1)
-        local state = VapserUI.text(pill, "OFF", UDim2.fromOffset(19, 0), UDim2.fromOffset(34, 27), 8,
-            Color3.fromRGB(140, 147, 156), 9)
-        state.Name = "State"
-        state.TextXAlignment = Enum.TextXAlignment.Center
-        local dot = VapserUI.new("Frame", pill, {Name = "Knob", AnchorPoint = Vector2.new(0.5, 0.5),
-            Size = UDim2.fromOffset(8, 8), Position = UDim2.new(0, 12, 0.5, 0),
-            BackgroundColor3 = Color3.fromRGB(74, 83, 94), BorderSizePixel = 0, ZIndex = 9})
-        VapserUI.round(dot, 3)
+        pill:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
+        VapserUI.stroke(pill, TOGGLE_OFF_BG, 0, 1.5)
+        local dot = VapserUI.new("Frame", pill, {Name = "Knob", Size = UDim2.fromOffset(18, 18),
+            Position = KNOB_OFF_POS, BackgroundColor3 = TOGGLE_OFF_KNOB, BorderSizePixel = 0, ZIndex = 9})
+        VapserUI.round(dot, 9)
+        dot:FindFirstChildOfClass("UICorner").CornerRadius = UDim.new(1, 0)
         return pill, dot
     end
     local function animPill(pill, dot, on)
-        TS:Create(pill, TweenInfo.new(0.16), {BackgroundColor3 = on and Color3.fromRGB(57, 24, 42) or Color3.fromRGB(11, 15, 20)}):Play()
-        TS:Create(dot, TweenInfo.new(0.16), {BackgroundColor3 = on and getThemeColor() or Color3.fromRGB(74, 83, 94)}):Play()
-        local state = pill:FindFirstChild("State")
-        if state then state.Text = on and "ON" or "OFF"; state.TextColor3 = on and WHITE or Color3.fromRGB(140, 147, 156) end
+        local color = TOGGLE_ON_BG
+        TS:Create(pill, TweenInfo.new(0.16), {BackgroundColor3 = on and color or TOGGLE_OFF_BG}):Play()
+        TS:Create(dot, TweenInfo.new(0.18, Enum.EasingStyle.Quad), {Position = on and KNOB_ON_POS or KNOB_OFF_POS,
+            BackgroundColor3 = on and TOGGLE_ON_KNOB or TOGGLE_OFF_KNOB}):Play()
         local stroke = pill:FindFirstChildOfClass("UIStroke")
-        if stroke then stroke.Color = on and getThemeColor() or ROW_BORDER; stroke.Transparency = on and 0.28 or 0.57 end
+        if stroke then TS:Create(stroke, TweenInfo.new(0.16), {Color = on and color or TOGGLE_OFF_BG}):Play() end
     end
     local function mkToggle(page, text, callback)
         local row = mkRow(page, 46)
         local label = mkLabel(row, text)
-        label.Size = UDim2.new(1, -86, 1, 0)
+        label.Size = UDim2.new(1, -80, 1, 0)
         local pill, dot = mkPill(row)
         local on = false
         local function set(value)
@@ -9679,20 +9682,19 @@ function buildGui()
         if on then startESPLine() else stopESPLine() end
     end)
 
-    local configPage = contentPages["Settings"]
 
-    mkSect(configPage, "Automation")
+    mkSect(combatPage, "Automation")
 
     local mkToggleOrange = mkToggle
 
-    setInstaGrab = mkToggleOrange(configPage, "Auto Steal", function(on)
+    setInstaGrab = mkToggleOrange(combatPage, "Auto Steal", function(on)
         CONFIG.AUTO_STEAL_ENABLED = on == true
         if on then pcall(startAutoSteal) else stopAutoSteal() end
         updateProgressBarVisibility()
         pcall(saveAllSettings, true)
     end)
     do
-        local row = mkRow(configPage, 46)
+        local row = mkRow(combatPage, 46)
         mkLabel(row, "Auto Steal Mode")
         autoStealModeBtn = mkSelector(row, autoStealMode, AUTO_STEAL_VARIANT_NAMES, function(direction, update)
             local index = (autoStealVariant - 1 + direction) % #AUTO_STEAL_VARIANT_NAMES + 1
@@ -9705,7 +9707,7 @@ function buildGui()
     end
 
     do
-        local row = mkRow(configPage, 42)
+        local row = mkRow(combatPage, 42)
         mkLabel(row, "Steal Radius")
         radInput = mkBox(row, CONFIG.STEAL_RANGE, 50, 56, function(v)
             if v and v >= 5 and v <= 300 then
@@ -9717,9 +9719,9 @@ function buildGui()
         end)
     end
 
-    mkSect(configPage, "Management")
+    mkSect(visualPage, "Management")
     do
-        local row = mkRow(configPage, 44)
+        local row = mkRow(visualPage, 44)
         row.Size = UDim2.new(1, 0, 0, 44)
         local saveBtn = Instance.new("TextButton", row)
         saveBtn.Size = UDim2.new(1, -12, 0.8, 0)
@@ -9754,7 +9756,7 @@ function buildGui()
         end)
     end
     do
-        local row = mkRow(configPage, 44)
+        local row = mkRow(visualPage, 44)
         row.Size = UDim2.new(1, 0, 0, 44)
         local resetPosBtn = Instance.new("TextButton", row)
         resetPosBtn.Size = UDim2.new(1, -12, 0.8, 0)
@@ -9795,7 +9797,7 @@ function buildGui()
         end)
     end
     do
-        local row = mkRow(configPage, 44)
+        local row = mkRow(visualPage, 44)
         row.Size = UDim2.new(1, 0, 0, 44)
         local delBtn = Instance.new("TextButton", row)
         delBtn.Size = UDim2.new(1, -12, 0.8, 0)

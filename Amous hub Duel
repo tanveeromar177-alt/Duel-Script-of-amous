@@ -1,5 +1,5 @@
 if _G.VapserRunning then
-    warn("[Vapser] Instancia previa detectada. Se recomienda rejoin si hay comportamiento errático.")
+    warn("[Vapser] Previous instance detected. Rejoin is recommended if behavior is erratic.")
 end
 _G.VapserRunning = false
 _G.__VapserMainOriginalPos = nil
@@ -28,7 +28,7 @@ end
 
 local pgui = LP:WaitForChild("PlayerGui", 20)
 if not pgui then
-    warn("[Vapser] PlayerGui no cargó en 20s. Abortando.")
+    warn("[Vapser] PlayerGui did not load in 20s. Aborting.")
     return
 end
 
@@ -130,12 +130,7 @@ local _mySession = _G.VapserSession
 
 local Vapser_LANGUAGE = "en"
 
-local Vapser_TRANSLATIONS = {
-    es = { ["RESET ALL SETTINGS"]="RESTABLECER TODO", ["SETTINGS RESET"]="AJUSTES RESTABLECIDOS", ["CONFIRM?"]="¿CONFIRMAR?", ["ERROR"]="ERROR", ["RESET"]="RESTABLECER", ["Keybinds"]="TECLAS", ["Carry Mode"]="MODO CARGAR", ["Lagger Mode"]="MODO LAG", ["Auto Left"]="AUTO IZQUIERDA", ["Auto Right"]="AUTO DERECHA", ["Auto Bat"]="AUTO BATE", ["TP Down"]="TP ABAJO", ["Drop Brainrot"]="SOLTAR BRAINROT", ["Hide GUI"]="OCULTAR MENÚ", ["Normal Speed"]="VELOCIDAD NORMAL", ["Carry Speed"]="VELOCIDAD CARGAR", ["Current Mode"]="MODO ACTUAL", ["ACTIVATE"]="ACTIVAR" },
-    pt = { ["RESET ALL SETTINGS"]="REDEFINIR TUDO", ["SETTINGS RESET"]="CONFIGURAÇÕES REDEFINIDAS", ["CONFIRM?"]="CONFIRMAR?", ["ERROR"]="ERRO", ["RESET"]="REDEFINIR", ["Keybinds"]="TECLAS", ["Carry Mode"]="MODO CARREGAR", ["Auto Left"]="AUTO ESQUERDA", ["Auto Right"]="AUTO DIREITA", ["Hide GUI"]="OCULTAR MENU", ["Normal Speed"]="VELOCIDADE NORMAL", ["Carry Speed"]="VELOCIDADE CARREGAR", ["ACTIVATE"]="ATIVAR" },
-    fr = { ["RESET ALL SETTINGS"]="RÉINITIALISER", ["SETTINGS RESET"]="PARAMÈTRES RÉINITIALISÉS", ["CONFIRM?"]="CONFIRMER ?", ["ERROR"]="ERREUR", ["RESET"]="RÉINITIALISER", ["Keybinds"]="RACCOURCIS", ["Carry Mode"]="MODE PORTER", ["Auto Left"]="AUTO GAUCHE", ["Auto Right"]="AUTO DROITE", ["Hide GUI"]="MASQUER LE MENU", ["Normal Speed"]="VITESSE NORMALE", ["Carry Speed"]="VITESSE PORTER", ["ACTIVATE"]="ACTIVER" },
-    de = { ["RESET ALL SETTINGS"]="ALLES ZURÜCKSETZEN", ["SETTINGS RESET"]="EINSTELLUNGEN ZURÜCKGESETZT", ["CONFIRM?"]="BESTÄTIGEN?", ["ERROR"]="FEHLER", ["RESET"]="ZURÜCKSETZEN", ["Keybinds"]="TASTEN", ["Carry Mode"]="TRAGEMODUS", ["Auto Left"]="AUTO LINKS", ["Auto Right"]="AUTO RECHTS", ["Hide GUI"]="MENÜ AUSBLENDEN", ["Normal Speed"]="NORMALE GESCHWINDIGKEIT", ["Carry Speed"]="TRAGEGESCHWINDIGKEIT", ["ACTIVATE"]="AKTIVIEREN" },
-}
+local Vapser_TRANSLATIONS = {}
 
 local function localizeVapserInterface(root)
     local dictionary = Vapser_TRANSLATIONS[Vapser_LANGUAGE]
@@ -2009,7 +2004,7 @@ function VX7A.apply(index)
     if index == 0 then VX7A.stop() return end
     local m = VX7A.load()
     if not m or type(m.apply) ~= "function" then
-        warn("[Vapser] No se pudo cargar el modulo de avatares VX7 (loadstring no disponible).")
+        warn("[Vapser] Could not load the VX7 avatar module (loadstring unavailable).")
         VX7A.setLabel()
         return
     end
@@ -2970,7 +2965,7 @@ end
                 if deltaTime236.softStealEnabled then
                     deltaTime236:startSoftStealScanner()
                 end
-                print("[CarrySystem] Activado")
+                print("[CarrySystem] Enabled")
             end
             VapserVenixCarry.stop = function(self)
                 if self._heartbeatConn then
@@ -2980,7 +2975,7 @@ end
                 self:stopSoftStealScanner()
                 destroyLV()
                 self.softStealLatched = false
-                print("[CarrySystem] Desactivado")
+                print("[CarrySystem] Disabled")
             end
         end
     VapserVenixCarry.setNormalSpeed = function(self, value)
@@ -3710,7 +3705,7 @@ function AntiRagdollV1.start()
     if stateV1.active then return end
     AntiRagdollV1.stop()
     if not cacheCharacterV1() then
-        warn("[AntiRagdollV1] No se pudo cachear el personaje")
+        warn("[AntiRagdollV1] Could not cache the character")
         return
     end
     stateV1.active = true
@@ -3729,7 +3724,7 @@ function AntiRagdollV1.start()
     end)
     table.insert(stateV1.ragdollConnections, respawnConn)
     task.spawn(heartbeatLoopV1)
-    print("[AntiRagdollV1] Activado")
+    print("[AntiRagdollV1] Enabled")
 end
 
 function AntiRagdollV1.stop()
@@ -3740,7 +3735,7 @@ function AntiRagdollV1.stop()
     stateV1.isBoosting = false
     disconnectAllV1()
     stateV1.cachedChar = nil
-    print("[AntiRagdollV1] Desactivado")
+    print("[AntiRagdollV1] Disabled")
 end
 
 function AntiRagdollV1.isRunning() return stateV1.active end
@@ -4050,11 +4045,11 @@ function stopAntiBat()
         AntiBat.Connection:Disconnect()
         AntiBat.Connection = nil
     end
-    -- Desactivar source autobat del anti-die cuando se apaga el anti bate
+    -- Disable the anti-die autobat source when anti bat is turned off
     if _G.__CrystalAntiDieSource then
         pcall(_G.__CrystalAntiDieSource, "autobat", false)
     end
-    -- Restaurar estados normales si el anti-die manual no está activo
+    -- Restore normal states if manual anti-die is not active
     pcall(function()
         if _antiDieSources and not _antiDieSources.toggle then
             local char = LP and LP.Character
@@ -4072,7 +4067,7 @@ end
 function startAntiBat()
     stopAntiBat()
     antiBatEnabled = true
-    -- Activar anti-die automáticamente cuando anti bate está prendido
+    -- Enable anti-die automatically when anti bat is on
     if _G.__CrystalAntiDieSource then
         pcall(_G.__CrystalAntiDieSource, "autobat", true)
     end
@@ -4083,7 +4078,7 @@ function startAntiBat()
         if not character then return end
         local hrp = character:FindFirstChild("HumanoidRootPart")
         if not hrp then return end
-        -- Proteger health antes de aplicar velocidades para evitar reset
+        -- Protect health before applying speeds to avoid a reset
         local hum = character:FindFirstChildOfClass("Humanoid")
         if hum then
             if hum.Health <= 0 then
@@ -4110,7 +4105,7 @@ function startAntiBat()
         if hrp and hrp.Parent then
             hrp.Velocity = v
         end
-        -- Verificar health después de aplicar velocidades
+        -- Verify health after applying speeds
         if hum and hum.Parent and hum.Health <= 0 then
             pcall(function()
                 hum.Health = hum.MaxHealth or 100
@@ -4777,7 +4772,7 @@ function setupSpeedIndicator(char)
     speedLabel.Size = UDim2.new(1, -12, 1, 0)
     speedLabel.Position = UDim2.fromOffset(6, 0)
     speedLabel.BackgroundTransparency = 1
-    speedLabel.Text = string.format("VELOCIDAD: %.1f", getActiveMoveSpeed())
+    speedLabel.Text = string.format("SPEED: %.1f", getActiveMoveSpeed())
     speedLabel.TextColor3 = Color3.fromRGB(248, 245, 235)
     speedLabel.TextStrokeColor3 = Color3.fromRGB(15, 13, 13)
     speedLabel.TextStrokeTransparency = 0.4
@@ -5415,7 +5410,7 @@ local function startAimbot()
         pcall(aimbotLoop, dt)
     end)
     
-    print("[Bat Aimbot] ✅ ACTIVADO")
+    print("[Bat Aimbot] ✅ ENABLED")
 end
 
 local function stopAimbot()
@@ -5447,7 +5442,7 @@ local function stopAimbot()
     STATE.previousAutoRotate = nil
     resetState()
     
-    print("[Bat Aimbot] ❌ DESACTIVADO")
+    print("[Bat Aimbot] ❌ DISABLED")
 end
 
 local function toggleAimbot()
@@ -6853,7 +6848,7 @@ function setupMovementAndIndicators(char)
         end
         if speedLabel and speedLabel.Parent then
             local displaySpeed = getActiveMoveSpeed()
-            speedLabel.Text = string.format("VELOCIDAD: %.1f", displaySpeed)
+            speedLabel.Text = string.format("SPEED: %.1f", displaySpeed)
         end
     end)
     setupSpeedIndicator(char)
@@ -7659,7 +7654,7 @@ local function tpBatTick()
     local targetRoot = closestPlayer.Character:FindFirstChild("HumanoidRootPart")
     if not targetRoot then return end
 
-    -- TP suave con Lerp + zerear velocidad en cada frame para no salir volando
+    -- Smooth TP with Lerp + zero velocity every frame to avoid flying off
     local targetPos = targetRoot.Position + Vector3.new(0, 0.9, 0)
     if closestDistance > 5 then
         root.CFrame = CFrame.new(targetPos, targetRoot.Position)
@@ -8866,12 +8861,12 @@ function buildGui()
     local tabBar = VapserUI.new("Frame", sidePanel, {Name = "Navigation", Position = UDim2.fromOffset(12, 50),
         Size = UDim2.new(1, -24, 1, -120), BackgroundTransparency = 1, BorderSizePixel = 0, ZIndex = 14})
     VapserUI.new("UIListLayout", tabBar, {FillDirection = Enum.FillDirection.Vertical,
-        HorizontalAlignment = Enum.HorizontalAlignment.Center, VerticalAlignment = Enum.VerticalAlignment.Top,
+        HorizontalAlignment = Enum.HorizontalAlignment.Center, VerticalAlignment = Enum.VerticalAlignment.Center,
         Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder})
     local sectionMarker = VapserUI.new("Frame", main, {Name = "SectionMarker", Position = UDim2.fromOffset(LEFT_W + 10, 11),
         Size = UDim2.fromOffset(3, 20), BackgroundColor3 = getThemeColor(), BorderSizePixel = 0, ZIndex = 8})
     VapserUI.round(sectionMarker, 2)
-    local pageHeading = VapserUI.text(main, "MOVEMENT", UDim2.fromOffset(LEFT_W + 22, 8), UDim2.new(1, -(LEFT_W + 70), 0, 26), 11, WHITE, 8)
+    local pageHeading = VapserUI.text(main, "HOME", UDim2.fromOffset(LEFT_W + 22, 8), UDim2.new(1, -(LEFT_W + 70), 0, 26), 11, WHITE, 8)
     pageHeading.Name = "SectionHeading"
     pageHeading.Font = Enum.Font.GothamBold
     local tabContent = VapserUI.new("Frame", main, {Name = "Content", Size = UDim2.new(1, -(LEFT_W + 8), 1, -78),
@@ -8888,8 +8883,8 @@ function buildGui()
         Color3.fromRGB(211, 108, 164), 9)
     VapserUI.footerStats.TextXAlignment = Enum.TextXAlignment.Right
     local tabs = {"Speed", "Custom", "Visual", "Keybinds"}
-    local titles = {"Move", "Combat", "Look", "Binds"}
-    local headings = {"MOVEMENT", "COMBAT", "APPEARANCE", "KEYBINDS"}
+    local titles = {"Home", "Combat", "Config", "Keys"}
+    local headings = {"HOME", "COMBAT", "CONFIG", "KEYS"}
     tabButtons = {}
     local contentPages = {}
     for i, name in ipairs(tabs) do
@@ -9662,7 +9657,7 @@ function buildGui()
 
     mkSect(keyPage, "Combat")
     addKeybindRow(keyPage, "Bat Bypass", KB.AutoBat)
-    addKeybindRow(keyPage, "TP Bate", KB.BatV2)
+    addKeybindRow(keyPage, "TP Bat", KB.BatV2)
 
     mkSect(keyPage, "Utility")
     addKeybindRow(keyPage, "Drop Brainrot", KB.DropBrainrot)
@@ -9960,7 +9955,7 @@ function createMobilePanel()
     local BTN_W, BTN_H = 64, 64
     local buttons = {}
     local buttonNames = {"DropBR", "AutoLeft", "AutoBat", "AutoRight", "TpDown", "Carry", "Lagger1", "Lagger2", "BatV2"}
-    local buttonTexts = {"DROP\nBR", "AUTO\nLEFT", "BAT\nBYPASS", "AUTO\nRIGHT", "TP\nDOWN", "CARRY\nSPD", "LAGGER\nNORMAL", "LAGGER\nCARRY", "TP\nBATE"}
+    local buttonTexts = {"DROP\nBR", "AUTO\nLEFT", "BAT\nBYPASS", "AUTO\nRIGHT", "TP\nDOWN", "CARRY\nSPD", "LAGGER\nNORMAL", "LAGGER\nCARRY", "TP\nBAT"}
 
     local function createButton(name, text, order, isToggle, callback)
         local btn = VapserUI.new("TextButton", panel, {Name = name, Size = UDim2.fromOffset(BTN_W, BTN_H),
@@ -10505,12 +10500,12 @@ end
 local _bootErrors = {}
 
 local function _bootSection(name, fn)
-    print("[Vapser Boot] Iniciando:", name)
+    print("[Vapser Boot] Starting:", name)
     local ok, err = pcall(fn)
     if not ok then
-        print("[Vapser Boot] FALLÓ:", name, tostring(err))
+        print("[Vapser Boot] FAILED:", name, tostring(err))
         table.insert(_bootErrors, {name = name, err = tostring(err)})
-        warn("[Vapser Boot] Error en '" .. name .. "': " .. tostring(err))
+        warn("[Vapser Boot] Error in '" .. name .. "': " .. tostring(err))
     else
         print("[Vapser Boot] OK:", name)
     end
@@ -10600,7 +10595,7 @@ if gui and main then
                 title.Size = UDim2.new(1, -20, 0, 24)
                 title.Position = UDim2.new(0, 10, 0, 8)
                 title.BackgroundTransparency = 1
-                title.Text = "⚠ Vapser: " .. #_bootErrors .. " sección(es) fallaron"
+                title.Text = "⚠ Vapser: " .. #_bootErrors .. " section(s) failed"
                 title.TextColor3 = Color3.fromRGB(255, 100, 110)
                 title.Font = Enum.Font.GothamBold
                 title.TextSize = 13
@@ -10623,7 +10618,7 @@ if gui and main then
                 copyBtn.Size = UDim2.new(0, 100, 0, 22)
                 copyBtn.Position = UDim2.new(0, 10, 1, -30)
                 copyBtn.BackgroundColor3 = Color3.fromRGB(80, 20, 30)
-                copyBtn.Text = "COPIAR LOG"
+                copyBtn.Text = "COPY LOG"
                 copyBtn.TextColor3 = Color3.fromRGB(255, 200, 200)
                 copyBtn.Font = Enum.Font.GothamBold
                 copyBtn.TextSize = 11
@@ -10637,8 +10632,8 @@ if gui and main then
                     pcall(function()
                         if setclipboard then setclipboard(buf) end
                     end)
-                    copyBtn.Text = "¡COPIADO!"
-                    task.delay(1.2, function() copyBtn.Text = "COPIAR LOG" end)
+                    copyBtn.Text = "COPIED!"
+                    task.delay(1.2, function() copyBtn.Text = "COPY LOG" end)
                 end)
 
                 local closeBtn = Instance.new("TextButton", frame)
@@ -10662,7 +10657,7 @@ if gui and main then
         end)
     end
 else
-    warn("[Vapser Boot] Fatal: buildGui falló. El script no puede continuar.")
+    warn("[Vapser Boot] Fatal: buildGui failed. The script cannot continue.")
 end
 
 if LP and LP.CharacterAdded then

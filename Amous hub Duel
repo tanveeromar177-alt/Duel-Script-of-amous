@@ -6649,24 +6649,44 @@ end
 
 function paintFloatingBtn(button, active)
     if not button or not button.Parent then return end
-    local color = getThemeColor()
-    button.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    local color = getThemeColor() -- pink theme
+    local offBg = Color3.fromRGB(0, 0, 0)
+    local onBg = color
+    local white = Color3.fromRGB(255, 255, 255)
+    button.BackgroundColor3 = active and onBg or offBg
+    button.BackgroundTransparency = 0
     local gradient = button:FindFirstChild("BtnGrad")
-    if gradient then gradient.Color = active and ColorSequence.new(color:Lerp(Color3.fromRGB(255, 157, 210), 0.5), color:Lerp(Color3.fromRGB(105, 18, 65), 0.48))
-        or ColorSequence.new(Color3.fromRGB(30, 34, 40), Color3.fromRGB(10, 14, 19)) end
+    if gradient then
+        -- solid-like look matching Vampire (no fancy multi-stop gradient)
+        if active then
+            gradient.Color = ColorSequence.new(onBg, onBg:Lerp(Color3.fromRGB(0, 0, 0), 0.18))
+        else
+            gradient.Color = ColorSequence.new(offBg, Color3.fromRGB(12, 12, 14))
+        end
+    end
     local stroke = button:FindFirstChildOfClass("UIStroke")
-    if stroke then stroke.Color = active and Color3.fromRGB(255, 162, 213) or Color3.fromRGB(110, 74, 94)
-        stroke.Thickness = active and 1.4 or 1; stroke.Transparency = active and 0.15 or 0.54 end
-    local dark = Color3.fromRGB(51, 17, 35)
+    if stroke then
+        stroke.Color = active and color or Color3.fromRGB(0, 0, 0)
+        stroke.Thickness = active and 1.5 or 1.2
+        stroke.Transparency = active and 0.25 or 0.55
+    end
     local label = button:FindFirstChild("TextLabel")
-    if label then label.TextColor3 = active and dark or Color3.fromRGB(231, 228, 220) end
+    if label then label.TextColor3 = white end
     local status = button:FindFirstChild("Status")
-    if status then status.Text = active and "ON" or "OFF"
-        status.TextColor3 = active and dark or Color3.fromRGB(126, 132, 139) end
+    if status then
+        status.Text = active and "ON" or "OFF"
+        status.TextColor3 = white
+    end
     local dot = button:FindFirstChild("StatusDot")
-    if dot then dot.BackgroundColor3 = active and dark or Color3.fromRGB(65, 72, 81) end
+    if dot then
+        dot.BackgroundColor3 = active and white or Color3.fromRGB(80, 80, 85)
+        dot.BackgroundTransparency = active and 0 or 0.35
+    end
     local edge = button:FindFirstChild("AccentEdge")
-    if edge then edge.BackgroundColor3 = color; edge.BackgroundTransparency = active and 1 or 0.30 end
+    if edge then
+        edge.BackgroundColor3 = color
+        edge.BackgroundTransparency = active and 1 or 0.45
+    end
 end
 
 function applyFloatingButtonScale()
@@ -8955,8 +8975,8 @@ function buildGui()
     end
     local TOGGLE_OFF_BG = Color3.fromRGB(0, 0, 0)
     local TOGGLE_OFF_KNOB = Color3.fromRGB(120, 120, 120)
-    local TOGGLE_ON_BG = Color3.fromRGB(220, 45, 45)
-    local TOGGLE_ON_KNOB = Color3.fromRGB(245, 245, 245)
+    local TOGGLE_ON_BG = Color3.fromRGB(234, 85, 166) -- pink (matches theme)
+    local TOGGLE_ON_KNOB = Color3.fromRGB(255, 255, 255)
     local KNOB_OFF_POS = UDim2.new(0, 3, 0.5, -9)
     local KNOB_ON_POS = UDim2.new(1, -23, 0.5, -9)
     local function mkPill(row)
@@ -8973,7 +8993,7 @@ function buildGui()
         return pill, dot
     end
     local function animPill(pill, dot, on)
-        local color = TOGGLE_ON_BG
+        local color = getThemeColor() or TOGGLE_ON_BG
         TS:Create(pill, TweenInfo.new(0.16), {BackgroundColor3 = on and color or TOGGLE_OFF_BG}):Play()
         TS:Create(dot, TweenInfo.new(0.18, Enum.EasingStyle.Quad), {Position = on and KNOB_ON_POS or KNOB_OFF_POS,
             BackgroundColor3 = on and TOGGLE_ON_KNOB or TOGGLE_OFF_KNOB}):Play()
@@ -9096,7 +9116,12 @@ function buildGui()
 
     mkSect(speedPage, "Movement Speeds")
     do local row = mkRow(speedPage, 42); mkLabel(row, "Normal Speed"); normalBox = mkBox(row, NS, 50, 56, function(v) if v == v and v > 0 and v < math.huge then NS = v; if _G.__VapserApplySpeedNow then pcall(_G.__VapserApplySpeedNow) end end end) end
-    do local row = mkRow(speedPage, 42); mkLabel(row, "Carry Speed"); carryBox = mkBox(row, CS, 50, 56, function(v) if v == v and v > 0 and v < math.huge then CS = v; if _G.__VapserApplySpeedNow then pcall(_G.__VapserApplySpeedNow) end end end) end
+    do
+        local row = mkRow(speedPage, 42); mkLabel(row, "Carry Speed")
+        VapserUI.carrySpeedBox = mkBox(row, VapserVenixCarry.softStealSpeed, 50, 56, function(v)
+            VapserVenixCarry:setSoftStealSpeed(v); VapserUI.carrySpeedBox.Text = tostring(VapserVenixCarry.softStealSpeed)
+        end)
+    end
     do local row = mkRow(speedPage, 42); mkLabel(row, "Lagger Normal Speed"); laggerBox = mkBox(row, LAGGER_SPEED, 50, 56, function(v) if v == v and v > 0 and v < math.huge then LAGGER_SPEED = v; if _G.__VapserApplySpeedNow then pcall(_G.__VapserApplySpeedNow) end end end) end
     do local row = mkRow(speedPage, 42); mkLabel(row, "Lagger Carry Speed"); lagger2Box = mkBox(row, LAGGER_CARRY_SPEED, 50, 56, function(v) if v == v and v > 0 and v < math.huge then LAGGER_CARRY_SPEED = v; if _G.__VapserApplySpeedNow then pcall(_G.__VapserApplySpeedNow) end end end) end
 
@@ -9107,12 +9132,6 @@ function buildGui()
         if VapserUI.motorLabel then VapserUI.motorLabel.Text = useVenixCarryEngine and "Carry Boost" or "Direct" end
         if _G.__VapserRefreshSpeedEngine then _G.__VapserRefreshSpeedEngine() end
     end)
-    do
-        local row = mkRow(speedPage, 46); mkLabel(row, "Auto Carry Speed")
-        VapserUI.carrySpeedBox = mkBox(row, VapserVenixCarry.softStealSpeed, 60, 72, function(v)
-            VapserVenixCarry:setSoftStealSpeed(v); VapserUI.carrySpeedBox.Text = tostring(VapserVenixCarry.softStealSpeed)
-        end)
-    end
     do
         local row = mkRow(speedPage, 46); mkLabel(row, "Auto Carry Radius")
         VapserUI.carryRadiusBox = mkBox(row, VapserVenixCarry.softStealRadius, 60, 72, function(v)
@@ -9516,12 +9535,11 @@ function buildGui()
         saveBtn.BackgroundColor3 = Color3.fromRGB(27, 30, 33)
         saveBtn.BorderSizePixel = 0
         saveBtn.Text = "SAVE CONFIG"
-        saveBtn.TextColor3 = Color3.fromRGB(240, 175, 210)
+        saveBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
         saveBtn.Font = Enum.Font.GothamBold
         saveBtn.TextSize = 13
         saveBtn.AutoButtonColor = false
         saveBtn.ZIndex = 8
-        Instance.new("UICorner", saveBtn).CornerRadius = UDim.new(0, 6)
         local saveStroke = Instance.new("UIStroke", saveBtn)
         saveStroke.Color = getThemeColor()
         saveStroke.Thickness = 1.5
@@ -9532,7 +9550,7 @@ function buildGui()
         end)
         saveBtn.MouseLeave:Connect(function()
             TS:Create(saveBtn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(27, 30, 33)}):Play()
-            TS:Create(saveBtn, TweenInfo.new(0.15), {TextColor3 = Color3.fromRGB(240, 175, 210)}):Play()
+            TS:Create(saveBtn, TweenInfo.new(0.15), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
         end)
         saveBtn.MouseButton1Click:Connect(function()
             local ok = saveAllSettings(true)
@@ -9551,12 +9569,11 @@ function buildGui()
         resetPosBtn.BackgroundColor3 = Color3.fromRGB(27, 30, 33)
         resetPosBtn.BorderSizePixel = 0
         resetPosBtn.Text = "RESET POSITIONS"
-        resetPosBtn.TextColor3 = Color3.fromRGB(240, 175, 210)
+        resetPosBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
         resetPosBtn.Font = Enum.Font.GothamBold
         resetPosBtn.TextSize = 13
         resetPosBtn.AutoButtonColor = false
         resetPosBtn.ZIndex = 8
-        Instance.new("UICorner", resetPosBtn).CornerRadius = UDim.new(0, 6)
         local resetStroke = Instance.new("UIStroke", resetPosBtn)
         resetStroke.Color = getThemeColor()
         resetStroke.Thickness = 1.5
@@ -9567,7 +9584,7 @@ function buildGui()
         end)
         resetPosBtn.MouseLeave:Connect(function()
             TS:Create(resetPosBtn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(27, 30, 33)}):Play()
-            TS:Create(resetPosBtn, TweenInfo.new(0.15), {TextColor3 = Color3.fromRGB(240, 175, 210)}):Play()
+            TS:Create(resetPosBtn, TweenInfo.new(0.15), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
         end)
         local resetDebounce = false
         resetPosBtn.MouseButton1Click:Connect(function()
@@ -9592,12 +9609,11 @@ function buildGui()
         delBtn.BackgroundColor3 = Color3.fromRGB(27, 30, 33)
         delBtn.BorderSizePixel = 0
         delBtn.Text = "RESET ALL SETTINGS"
-        delBtn.TextColor3 = Color3.fromRGB(170, 30, 50)
+        delBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
         delBtn.Font = Enum.Font.GothamBold
         delBtn.TextSize = 13
         delBtn.AutoButtonColor = false
         delBtn.ZIndex = 8
-        Instance.new("UICorner", delBtn).CornerRadius = UDim.new(0, 6)
         local delStroke = Instance.new("UIStroke", delBtn)
         delStroke.Color = Color3.fromRGB(200, 60, 80)
         delStroke.Thickness = 1.5
@@ -9608,7 +9624,7 @@ function buildGui()
         end)
         delBtn.MouseLeave:Connect(function()
             TS:Create(delBtn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(27, 30, 33)}):Play()
-            TS:Create(delBtn, TweenInfo.new(0.15), {TextColor3 = Color3.fromRGB(170, 30, 50)}):Play()
+            TS:Create(delBtn, TweenInfo.new(0.15), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
         end)
         local deleteState = 0
         local originalDeleteText = "RESET ALL SETTINGS"
@@ -9625,7 +9641,7 @@ function buildGui()
                         deleteState = 0
                         delBtn.Text = originalDeleteText
                         delBtn.BackgroundColor3 = Color3.fromRGB(27, 30, 33)
-                        delBtn.TextColor3 = Color3.fromRGB(170, 30, 50)
+                        delBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
                     end
                 end)
             elseif deleteState == 1 then
@@ -9634,13 +9650,13 @@ function buildGui()
                 success = invoked and success
                 delBtn.Text = success and "SETTINGS RESET" or "ERROR"
                 delBtn.BackgroundColor3 = Color3.fromRGB(27, 30, 33)
-                delBtn.TextColor3 = Color3.fromRGB(170, 30, 50)
+                delBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
                 deleteState = 0
                 task.delay(1.5, function()
                     if delBtn and delBtn.Parent then
                         delBtn.Text = originalDeleteText
                         delBtn.BackgroundColor3 = Color3.fromRGB(27, 30, 33)
-                        delBtn.TextColor3 = Color3.fromRGB(170, 30, 50)
+                        delBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
                         delDebounce = false
                     end
                 end)
@@ -9937,27 +9953,27 @@ function createMobilePanel()
 
     local function createButton(name, text, order, isToggle, callback)
         local btn = VapserUI.new("TextButton", panel, {Name = name, Size = UDim2.fromOffset(BTN_W, BTN_H),
-            BackgroundColor3 = Color3.fromRGB(255, 255, 255), BorderSizePixel = 0, Text = "",
+            BackgroundColor3 = Color3.fromRGB(0, 0, 0), BorderSizePixel = 0, Text = "",
             AutoButtonColor = false, Active = true, ZIndex = 10})
         local saved = savedButtonPositions[name]
         local x, y = getDefaultButtonPosition(name)
         btn.Position = UDim2.fromOffset(saved and tonumber(saved.X) or x, saved and tonumber(saved.Y) or y)
-        VapserUI.round(btn, 11)
+        VapserUI.round(btn, 12)
         VapserUI.new("UIGradient", btn, {Name = "BtnGrad", Rotation = 90,
-            Color = ColorSequence.new(Color3.fromRGB(30, 34, 40), Color3.fromRGB(10, 14, 19))})
-        VapserUI.stroke(btn, Color3.fromRGB(110, 74, 94), 0.54, 1)
+            Color = ColorSequence.new(Color3.fromRGB(0, 0, 0), Color3.fromRGB(12, 12, 14))})
+        VapserUI.stroke(btn, Color3.fromRGB(0, 0, 0), 0.55, 1.2)
         local dot = VapserUI.new("Frame", btn, {Name = "StatusDot", Size = UDim2.fromOffset(4, 4),
-            Position = UDim2.new(1, -10, 0, 10), BackgroundColor3 = Color3.fromRGB(65, 72, 81), BorderSizePixel = 0, ZIndex = 11})
+            Position = UDim2.new(1, -10, 0, 10), BackgroundColor3 = Color3.fromRGB(80, 80, 85), BorderSizePixel = 0, ZIndex = 11})
         VapserUI.round(dot, 2)
         local label = VapserUI.text(btn, text, UDim2.fromOffset(6, 10), UDim2.new(1, -12, 0, 37), 10,
-            Color3.fromRGB(231, 228, 220), 11)
+            Color3.fromRGB(255, 255, 255), 11)
         label.Name = "TextLabel"
         label.Font = Enum.Font.GothamBold
         label.TextXAlignment = Enum.TextXAlignment.Center
         label.TextWrapped = true
         label.TextTruncate = Enum.TextTruncate.None
         local status = VapserUI.text(btn, "OFF", UDim2.fromOffset(6, 52), UDim2.new(1, -12, 0, 8), 6,
-            Color3.fromRGB(126, 132, 139), 11)
+            Color3.fromRGB(255, 255, 255), 11)
         status.Name = "Status"
         status.TextXAlignment = Enum.TextXAlignment.Center
         local scale = VapserUI.new("UIScale", btn, {Scale = floatingButtonScale})

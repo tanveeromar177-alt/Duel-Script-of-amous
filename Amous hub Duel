@@ -307,8 +307,8 @@ function applyRivalTitleTheme(themeName)
         local grad = scriptLogoRef:FindFirstChildOfClass("UIGradient")
         if grad then
             grad.Color = ColorSequence.new({
-                ColorSequenceKeypoint.new(0, t.top),
-                ColorSequenceKeypoint.new(1, t.bottom),
+                ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+                ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)),
             })
         end
     end
@@ -397,8 +397,6 @@ function updateAllUIThemeColors(color)
         if pingNeon then pingNeon.TextColor3 = color end
         local divider = pbFrame:FindFirstChild("Divider", true)
         if divider and divider:IsA("Frame") then divider.BackgroundColor3 = color end
-
-        pbFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     end
 
     if VapserUI.speedStroke and VapserUI.speedStroke.Parent then VapserUI.speedStroke.Color = color end
@@ -3591,14 +3589,17 @@ function updateStealProgress(value, state)
     state = state or "READY"
     stealHud.value, stealHud.state = value, state
     if progressFill then
-        progressFill.Size = UDim2.new(value, 0, 1, 0)
+        if value <= 0.0005 then
+            progressFill.Size = UDim2.new(0, 0, 1, 0)
+        else
+            progressFill.Size = UDim2.new(0, _clamp(value * 210, 35, 210), 1, 0)
+        end
         progressFill.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     end
     if progressPct then progressPct.Text = _floor(value * 100 + 0.5) .. "%" end
     if progressStatus then
-        progressStatus.Text = state == "APPROACH" and "GET CLOSER" or state
-        progressStatus.TextColor3 = (state == "READY" or state == "CANCELLED")
-            and Color3.fromRGB(178, 162, 171) or Color3.fromRGB(255, 112, 190)
+        progressStatus.Text = "STEAL"
+        progressStatus.TextColor3 = Color3.fromRGB(255, 255, 255)
     end
 end
 
@@ -6590,9 +6591,9 @@ function VapserUI.fit()
         local compact = viewport.X < 600 or viewport.X < viewport.Y * 1.18
         local right = main.Position.X.Offset + size.X + 14
         local room = viewport.X - right - 12
-        local hudScale = compact and math.min(1, (viewport.X - 24) / 264) or math.clamp(room / 264, 0.65, 1)
+        local hudScale = compact and math.min(1, (viewport.X - 24) / 380) or math.clamp(room / 380, 0.65, 1)
         VapserUI.hudScale.Scale = hudScale
-        local hudWidth, hudHeight = 264 * hudScale, 86 * hudScale
+        local hudWidth, hudHeight = 380 * hudScale, 35 * hudScale
         if not savedProgressBarPos then
             if compact then
                 pbFrame.Position = UDim2.fromOffset((viewport.X - hudWidth) / 2,
@@ -6827,7 +6828,7 @@ function setupMovementAndIndicators(char)
             if type(ping) ~= "number" then pcall(function() ping = LP:GetNetworkPing() * 1000 end) end
             local pingText = type(ping) == "number" and tostring(_floor(ping + 0.5)) or "--"
             stealHud.statsText = tostring(fps) .. " FPS  ·  PING: " .. pingText .. " MS"
-            if stealHud.stats and stealHud.stats.Parent then stealHud.stats.Text = stealHud.statsText end
+            if stealHud.stats and stealHud.stats.Parent then stealHud.stats.Text = "FPS:" .. fps .. "   PING:" .. pingText end
             if stealHud.mode and stealHud.mode.Parent then stealHud.mode.Text = autoStealMode end
             if VapserUI.footerStats and VapserUI.footerStats.Parent then VapserUI.footerStats.Text = stealHud.statsText end
         end
@@ -7411,7 +7412,7 @@ function resetFloatingPositions()
         end
     end
     if pbFrame then
-        pbFrame.Position = UDim2.new(1, -282, 0, 18)
+        pbFrame.Position = UDim2.new(1, -392, 0, 18)
         savedProgressBarPos = nil
     end
     savedMobilePanelPos = nil
@@ -8788,7 +8789,7 @@ function buildGui()
     main = VapserUI.new("Frame", gui, {Name = "Main", Size = UDim2.fromOffset(GUI_W, GUI_H),
         Position = UDim2.fromOffset(18, 16), BackgroundColor3 = Color3.fromRGB(5, 5, 7),
         BorderSizePixel = 0, ClipsDescendants = true, Active = true})
-    VapserUI.round(main, 18)
+    VapserUI.round(main, 40)
     local border = VapserUI.stroke(main, Color3.fromRGB(210, 83, 152), 0.35, 1.2)
     border.Name = "MainBorder"
     mainUIScale = VapserUI.new("UIScale", main, {Scale = uiScaleValue / 100})
@@ -8803,17 +8804,17 @@ function buildGui()
         BackgroundColor3 = Color3.fromRGB(0, 0, 0), BorderSizePixel = 0, ZIndex = 2})
     VapserUI.new("UIGradient", sideShade, {Rotation = 90, Transparency = NumberSequence.new({
         NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.5, 0.9), NumberSequenceKeypoint.new(1, 0.2)})})
-    scriptLogoRef = VapserUI.text(sidePanel, "Vapser", UDim2.new(0, 16, 1, -54), UDim2.fromOffset(LEFT_W - 28, 28), 22, WHITE, 8)
+    scriptLogoRef = VapserUI.text(sidePanel, "Vapser", UDim2.new(0, 16, 1, -60), UDim2.fromOffset(LEFT_W - 28, 28), 22, Color3.fromRGB(255, 255, 255), 8)
     scriptLogoRef.Font = Enum.Font.GothamBlack
     VapserUI.titleGradient = VapserUI.new("UIGradient", scriptLogoRef, {Rotation = 90,
-        Color = ColorSequence.new(WHITE, Color3.fromRGB(247, 120, 189))})
-    local titleRule = VapserUI.new("Frame", sidePanel, {Name = "TitleRule", Position = UDim2.new(0, 16, 1, -25),
+        Color = ColorSequence.new(Color3.fromRGB(255, 255, 255))})
+    local titleRule = VapserUI.new("Frame", sidePanel, {Name = "TitleRule", Position = UDim2.new(0, 16, 1, -31),
         Size = UDim2.fromOffset(LEFT_W - 66, 1), BackgroundColor3 = getThemeColor(), BorderSizePixel = 0, ZIndex = 8})
-    VapserUI.text(sidePanel, "made by vasps-3", UDim2.new(0, 16, 1, -21), UDim2.fromOffset(LEFT_W - 28, 14), 9,
+    VapserUI.text(sidePanel, "made by vasps-3", UDim2.new(0, 16, 1, -27), UDim2.fromOffset(LEFT_W - 28, 14), 9,
         Color3.fromRGB(196, 176, 188), 8)
 
     local close = VapserUI.new("TextButton", main, {Name = "Close", Size = UDim2.fromOffset(26, 26),
-        Position = UDim2.new(1, -36, 0, 8), Text = "−", TextSize = 20, Font = Enum.Font.GothamMedium,
+        Position = UDim2.new(1, -46, 0, 14), Text = "−", TextSize = 20, Font = Enum.Font.GothamMedium,
         TextColor3 = WHITE, BackgroundColor3 = INP, BackgroundTransparency = 0.06,
         BorderSizePixel = 0, AutoButtonColor = false, ZIndex = 18})
     VapserUI.round(close, 8)
@@ -8872,7 +8873,7 @@ function buildGui()
     local tabContent = VapserUI.new("Frame", main, {Name = "Content", Size = UDim2.new(1, -(LEFT_W + 8), 1, -78),
         Position = UDim2.fromOffset(LEFT_W + 4, 40), BackgroundTransparency = 1, ClipsDescendants = true, ZIndex = 6})
     local footer = VapserUI.new("Frame", main, {Name = "Footer", Position = UDim2.new(0, LEFT_W + 10, 1, -34),
-        Size = UDim2.new(1, -(LEFT_W + 20), 0, 25), BackgroundTransparency = 1, ZIndex = 8})
+        Size = UDim2.new(1, -(LEFT_W + 34), 0, 25), BackgroundTransparency = 1, ZIndex = 8})
     VapserUI.new("Frame", footer, {Size = UDim2.new(1, 0, 0, 1), BackgroundColor3 = ROW_BORDER,
         BackgroundTransparency = 0.62, BorderSizePixel = 0, ZIndex = 8})
     local avatar = VapserUI.new("ImageLabel", footer, {Position = UDim2.fromOffset(2, 6), Size = UDim2.fromOffset(17, 17),
@@ -9670,59 +9671,36 @@ function buildGui()
     spacer.LayoutOrder = getNextOrder(keyPage)
     spacer.ZIndex = 7
 
-    pbFrame = VapserUI.new("Frame", gui, {Name = "VapserAutoStealHud", Size = UDim2.fromOffset(264, 86),
-        Position = UDim2.new(1, -282, 0, 18), BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+    local PB_W, PB_H = 210, 35
+    local PB_WHITE = Color3.fromRGB(255, 255, 255)
+    pbFrame = VapserUI.new("Frame", gui, {Name = "VapserAutoStealHud", Size = UDim2.fromOffset(380, PB_H),
+        Position = UDim2.new(1, -392, 0, 18), BackgroundColor3 = Color3.fromRGB(12, 12, 12),
         BorderSizePixel = 0, Active = true, ZIndex = 50})
     VapserUI.hudScale = VapserUI.new("UIScale", pbFrame, {Scale = 1})
-    VapserUI.round(pbFrame, 15)
-    VapserUI.new("UIGradient", pbFrame, {Rotation = 80, Color = ColorSequence.new(
-        Color3.fromRGB(42, 31, 25), Color3.fromRGB(11, 16, 24))})
-    local hudStroke = VapserUI.stroke(pbFrame, getThemeColor(), 0.4, 1.2)
-    hudStroke.Name = "OuterStroke"
-    local inset = VapserUI.new("Frame", pbFrame, {Name = "Inset", Position = UDim2.fromOffset(3, 3),
-        Size = UDim2.new(1, -6, 1, -6), BackgroundTransparency = 1, BorderSizePixel = 0, ZIndex = 51})
-    VapserUI.round(inset, 12)
-    VapserUI.stroke(inset, Color3.fromRGB(245, 155, 204), 0.91, 1)
-    local title = VapserUI.text(pbFrame, "Vapser", UDim2.fromOffset(14, 7), UDim2.fromOffset(150, 19), 10, WHITE, 53)
-    title.Font = Enum.Font.GothamBlack
-    local modePill = VapserUI.new("Frame", pbFrame, {Name = "ModeBadge", Size = UDim2.fromOffset(41, 19),
-        Position = UDim2.new(1, -53, 0, 8), BackgroundColor3 = Color3.fromRGB(58, 27, 44),
-        BackgroundTransparency = 0.12, BorderSizePixel = 0, ZIndex = 52})
-    VapserUI.round(modePill, 6)
-    VapserUI.stroke(modePill, Color3.fromRGB(204, 72, 144), 0.8, 1)
-    stealHud.mode = VapserUI.text(modePill, autoStealMode, UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), 9, getThemeColor(), 53)
-    stealHud.mode.Name = "StealMode"
-    stealHud.mode.TextXAlignment = Enum.TextXAlignment.Center
-    stealHud.mode.Font = Enum.Font.GothamBold
-    progressStatus = VapserUI.text(pbFrame, stealHud.state, UDim2.fromOffset(14, 28), UDim2.fromOffset(88, 14), 8,
-        Color3.fromRGB(183, 179, 169), 53)
-    progressStatus.Name = "StealProgressStatus"
-    stealHud.stats = VapserUI.text(pbFrame, stealHud.statsText, UDim2.new(1, -137, 0, 29), UDim2.fromOffset(125, 14), 8,
-        Color3.fromRGB(195, 188, 172), 53)
-    stealHud.stats.Name = "PerformanceStats"
-    stealHud.stats.TextXAlignment = Enum.TextXAlignment.Right
-    local track = VapserUI.new("Frame", pbFrame, {Name = "StealProgressTrack", Size = UDim2.new(1, -22, 0, 26),
-        Position = UDim2.new(0, 11, 1, -37), BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-        BorderSizePixel = 0, ClipsDescendants = true, ZIndex = 51})
-    VapserUI.round(track, 8)
-    VapserUI.stroke(track, Color3.fromRGB(126, 49, 91), 0.55, 1)
-    VapserUI.new("UIGradient", track, {Rotation = 90, Color = ColorSequence.new(
-        Color3.fromRGB(43, 35, 29), Color3.fromRGB(17, 22, 30))})
-    progressFill = VapserUI.new("Frame", track, {Name = "StealProgressFill", Size = UDim2.new(stealHud.value, 0, 1, 0),
-        BackgroundColor3 = Color3.fromRGB(255, 255, 255), BorderSizePixel = 0, ZIndex = 52})
-    VapserUI.round(progressFill, 8)
+    VapserUI.new("UICorner", pbFrame, {CornerRadius = UDim.new(1, 0)})
+    local hudStroke = VapserUI.stroke(pbFrame, Color3.fromRGB(0, 0, 0), 0, 1.5)
+    hudStroke.Name = "HudStroke"
+    local pbBg = VapserUI.new("Frame", pbFrame, {Name = "StealProgressTrack", Size = UDim2.fromOffset(PB_W, PB_H),
+        BackgroundColor3 = Color3.fromRGB(22, 22, 22), BorderSizePixel = 0, ZIndex = 51})
+    VapserUI.new("UICorner", pbBg, {CornerRadius = UDim.new(1, 0)})
+    VapserUI.stroke(pbBg, Color3.fromRGB(0, 0, 0), 0, 1.5)
+    progressFill = VapserUI.new("Frame", pbBg, {Name = "StealProgressFill", Size = UDim2.new(0, 0, 1, 0),
+        BackgroundColor3 = PB_WHITE, BorderSizePixel = 0, ZIndex = 52})
+    VapserUI.new("UICorner", progressFill, {CornerRadius = UDim.new(1, 0)})
     VapserUI.new("UIGradient", progressFill, {Color = VapserGradient(getThemeColor())})
-    for i = 1, 5 do
-        VapserUI.new("Frame", track, {Name = "ProgressMark", Position = UDim2.new(i / 6, 0, 0, 5),
-            Size = UDim2.new(0, 1, 1, -10), BackgroundColor3 = Color3.fromRGB(48, 28, 17),
-            BackgroundTransparency = 0.88, BorderSizePixel = 0, ZIndex = 53})
-    end
-    progressPct = VapserUI.text(track, "0%", UDim2.fromScale(0, 0), UDim2.fromScale(1, 1), 11, WHITE, 54)
+    progressStatus = VapserUI.text(pbBg, "STEAL", UDim2.fromOffset(14, 0), UDim2.new(1, -28, 1, 0), 13, PB_WHITE, 54)
+    progressStatus.Name = "StealProgressStatus"
+    progressStatus.Font = Enum.Font.GothamBold
+    progressStatus.TextStrokeTransparency = 0.6
+    progressPct = VapserUI.text(pbBg, "0%", UDim2.fromOffset(0, 0), UDim2.new(1, -16, 1, 0), 12, PB_WHITE, 54)
     progressPct.Name = "StealProgressPercent"
     progressPct.Font = Enum.Font.GothamBold
-    progressPct.TextXAlignment = Enum.TextXAlignment.Center
-    progressPct.TextStrokeColor3 = Color3.fromRGB(28, 18, 13)
-    progressPct.TextStrokeTransparency = 0.18
+    progressPct.TextXAlignment = Enum.TextXAlignment.Right
+    progressPct.TextStrokeTransparency = 0.6
+    stealHud.stats = VapserUI.text(pbFrame, "FPS:--   PING:--", UDim2.fromOffset(222, 0), UDim2.new(1, -232, 1, 0), 12, PB_WHITE, 53)
+    stealHud.stats.Name = "PerformanceStats"
+    stealHud.stats.Font = Enum.Font.GothamBold
+    stealHud.stats.TextStrokeTransparency = 0.6
     updateStealProgress(stealHud.value, stealHud.state)
     drag(pbFrame)
     VapserUI.fit()
